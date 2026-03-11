@@ -2,6 +2,8 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\RoleController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,6 +16,23 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+
+
+Route::post('/createStaffMember', [AuthController::class, 'createStaffMember']);
+Route::post('/loginUser', [AuthController::class, 'loginUser']);
+Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
+Route::post('/updateStaffMember/{id}', [AuthController::class, 'updateStaffMember']);
+
+
+
+
+Route::group([
+    'middleware' => ['api', 'auth:sanctum'/** , role:super_admin|admin'*/],
+    'prefix' => 'role'
+], function ($router) {
+    Route::post('/createRole', [RoleController::class, 'createRole']);
+    Route::get('/getAllRoles', [RoleController::class, 'getAllRoles']);
+    Route::get('/getRole/{id}', [RoleController::class, 'getRole']);
+    Route::post('/updateRole/{id}', [RoleController::class, 'updateRole']);
+    Route::delete('/deleteRole/{id}', [RoleController::class, 'deleteRole']);
 });
