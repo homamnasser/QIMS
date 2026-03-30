@@ -28,6 +28,7 @@ class AuthController extends Controller
     {
 
         $user = $this->staffService->createStaff($request->validated());
+
         return response()->json([
             'code' => 201,
             'message' => 'User created successfully',
@@ -36,7 +37,7 @@ class AuthController extends Controller
     }
 
 
-   public function loginUser(LoginRequest $request)
+    public function loginUser(LoginRequest $request)
     {
         $token = $this->staffService->login($request->validated());
 
@@ -84,6 +85,9 @@ class AuthController extends Controller
         $validatedData = $request->validated();
 
         $updatedUser = $this->staffService->updateStaff($user, $request->validated());
+         if ($request->has('role_id')) {
+            $this->staffService->assignRoleToUser($user, (int)$request->role_id);
+        }
         return response()->json([
             'code' => 200,
             'message' => 'User updated successfully',

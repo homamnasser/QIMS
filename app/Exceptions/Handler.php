@@ -5,7 +5,7 @@ namespace App\Exceptions;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Auth\AuthenticationException;
 use Throwable;
-
+use Spatie\Permission\Exceptions\UnauthorizedException;
 class Handler extends ExceptionHandler
 {
     /**
@@ -23,11 +23,17 @@ class Handler extends ExceptionHandler
      * Register the exception handling callbacks for the application.
      */
     public function register(): void
-    {
-        $this->reportable(function (Throwable $e) {
-            //
-        });
-    }
+{
+    $this->renderable(function (UnauthorizedException $e, $request) {
+        if ($request->is('api/*')) {
+            return response()->json([
+                'code'    => 403,
+                'message' => 'Forbidden: You do not have the required permissions.',
+                'data'    => null
+            ], 403);
+        }
+    });
+}
     protected function unauthenticated($request, AuthenticationException $exception)
     {
         return response()->json([

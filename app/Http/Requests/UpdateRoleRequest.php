@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
-use Illuminate\Validation\Rule; 
+use Illuminate\Validation\Rule;
 
 class UpdateRoleRequest extends FormRequest
 {
@@ -53,6 +53,7 @@ class UpdateRoleRequest extends FormRequest
             'name.max'              => 'The name may not be greater than 255 characters.',
             'permissions.*.integer' => 'Each permission ID must be a number.',
             'permissions.*.exists'  => 'One or more selected permissions are invalid.',
+            
         ];
     }
 

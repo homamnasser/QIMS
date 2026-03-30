@@ -20,10 +20,12 @@ class UpdateUserRequest extends FormRequest
         return [
             'first_name' => 'required|string|max:55',
             'last_name'  => 'string|max:55',
-            'phone'      => [ 'unique:users,phone'],
+            'phone'      => ['unique:users,phone'],
             'password'   => 'string|min:8|confirmed',
             'email'      => 'email|unique:users,email',
             'birth_date' => 'date',
+            'role_id'    => 'exists:roles,id'
+
         ];
     }
 
@@ -35,6 +37,10 @@ class UpdateUserRequest extends FormRequest
             'phone.phone'    => 'please enter a valid phone number',
             'email.email'    => 'Please enter a valid email address in the format name@gmail.com',
             'password.min'   => 'Password must be at least 8 characters',
+            'password.confirmed' => 'Password confirmation does not match',
+            'email.unique'   => 'the email already exist',
+            'role_id.exists' => 'The selected role is invalid.',
+             
         ];
     }
 

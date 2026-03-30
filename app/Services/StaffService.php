@@ -11,14 +11,23 @@ class StaffService implements IStaffService
     public function updateStaff(User $user, array $data): User
     {
         $user->update($data);
-
+        if (isset($data['role_id'])) {
+            $user->assignRole((int)$data['role_id']);
+        }
         return $user;
     }
 
     public function createStaff(array $data): User
     {
-        return User::create($data);
+        $user = User::create($data);
+
+        if (isset($data['role_id'])) {
+            $user->assignRole((int)$data['role_id']);
+        }
+
+        return $user;
     }
+
 
     public function login(array $credentials): ?string
     {
@@ -36,5 +45,10 @@ class StaffService implements IStaffService
     {
         $user->tokens()->delete();
         return true;
+    }
+
+    public function assignRoleToUser(User $user, $roleId): void
+    {
+        $user->assignRole((int)$roleId);
     }
 }

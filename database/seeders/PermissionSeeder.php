@@ -14,7 +14,13 @@ class PermissionSeeder extends Seeder
 
         $permissions = [
             'createStaffMember',
-            'updateStaffMember'
+            'updateStaffMember',
+            'getAllRoles',
+            'createRole',
+            'getRole',
+            'updateRole',
+            'deleteRole',
+
         ];
 
         foreach ($permissions as $permission) {

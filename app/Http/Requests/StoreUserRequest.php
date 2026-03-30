@@ -24,6 +24,7 @@ class StoreUserRequest extends FormRequest
             'password'   => 'required|string|min:8|confirmed',
             'email'      => 'required|email|unique:users,email',
             'birth_date' => 'required|date',
+            'role_id'    => 'required|exists:roles,id'
         ];
     }
 
@@ -35,6 +36,9 @@ class StoreUserRequest extends FormRequest
             'phone.phone'    => 'please enter a valid phone number',
             'email.email'    => 'Please enter a valid email address in the format name@gmail.com',
             'password.min'   => 'Password must be at least 8 characters',
+            'password.confirmed' => 'Password confirmation does not match',
+            'role_id.required' => 'The role field is required.',
+            'role_id.exists'   => 'The selected role is invalid.',
         ];
     }
 

@@ -18,16 +18,19 @@ use App\Http\Controllers\RoleController;
 
 
 
-Route::post('/createStaffMember', [AuthController::class, 'createStaffMember']);
 Route::post('/loginUser', [AuthController::class, 'loginUser']);
 Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
-Route::post('/updateStaffMember/{id}', [AuthController::class, 'updateStaffMember']);
 
-
+Route::group([
+    'middleware' => ['api', 'auth:sanctum', 'role:super-admin'],
+], function ($router) {
+    Route::post('/createStaffMember', [AuthController::class, 'createStaffMember']);
+    Route::post('/updateStaffMember/{id}', [AuthController::class, 'updateStaffMember']);
+});
 
 
 Route::group([
-    'middleware' => ['api', 'auth:sanctum'/** , role:super_admin|admin'*/],
+    'middleware' => ['api', 'auth:sanctum', 'role:super-admin'],
     'prefix' => 'role'
 ], function ($router) {
     Route::post('/createRole', [RoleController::class, 'createRole']);
