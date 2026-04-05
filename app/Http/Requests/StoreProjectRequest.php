@@ -35,7 +35,7 @@ class StoreProjectRequest extends FormRequest
                 },
             ],
 
-            'logo'        => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
+            'logo'        => 'mimes:jpg,jpeg,png,pdf|max:5120',
         ];
     }
 
@@ -53,7 +53,6 @@ class StoreProjectRequest extends FormRequest
             'supervisor.required' => 'A project supervisor must be assigned.',
             'supervisor.exists'   => 'The selected supervisor does not exist in our records.',
 
-            'logo.file'          => 'The logo must be a valid file.',
             'logo.mimes'         => 'The logo must be a file of type: jpg, png, jpeg.',
             'logo.max'           => 'The logo size may not exceed 5MB.',
 

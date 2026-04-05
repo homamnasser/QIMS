@@ -1,0 +1,47 @@
+info:
+  name: createStaffMember
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: http://127.0.0.1:8000/api/createStaffMember
+  headers:
+    - name: Accept
+      value: application/json
+  body:
+    type: multipart-form
+    data:
+      - name: first_name
+        type: text
+        value: homam
+      - name: last_name
+        type: text
+        value: nasser
+      - name: phone
+        type: text
+        value: "0940099142"
+      - name: email
+        type: text
+        value: 0940099142@gmail.com
+      - name: password
+        type: text
+        value: "123456789"
+      - name: password_confirmation
+        type: text
+        value: "123456789"
+      - name: birth_date
+        type: text
+        value: 2002-02-18
+      - name: role_id
+        type: text
+        value: "3"
+  auth:
+    type: bearer
+    token: 7|XUAa10P6yEi0IP5kD0AJF0qom1EoGYql2NcaW6TP0c59dc7e
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

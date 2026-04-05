@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreRoleRequest;
 use App\Http\Requests\UpdateRoleRequest;
 use App\Http\Resources\RoleResource;
+use App\Http\Resources\PermissionResource;
 use App\IService\IRoleService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -114,5 +115,17 @@ class RoleController extends Controller
                 'data'    => null
             ], 404);
         }
+    }
+
+
+    public function getAllPermissions(): \Illuminate\Http\JsonResponse
+    {
+        $permissions = $this->roleService->getAllPermissions();
+
+        return response()->json([
+            'code'    => 200,
+            'message' => 'Permissions retrieved successfully.',
+            'data'    => PermissionResource::collection($permissions)
+        ], 200);
     }
 }

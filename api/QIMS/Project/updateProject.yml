@@ -1,0 +1,36 @@
+info:
+  name: updateProject
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: http://127.0.0.1:8000/api/project/updateProject/1
+  body:
+    type: multipart-form
+    data:
+      - name: name
+        type: text
+        value: eee
+      - name: description
+        type: text
+        value: fds
+      - name: audience
+        type: text
+        value: wf
+      - name: supervisor
+        type: text
+        value: "2"
+      - name: logo
+        type: file
+        value:
+          - C:\Users\homam\OneDrive\Pictures\Screenshots\Screenshot 2025-12-03 165217.png
+  auth:
+    type: bearer
+    token: 8|k1R9sBJrjn8fynOFquACSeYvzOQe6jwO1kyMqtVd414c63b8
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

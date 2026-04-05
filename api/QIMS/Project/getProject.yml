@@ -1,0 +1,17 @@
+info:
+  name: getProject
+  type: http
+  seq: 4
+
+http:
+  method: GET
+  url: http://127.0.0.1:8000/api/project/getProject/1
+  auth:
+    type: bearer
+    token: 8|k1R9sBJrjn8fynOFquACSeYvzOQe6jwO1kyMqtVd414c63b8
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

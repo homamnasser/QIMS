@@ -1,0 +1,30 @@
+info:
+  name: updateRole
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: http://127.0.0.1:8000/api/role/updateRole/3
+  params:
+    - name: ""
+      value: ""
+      type: query
+  body:
+    type: multipart-form
+    data:
+      - name: name
+        type: text
+        value: admin3
+      - name: permissions[]
+        type: text
+        value: "1"
+  auth:
+    type: bearer
+    token: 7|XUAa10P6yEi0IP5kD0AJF0qom1EoGYql2NcaW6TP0c59dc7e
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

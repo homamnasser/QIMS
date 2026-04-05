@@ -25,7 +25,9 @@ class PermissionSeeder extends Seeder
             'getProject',
             'updateProject',
             'deleteProject',
-            
+            'getAllPermissions',
+            'editProjectStatus',
+
 
         ];
 

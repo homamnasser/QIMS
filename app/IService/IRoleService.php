@@ -20,4 +20,5 @@ interface IRoleService
     public function updateRole(int $roleId, string $name, array $permissionIds): Role;
 
     public function deleteRole(int $roleId): bool;
+    public function getAllPermissions(): Collection;
 }

@@ -1,10 +1,13 @@
 <?php
+
 namespace App\Services;
 
 use App\IService\IProjectService;
 use App\Models\Project;
 use App\Traits\FileTrait;
 use Illuminate\Support\Str;
+use Illuminate\Support\Collection;
+
 
 class ProjectService implements IProjectService
 {
@@ -33,6 +36,28 @@ class ProjectService implements IProjectService
         }
 
         $project->update($data);
+
+        return $project;
+    }
+
+    public function getAllProjects($status = null)
+    {
+        $query = Project::query();
+
+        if (!is_null($status)) {
+            $query->where('is_active', (bool)$status);
+        }
+
+        return $query->orderBy('created_at', 'desc')->get();
+    }
+    public function getProjectById(int $id): ?Project
+    {
+        return Project::find($id);
+    }
+    public function editProjectStatus(Project $project): Project
+    {
+        $project->is_active = !$project->is_active;
+        $project->save();
 
         return $project;
     }

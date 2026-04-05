@@ -23,7 +23,7 @@ Route::post('/loginUser', [AuthController::class, 'loginUser']);
 Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
 
 Route::group([
-    'middleware' => ['api', 'auth:sanctum', 'role:super-admin'],
+    'middleware' => ['api', 'auth:sanctum', 'role:super-admin|admin'],
 ], function ($router) {
     Route::post('/createStaffMember', [AuthController::class, 'createStaffMember']);
     Route::post('/updateStaffMember/{id}', [AuthController::class, 'updateStaffMember']);
@@ -39,6 +39,7 @@ Route::group([
     Route::get('/getRole/{id}', [RoleController::class, 'getRole']);
     Route::post('/updateRole/{id}', [RoleController::class, 'updateRole']);
     Route::delete('/deleteRole/{id}', [RoleController::class, 'deleteRole']);
+    Route::get('/getAllPermissions', [RoleController::class, 'getAllPermissions']);
 });
 
 
@@ -51,4 +52,5 @@ Route::group([
     Route::get('/getProject/{id}', [ProjectController::class, 'getProject']);
     Route::post('/updateProject/{id}', [ProjectController::class, 'updateProject']);
     Route::delete('/deleteProject/{id}', [ProjectController::class, 'deleteProject']);
+    Route::patch('/editProjectStatus/{id}', [ProjectController::class, 'editProjectStatus']);
 });

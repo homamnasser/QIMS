@@ -1,0 +1,17 @@
+info:
+  name: editProjectStatus
+  type: http
+  seq: 5
+
+http:
+  method: PATCH
+  url: http://127.0.0.1:8000/api/project/editProjectStatus/4
+  auth:
+    type: bearer
+    token: 9|66SxxIafwg2tdtY2rrEfnrAyCH5Ncc4wnQ4i3i2v46618faa
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
