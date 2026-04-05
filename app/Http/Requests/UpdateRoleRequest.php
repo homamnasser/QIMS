@@ -53,16 +53,15 @@ class UpdateRoleRequest extends FormRequest
             'name.max'              => 'The name may not be greater than 255 characters.',
             'permissions.*.integer' => 'Each permission ID must be a number.',
             'permissions.*.exists'  => 'One or more selected permissions are invalid.',
-            
+
         ];
     }
 
     protected function failedValidation(Validator $validator)
     {
         throw new HttpResponseException(response()->json([
-            'success' => false,
             'code'    => 422,
-            'errors'  => $validator->errors()
+            'message'  => $validator->errors()
         ], 422));
     }
 }

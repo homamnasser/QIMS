@@ -20,6 +20,12 @@ class PermissionSeeder extends Seeder
             'getRole',
             'updateRole',
             'deleteRole',
+            'getAllProjects',
+            'createProject',
+            'getProject',
+            'updateProject',
+            'deleteProject',
+            
 
         ];
 

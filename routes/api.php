@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\ProjectController;
 
 /*
 |--------------------------------------------------------------------------
@@ -38,4 +39,16 @@ Route::group([
     Route::get('/getRole/{id}', [RoleController::class, 'getRole']);
     Route::post('/updateRole/{id}', [RoleController::class, 'updateRole']);
     Route::delete('/deleteRole/{id}', [RoleController::class, 'deleteRole']);
+});
+
+
+Route::group([
+    'middleware' => ['api', 'auth:sanctum', 'role:super-admin'],
+    'prefix' => 'project'
+], function ($router) {
+    Route::post('/createProject', [ProjectController::class, 'createProject']);
+    Route::get('/getAllProjects', [ProjectController::class, 'getAllProjects']);
+    Route::get('/getProject/{id}', [ProjectController::class, 'getProject']);
+    Route::post('/updateProject/{id}', [ProjectController::class, 'updateProject']);
+    Route::delete('/deleteProject/{id}', [ProjectController::class, 'deleteProject']);
 });

@@ -4,7 +4,9 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use App\Services\StaffService;
+use App\Services\ProjectService;
 use App\IService\IStaffService;
+use App\IService\IProjectService;
 use App\IService\IRoleService;
 use App\Services\RoleService;
 use Illuminate\Support\Facades\Gate;
@@ -18,6 +20,7 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->bind(IStaffService::class, StaffService::class);
         $this->app->bind(IRoleService::class, RoleService::class);
+        $this->app->bind(IProjectService::class, ProjectService::class);
     }
 
     /**

@@ -40,16 +40,15 @@ class UpdateUserRequest extends FormRequest
             'password.confirmed' => 'Password confirmation does not match',
             'email.unique'   => 'the email already exist',
             'role_id.exists' => 'The selected role is invalid.',
-             
+
         ];
     }
 
     protected function failedValidation(Validator $validator)
     {
         throw new HttpResponseException(response()->json([
-            'success' => false,
             'code'    => 422,
-            'errors'  => $validator->errors()
+            'message'  => $validator->errors()
         ], 422));
     }
 }

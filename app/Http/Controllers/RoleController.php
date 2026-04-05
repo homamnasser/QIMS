@@ -85,13 +85,11 @@ class RoleController extends Controller
             return response()->json([
                 'code'    => 404,
                 'message' => 'Role not found',
-                'data'    => null
             ], 404);
         } catch (\Exception $e) {
             return response()->json([
                 'code'    => 500,
                 'message' => $e->getMessage(),
-                'data'    => null
             ], 500);
         }
     }

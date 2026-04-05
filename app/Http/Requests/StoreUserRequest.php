@@ -39,15 +39,15 @@ class StoreUserRequest extends FormRequest
             'password.confirmed' => 'Password confirmation does not match',
             'role_id.required' => 'The role field is required.',
             'role_id.exists'   => 'The selected role is invalid.',
+
         ];
     }
 
     protected function failedValidation(Validator $validator)
     {
         throw new HttpResponseException(response()->json([
-            'success' => false,
             'code'    => 422,
-            'errors'  => $validator->errors()
+            'message'  => $validator->errors()
         ], 422));
     }
 }
