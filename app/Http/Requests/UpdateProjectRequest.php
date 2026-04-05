@@ -49,9 +49,7 @@ class UpdateProjectRequest extends FormRequest
         ];
     }
 
-    /**
-     * تخصيص رسائل الخطأ
-     */
+    
     public function messages(): array
 {
     return [
@@ -70,7 +68,7 @@ class UpdateProjectRequest extends FormRequest
     ];
 }
 
-  
+
     protected function failedValidation(Validator $validator): void
     {
         throw new HttpResponseException(response()->json([
