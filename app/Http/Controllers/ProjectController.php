@@ -33,7 +33,7 @@ class ProjectController extends Controller
     }
 
 
-    public function updateProject(Request $request, string $id): JsonResponse
+    public function updateProject(UpdateProjectRequest $request, string $id): JsonResponse
     {
 
         $project = Project::find($id);

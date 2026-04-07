@@ -9,6 +9,9 @@ http:
   headers:
     - name: Accept
       value: application/json
+    - name: _method
+      value: PATCH
+      disabled: true
   body:
     type: multipart-form
     data:
@@ -20,10 +23,10 @@ http:
         value: nasser
       - name: phone
         type: text
-        value: "0940099142"
+        value: "0940099146"
       - name: email
         type: text
-        value: 0940099142@gmail.com
+        value: 0940099146@gmail.com
       - name: password
         type: text
         value: "123456789"
@@ -35,10 +38,10 @@ http:
         value: 2002-02-18
       - name: role_id
         type: text
-        value: "3"
+        value: "2"
   auth:
     type: bearer
-    token: 7|XUAa10P6yEi0IP5kD0AJF0qom1EoGYql2NcaW6TP0c59dc7e
+    token: 11|0lzeVMvOeag3VFl9lORqIKomZlxGLpzvpti4j9x4a7a213f3
 
 settings:
   encodeUrl: true

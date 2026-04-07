@@ -20,9 +20,9 @@ class UpdateUserRequest extends FormRequest
         return [
             'first_name' => 'sometimes|required|string|max:55',
             'last_name'  => 'sometimes|required|string|max:55',
-            'phone'      => ['sometimes', 'unique:users,phone'],
+            'phone'      => ['sometimes', 'unique:users,phone,'. $this->route('id')],
             'password'   => 'sometimes|required|string|min:8|confirmed',
-            'email'      => 'sometimes|required|email|unique:users,email',
+            'email'      => 'sometimes|required|email|unique:users,email,'. $this->route('id'),
             'birth_date' => 'sometimes|required|date',
             'role_id'    => 'exists:roles,id'
 

@@ -1,7 +1,7 @@
 info:
-  name: Project
+  name: Mosque
   type: folder
-  seq: 1
+  seq: 4
 
 request:
   auth: inherit

@@ -5,23 +5,22 @@ info:
 
 http:
   method: POST
-  url: http://127.0.0.1:8000/api/role/updateRole/3
-  params:
-    - name: ""
-      value: ""
-      type: query
+  url: http://127.0.0.1:8000/api/role/updateRole/2
   body:
     type: multipart-form
     data:
       - name: name
         type: text
-        value: admin3
+        value: admin
       - name: permissions[]
         type: text
         value: "1"
+      - name: permissions[]
+        type: text
+        value: "2"
   auth:
     type: bearer
-    token: 7|XUAa10P6yEi0IP5kD0AJF0qom1EoGYql2NcaW6TP0c59dc7e
+    token: 11|0lzeVMvOeag3VFl9lORqIKomZlxGLpzvpti4j9x4a7a213f3
 
 settings:
   encodeUrl: true

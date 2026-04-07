@@ -23,7 +23,6 @@ class UpdateProjectRequest extends FormRequest
     public function rules(): array
     {
         return [
-            // استخدام ID المشروع في قاعدة unique لتجنب الخطأ إذا لم يتغير الاسم
             'name' => [
                 'sometimes',
                 'string',
@@ -49,7 +48,7 @@ class UpdateProjectRequest extends FormRequest
         ];
     }
 
-    
+
     public function messages(): array
 {
     return [

@@ -27,6 +27,11 @@ class PermissionSeeder extends Seeder
             'deleteProject',
             'getAllPermissions',
             'editProjectStatus',
+            "getAllMosques",
+            "createMosque",
+            "updateMosque",
+            "deleteMosque",
+            "getMosque",
 
 
         ];

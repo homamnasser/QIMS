@@ -19,7 +19,9 @@ class Project extends Model
         'supervisor',
         'is_active',
     ];
-
+    protected $casts = [
+        'is_active' => 'boolean',
+    ];
 
     public function supervisorUser(): BelongsTo
     {

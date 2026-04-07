@@ -4,11 +4,11 @@ info:
   seq: 5
 
 http:
-  method: PATCH
-  url: http://127.0.0.1:8000/api/project/editProjectStatus/4
+  method: POST
+  url: http://127.0.0.1:8000/api/project/editProjectStatus/5
   auth:
     type: bearer
-    token: 9|66SxxIafwg2tdtY2rrEfnrAyCH5Ncc4wnQ4i3i2v46618faa
+    token: 11|0lzeVMvOeag3VFl9lORqIKomZlxGLpzvpti4j9x4a7a213f3
 
 settings:
   encodeUrl: true

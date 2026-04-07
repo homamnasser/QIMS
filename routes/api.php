@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\MosqueController;
 
 /*
 |--------------------------------------------------------------------------
@@ -52,5 +53,15 @@ Route::group([
     Route::get('/getProject/{id}', [ProjectController::class, 'getProject']);
     Route::post('/updateProject/{id}', [ProjectController::class, 'updateProject']);
     Route::delete('/deleteProject/{id}', [ProjectController::class, 'deleteProject']);
-    Route::patch('/editProjectStatus/{id}', [ProjectController::class, 'editProjectStatus']);
+    Route::post('/editProjectStatus/{id}', [ProjectController::class, 'editProjectStatus']);
+});
+Route::group([
+    'middleware' => ['api', 'auth:sanctum', 'role:super-admin'],
+    'prefix' => 'mosque'
+], function ($router) {
+    Route::post('/createMosque', [MosqueController::class, 'createMosque']);
+    Route::get('/getAllMosques', [MosqueController::class, 'getAllMosques']);
+    Route::get('/getMosque/{id}', [MosqueController::class, 'getMosque']);
+    Route::post('/updateMosque/{id}', [MosqueController::class, 'updateMosque']);
+    Route::delete('/deleteMosque/{id}', [MosqueController::class, 'deleteMosque']);
 });
