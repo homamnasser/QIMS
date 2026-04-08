@@ -1,11 +1,11 @@
 info:
-  name: createMosque
+  name: updateMosque
   type: http
-  seq: 1
+  seq: 2
 
 http:
   method: POST
-  url: http://127.0.0.1:8000/api/mosque/createMosque
+  url: http://127.0.0.1:8000/api/mosque/updateMosque/2
   headers:
     - name: Accept
       value: application/json
@@ -14,10 +14,10 @@ http:
     data:
       - name: name
         type: text
-        value: ANAS
+        value: Ansaar
   auth:
     type: bearer
-    token: 10|ZBi2ztSwoH6WBPSfharqn5ChF6jmiDnqIqWvwC3460744771
+    token: 14|S4tcfaPWWaSmlW6brhtNlkd2IHkvxPEsXDezmgTH72abe54c
 
 settings:
   encodeUrl: true

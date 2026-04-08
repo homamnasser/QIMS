@@ -5,13 +5,13 @@ info:
 
 http:
   method: POST
-  url: http://127.0.0.1:8000/api/project/updateProject/5
+  url: http://127.0.0.1:8000/api/project/updateProject/44
   body:
     type: multipart-form
     data:
       - name: name
         type: text
-        value: www
+        value: eee
       - name: description
         type: text
         value: fds

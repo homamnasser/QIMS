@@ -11,4 +11,7 @@ interface IStaffService
     public function login(array $credentials): ?string;
     public function logout(User $user): bool;
     public function assignRoleToUser(User $user, string $roleName): void;
-}
+    public function deleteStaff(int $id): bool;
+    public function getStaffById(int $id): ?User;
+    public function getAllStaff(?string $firstName = null);
+    }

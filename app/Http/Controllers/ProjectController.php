@@ -9,6 +9,7 @@ use Illuminate\Http\JsonResponse;
 use App\Http\Requests\UpdateProjectRequest;
 use App\Models\Project;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class ProjectController extends Controller
 {
@@ -26,17 +27,15 @@ class ProjectController extends Controller
 
         return response()->json([
             'code'    => 201,
-            'status'  => 'success',
             'message' => 'Project created successfully.',
             'data'    => new ProjectResource($project)
         ], 201);
     }
 
 
-    public function updateProject(UpdateProjectRequest $request, string $id): JsonResponse
+    public function updateProject(Request $request, int $id): JsonResponse
     {
-
-        $project = Project::find($id);
+        $project = $this->projectService->getProjectById((int)$id);
 
         if (!$project) {
             return response()->json([
@@ -45,14 +44,31 @@ class ProjectController extends Controller
                 'data'    => null
             ], 404);
         }
+
         if (!$project->is_active) {
             return response()->json([
                 'code'    => 403,
-                'message' => 'This project is archived (past project) and cannot be modified.'
+                'message' => 'This project is archived and cannot be modified.'
             ], 403);
         }
 
-        $updatedProject = $this->projectService->updateProject($project, $request->validated());
+        $projectRequest = app(UpdateProjectRequest::class);
+
+        $validator = Validator::make(
+            $request->all(),
+            $projectRequest->rules(),
+            $projectRequest->messages()
+        );
+
+        if ($validator->fails()) {
+            return response()->json([
+                'code'    => 422,
+                'message' => $validator->errors()
+            ], 422);
+        }
+
+        $validatedData = $validator->validated();
+        $updatedProject = $this->projectService->updateProject($project, $validatedData);
 
         return response()->json([
             'code'    => 200,
@@ -60,6 +76,8 @@ class ProjectController extends Controller
             'data'    => new ProjectResource($updatedProject)
         ], 200);
     }
+
+    
     public function getAllProjects(Request $request): JsonResponse
     {
         $status = $request->has('active')

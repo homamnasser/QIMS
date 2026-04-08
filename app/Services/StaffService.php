@@ -51,4 +51,34 @@ class StaffService implements IStaffService
     {
         $user->assignRole((int)$roleId);
     }
+
+    public function getStaffById(int $id): ?User
+    {
+        return User::with('roles')->find($id);
+    }
+
+    public function deleteStaff(int $id): bool
+    {
+        $user = User::find($id);
+
+
+        if (!$user || $user->projects()->exists()) {
+            return false;
+        }
+
+        return $user->delete();
+    }
+
+    public function getAllStaff(?string $name = null)
+    {
+        return User::with('roles')
+            ->when($name, function ($query, $name) {
+                return $query->where(function ($q) use ($name) {
+                    $q->where('first_name', 'LIKE', '%' . $name . '%')
+                        ->orWhere('last_name', 'LIKE', '%' . $name . '%');
+                });
+            })
+            ->orderBy('id', 'desc')
+            ->get();
+    }
 }

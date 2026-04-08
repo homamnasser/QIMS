@@ -10,6 +10,8 @@ use App\IService\IRoleService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class RoleController extends Controller
 {
@@ -50,7 +52,13 @@ class RoleController extends Controller
     {
         try {
             $role = $this->roleService->getRoleById($id);
-            if (!$role) throw new ModelNotFoundException();
+            if (!$role) {
+                return response()->json([
+                    'code'    => 404,
+                    'message' => 'Role not found',
+                    'data'    => null
+                ], 404);
+            }
 
             return response()->json([
                 'code'    => 200,
@@ -66,35 +74,56 @@ class RoleController extends Controller
         }
     }
 
-    public function updateRole(UpdateRoleRequest $request, int $id): JsonResponse
+    public function updateRole(Request $request, int $id): JsonResponse
     {
         try {
-            $validatedData = $request->validated();
+            $role = $this->roleService->getRoleById($id);
+            if (!$role) {
+                return response()->json([
+                    'code' => 404,
+                    'message' => 'Role not found',
+                    'data'    => null
 
-            $role = $this->roleService->updateRole(
+                ], 404);
+            }
+
+            $roleRequest = app(UpdateRoleRequest::class);
+
+            $validator = Validator::make(
+                $request->all(),
+                $roleRequest->rules(),
+                $roleRequest->messages()
+            );
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'code' => 422,
+                    'message' => $validator->errors()
+                ], 422);
+            }
+
+            // 3. جلب البيانات الموثقة
+            $data = $validator->validated();
+
+            // 4. التحديث عبر السيرفس
+            $updatedRole = $this->roleService->updateRole(
                 $id,
-                $validatedData['name'],
-                $validatedData['permissions']
+                $data['name'],
+                $data['permissions']
             );
 
             return response()->json([
-                'code'    => 200,
+                'code' => 200,
                 'message' => 'Role updated successfully',
-                'data'    => new RoleResource($role)
+                'data' => new RoleResource($updatedRole)
             ], 200);
-        } catch (ModelNotFoundException $e) {
-            return response()->json([
-                'code'    => 404,
-                'message' => 'Role not found',
-            ], 404);
         } catch (\Exception $e) {
             return response()->json([
-                'code'    => 500,
+                'code' => 500,
                 'message' => $e->getMessage(),
             ], 500);
         }
     }
-
 
 
 

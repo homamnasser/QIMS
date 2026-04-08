@@ -32,6 +32,9 @@ class PermissionSeeder extends Seeder
             "updateMosque",
             "deleteMosque",
             "getMosque",
+            "getAllStaff",
+            "getStaffById",
+            "deleteStaff",
 
 
         ];

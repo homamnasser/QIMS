@@ -1,20 +1,17 @@
 info:
-  name: createMosque
+  name: getAllMosques
   type: http
-  seq: 1
+  seq: 4
 
 http:
-  method: POST
-  url: http://127.0.0.1:8000/api/mosque/createMosque
-  headers:
-    - name: Accept
-      value: application/json
+  method: GET
+  url: http://127.0.0.1:8000/api/mosque/getAllMosques?name=anas
+  params:
+    - name: name
+      value: anas
+      type: query
   body:
     type: multipart-form
-    data:
-      - name: name
-        type: text
-        value: ANAS
   auth:
     type: bearer
     token: 10|ZBi2ztSwoH6WBPSfharqn5ChF6jmiDnqIqWvwC3460744771

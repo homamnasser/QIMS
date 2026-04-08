@@ -10,6 +10,7 @@ use App\Http\Requests\UpdateUserRequest;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 use App\Http\Resources\UserResource;
 use App\Services\StaffService;
 use App\IService\IStaffService;
@@ -73,27 +74,121 @@ class AuthController extends Controller
         return response()->json(['code' => 401, 'message' => 'Unauthenticated.'], 401);
     }
 
-    public function updateStaffMember(UpdateUserRequest $request, $id)
+    public function updateStaffMember(Request $request, int $id): JsonResponse
     {
-        $user = User::find($id);
+        if ($id === 1) {
+            return response()->json([
+                'code'    => 403,
+                'message' => 'The Super Admin account cannot be modified.',
+                'data'    => null
+            ], 403);
+        }
+
+        $user = $this->staffService->getStaffById($id);
+
         if (!$user) {
             return response()->json([
-                'code' => 404,
-                'message' => 'User not found',
-                'data' => []
+                'code'    => 404,
+                'message' => 'Staff member not found.',
+                'data'    => null
             ], 404);
         }
 
-        $validatedData = $request->validated();
+        $staffRequest = app(UpdateUserRequest::class);
 
-        $updatedUser = $this->staffService->updateStaff($user, $request->validated());
-         if ($request->has('role_id')) {
-            $this->staffService->assignRoleToUser($user, (int)$request->role_id);
+        $validator = Validator::make(
+            $request->all(),
+            $staffRequest->rules(),
+            $staffRequest->messages()
+        );
+
+        if ($validator->fails()) {
+            return response()->json([
+                'code'    => 422,
+                'message' => 'Validation error.',
+                'errors'  => $validator->errors()
+            ], 422);
         }
+
+        $validatedData = $validator->validated();
+        $updatedUser = $this->staffService->updateStaff($user, $validatedData);
+
+        if (isset($validatedData['role_id'])) {
+            $this->staffService->assignRoleToUser($user, (int)$validatedData['role_id']);
+        }
+
         return response()->json([
-            'code' => 200,
-            'message' => 'User updated successfully',
-            'data' => new UserResource($user)
+            'code'    => 200,
+            'message' => 'Staff member updated successfully.',
+            'data'    => new UserResource($user)
+        ], 200);
+    }
+
+    public function deleteStaffMember(int $id): JsonResponse
+    {
+        if ($id === 1) {
+            return response()->json([
+                'code'    => 403,
+                'message' => 'Cannot delete the Super Admin account.',
+                'data'    => null
+            ], 403);
+        }
+
+        $user = $this->staffService->getStaffById($id);
+        if (!$user) {
+            return response()->json([
+                'code'    => 404,
+                'message' => 'Staff member not found.',
+                'data'    => null
+            ], 404);
+        }
+
+        $isDeleted = $this->staffService->deleteStaff($id);
+
+        if (!$isDeleted) {
+            return response()->json([
+                'code'    => 400,
+                'message' => 'Cannot delete staff: This user is assigned as a supervisor to existing projects.',
+                'data'    => null
+            ], 400);
+        }
+
+        return response()->json([
+            'code'    => 200,
+            'message' => 'Staff member deleted successfully.',
+            'data'    => null
+        ], 200);
+    }
+
+    public function getStaffById(int $id): JsonResponse
+    {
+        $user = $this->staffService->getStaffById($id);
+
+        if (!$user) {
+            return response()->json([
+                'code'    => 404,
+                'message' => 'Staff member not found.',
+                'data'    => null
+            ], 404);
+        }
+
+        return response()->json([
+            'code'    => 200,
+            'message' => 'Staff member retrieved successfully.',
+            'data'    => new UserResource($user)
+        ], 200);
+    }
+
+    public function getAllStaff(Request $request): JsonResponse
+    {
+        $searchTerm = $request->query('name');
+
+        $staff = $this->staffService->getAllStaff($searchTerm);
+
+        return response()->json([
+            'code'    => 200,
+            'message' => 'Staff members retrieved successfully.',
+            'data'    => UserResource::collection($staff)
         ], 200);
     }
 }

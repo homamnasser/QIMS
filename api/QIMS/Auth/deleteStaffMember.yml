@@ -1,0 +1,25 @@
+info:
+  name: deleteStaffMember
+  type: http
+  seq: 5
+
+http:
+  method: DELETE
+  url: http://127.0.0.1:8000/api/deleteStaffMember/1
+  headers:
+    - name: Accept
+      value: application/json
+    - name: _method
+      value: PATCH
+      disabled: true
+  body:
+    type: multipart-form
+  auth:
+    type: bearer
+    token: 11|0lzeVMvOeag3VFl9lORqIKomZlxGLpzvpti4j9x4a7a213f3
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

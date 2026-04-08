@@ -28,6 +28,9 @@ Route::group([
 ], function ($router) {
     Route::post('/createStaffMember', [AuthController::class, 'createStaffMember']);
     Route::post('/updateStaffMember/{id}', [AuthController::class, 'updateStaffMember']);
+    Route::delete('/deleteStaffMember/{id}', [AuthController::class, 'deleteStaffMember']);
+    Route::get('/getStaffById/{id}', [AuthController::class, 'getStaffById']);
+    Route::get('/getAllStaff', [AuthController::class, 'getAllStaff']);
 });
 
 

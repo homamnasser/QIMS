@@ -50,10 +50,12 @@ class ProjectService implements IProjectService
 
         return $query->orderBy('created_at', 'desc')->get();
     }
+    
     public function getProjectById(int $id): ?Project
     {
         return Project::find($id);
     }
+
     public function editProjectStatus(Project $project): Project
     {
         $project->is_active = !$project->is_active;

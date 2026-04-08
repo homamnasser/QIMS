@@ -3,10 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-
-namespace App\Http\Requests;
-
-use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class MosqueRequest extends FormRequest
 {
@@ -18,7 +16,7 @@ class MosqueRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255|unique:mosques,name',
+            'name' => 'required|string|max:255|unique:mosques,name,'. $this->route('id'),
         ];
     }
 
@@ -31,5 +29,13 @@ class MosqueRequest extends FormRequest
             'name.max'      => 'The mosque name is too long; the maximum limit is 255 characters.',
             'name.unique'   => 'This mosque name has already been registered in our system.',
         ];
+    }
+
+    protected function failedValidation(Validator $validator): void
+    {
+        throw new HttpResponseException(response()->json([
+            'code'    => 422,
+            'message'  => $validator->errors()
+        ], 422));
     }
 }
