@@ -13,6 +13,8 @@ class PermissionSeeder extends Seeder
         app(PermissionRegistrar::class)->forgetCachedPermissions();
 
         $permissions = [
+            'login',
+            'logout',
             'createStaffMember',
             'updateStaffMember',
             'getAllRoles',
