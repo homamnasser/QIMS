@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\MosqueController;
+use App\Http\Controllers\CourseController;
 
 /*
 |--------------------------------------------------------------------------
@@ -66,5 +67,15 @@ Route::group([
     Route::get('/getAllMosques', [MosqueController::class, 'getAllMosques']);
     Route::get('/getMosque/{id}', [MosqueController::class, 'getMosque']);
     Route::post('/updateMosque/{id}', [MosqueController::class, 'updateMosque']);
+    Route::delete('/deleteMosque/{id}', [MosqueController::class, 'deleteMosque']);
+});
+Route::group([
+    'middleware' => ['api', 'auth:sanctum', 'role:super-admin'],
+    'prefix' => 'course'
+], function ($router) {
+    Route::post('/createCourse', [CourseController::class, 'createCourse']);
+    Route::get('/getAllCourses', [CourseController::class, 'getAllCourses']);
+    Route::get('/getCourse/{id}', [CourseController::class, 'getCourse']);
+    Route::post('/updateCourse/{id}', [CourseController::class, 'updateCourse']);
     Route::delete('/deleteMosque/{id}', [MosqueController::class, 'deleteMosque']);
 });

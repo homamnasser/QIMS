@@ -14,7 +14,7 @@ http:
     data:
       - name: name
         type: text
-        value: ANAS
+        value: ANsar
   auth:
     type: bearer
     token: 10|ZBi2ztSwoH6WBPSfharqn5ChF6jmiDnqIqWvwC3460744771

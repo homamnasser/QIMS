@@ -5,7 +5,7 @@ info:
 
 http:
   method: GET
-  url: http://127.0.0.1:8000/api/getStaffById/5
+  url: http://127.0.0.1:8000/api/getStaffById/1
   headers:
     - name: Accept
       value: application/json

@@ -37,6 +37,12 @@ class PermissionSeeder extends Seeder
             "getAllStaff",
             "getStaffById",
             "deleteStaff",
+            "getAllCourses",
+            "createCourse",
+            "getCourse",
+            "updateCourse",
+            "deleteCourse",
+            
 
 
         ];

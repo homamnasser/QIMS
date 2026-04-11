@@ -12,6 +12,8 @@ use App\Services\RoleService;
 use Illuminate\Support\Facades\Gate;
 use App\Services\MosqueService;
 use App\IService\IMosqueService;
+use App\IService\ICourseService;
+use App\Services\CourseService;
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -23,6 +25,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(IRoleService::class, RoleService::class);
         $this->app->bind(IProjectService::class, ProjectService::class);
         $this->app->bind(IMosqueService::class, MosqueService::class);
+        $this->app->bind(ICourseService::class, CourseService::class);
 
     }
 

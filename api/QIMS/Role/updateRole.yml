@@ -21,6 +21,7 @@ http:
       - name: permissions[]
         type: text
         value: "2"
+        disabled: true
   auth:
     type: bearer
     token: 11|0lzeVMvOeag3VFl9lORqIKomZlxGLpzvpti4j9x4a7a213f3

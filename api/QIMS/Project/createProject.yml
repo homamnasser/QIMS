@@ -11,7 +11,7 @@ http:
     data:
       - name: name
         type: text
-        value: www
+        value: wwwss
       - name: description
         type: text
         value: fds
@@ -24,7 +24,7 @@ http:
       - name: logo
         type: file
         value:
-          - C:\Users\homam\OneDrive\Pictures\Screenshots\Screenshot 2025-12-03 165217.png
+          - C:\Users\homam\OneDrive\Pictures\Screenshots\Screenshot 2026-04-08 205528.png
   auth:
     type: bearer
     token: 10|ZBi2ztSwoH6WBPSfharqn5ChF6jmiDnqIqWvwC3460744771

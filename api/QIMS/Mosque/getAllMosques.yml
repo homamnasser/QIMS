@@ -5,10 +5,10 @@ info:
 
 http:
   method: GET
-  url: http://127.0.0.1:8000/api/mosque/getAllMosques?name=anas
+  url: http://127.0.0.1:8000/api/mosque/getAllMosques?name=an
   params:
     - name: name
-      value: anas
+      value: an
       type: query
   body:
     type: multipart-form

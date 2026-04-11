@@ -5,7 +5,7 @@ info:
 
 http:
   method: POST
-  url: http://127.0.0.1:8000/api/updateStaffMember/4
+  url: http://127.0.0.1:8000/api/updateStaffMember/5
   headers:
     - name: Accept
       value: application/json
@@ -23,10 +23,10 @@ http:
         value: nasser
       - name: phone
         type: text
-        value: "0940099146"
+        value: "0989280708"
       - name: email
         type: text
-        value: 0940099146@gmail.com
+        value: 0989280708@gmail.com
       - name: password
         type: text
         value: "123456789"

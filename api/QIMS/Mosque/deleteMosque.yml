@@ -5,7 +5,7 @@ info:
 
 http:
   method: DELETE
-  url: http://127.0.0.1:8000/api/mosque/deleteMosque/21
+  url: http://127.0.0.1:8000/api/mosque/deleteMosque/1
   headers:
     - name: Accept
       value: application/json

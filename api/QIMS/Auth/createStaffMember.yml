@@ -14,16 +14,16 @@ http:
     data:
       - name: first_name
         type: text
-        value: homam
+        value: Shadi
       - name: last_name
         type: text
         value: nasser
       - name: phone
         type: text
-        value: "0940099142"
+        value: "0989280708"
       - name: email
         type: text
-        value: 0940099142@gmail.com
+        value: 0989280708@gmail.com
       - name: password
         type: text
         value: "123456789"
@@ -35,10 +35,10 @@ http:
         value: 2002-02-18
       - name: role_id
         type: text
-        value: "3"
+        value: "2"
   auth:
     type: bearer
-    token: 7|XUAa10P6yEi0IP5kD0AJF0qom1EoGYql2NcaW6TP0c59dc7e
+    token: 15|8US3IEhpbOnorDzKLqD7WXr7DlFcLcJTYmuVzm07c884bf7d
 
 settings:
   encodeUrl: true

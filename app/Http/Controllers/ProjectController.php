@@ -28,7 +28,7 @@ class ProjectController extends Controller
         return response()->json([
             'code'    => 201,
             'message' => 'Project created successfully.',
-            'data'    => new ProjectResource($project)
+            'data'    => new ProjectResource($project->fresh())
         ], 201);
     }
 
@@ -77,7 +77,7 @@ class ProjectController extends Controller
         ], 200);
     }
 
-    
+
     public function getAllProjects(Request $request): JsonResponse
     {
         $status = $request->has('active')
