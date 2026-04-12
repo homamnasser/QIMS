@@ -77,5 +77,6 @@ Route::group([
     Route::get('/getAllCourses', [CourseController::class, 'getAllCourses']);
     Route::get('/getCourse/{id}', [CourseController::class, 'getCourse']);
     Route::post('/updateCourse/{id}', [CourseController::class, 'updateCourse']);
-    Route::delete('/deleteMosque/{id}', [MosqueController::class, 'deleteMosque']);
+    Route::delete('/deleteCourse/{id}', [CourseController::class, 'deleteCourse']);
+    Route::post('/editCourseStatus/{id}', [CourseController::class, 'editCourseStatus']);
 });

@@ -42,7 +42,8 @@ class PermissionSeeder extends Seeder
             "getCourse",
             "updateCourse",
             "deleteCourse",
-            
+            "editCourseStatus"
+
 
 
         ];

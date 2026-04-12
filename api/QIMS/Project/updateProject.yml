@@ -11,7 +11,7 @@ http:
     data:
       - name: name
         type: text
-        value: eee
+        value: eeeq
       - name: description
         type: text
         value: fds
@@ -25,6 +25,7 @@ http:
         type: file
         value:
           - C:\Users\homam\OneDrive\Pictures\Screenshots\Screenshot 2025-12-03 165217.png
+        disabled: true
   auth:
     type: bearer
     token: 11|0lzeVMvOeag3VFl9lORqIKomZlxGLpzvpti4j9x4a7a213f3

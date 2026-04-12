@@ -1,0 +1,41 @@
+info:
+  name: upadteCourse
+  type: http
+  seq: 4
+
+http:
+  method: POST
+  url: http://127.0.0.1:8000/api/course/createCourse
+  body:
+    type: multipart-form
+    data:
+      - name: name
+        type: text
+        value: qqq
+      - name: description
+        type: text
+        value: vvv
+      - name: mosque_id
+        type: text
+        value: "6"
+      - name: project_id
+        type: text
+        value: "6"
+      - name: start_date
+        type: text
+        value: 2026-02-18
+      - name: end_date
+        type: text
+        value: 2027-02-18
+      - name: parent_course_id
+        type: text
+        value: ""
+  auth:
+    type: bearer
+    token: 16|6RCQaLQg0VUyjtdeNxBki7l9TnKCFFBYsSD6tDXxb9d3b12e
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

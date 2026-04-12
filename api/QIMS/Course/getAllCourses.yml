@@ -1,0 +1,40 @@
+info:
+  name: getAllCourses
+  type: http
+  seq: 2
+
+http:
+  method: GET
+  url: http://127.0.0.1:8000/api/course/getAllCourses
+  params:
+    - name: name
+      value: qqq
+      type: query
+      disabled: true
+    - name: mosque_id
+      value: "6"
+      type: query
+      disabled: true
+    - name: project_id
+      value: "6"
+      type: query
+      disabled: true
+    - name: mosque_name
+      value: ansar
+      type: query
+      disabled: true
+    - name: project_name
+      value: wwws
+      type: query
+      disabled: true
+  body:
+    type: multipart-form
+  auth:
+    type: bearer
+    token: 16|6RCQaLQg0VUyjtdeNxBki7l9TnKCFFBYsSD6tDXxb9d3b12e
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

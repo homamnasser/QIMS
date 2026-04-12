@@ -5,11 +5,12 @@ info:
 
 http:
   method: GET
-  url: http://127.0.0.1:8000/api/project/getAllProjects?active=true
+  url: http://127.0.0.1:8000/api/project/getAllProjects
   params:
     - name: active
-      value: "true"
+      value: "false"
       type: query
+      disabled: true
   auth:
     type: bearer
     token: 8|k1R9sBJrjn8fynOFquACSeYvzOQe6jwO1kyMqtVd414c63b8
