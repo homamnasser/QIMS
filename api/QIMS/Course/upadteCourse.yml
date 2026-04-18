@@ -5,13 +5,13 @@ info:
 
 http:
   method: POST
-  url: http://127.0.0.1:8000/api/course/createCourse
+  url: http://127.0.0.1:8000/api/course/updateCourse/3
   body:
     type: multipart-form
     data:
       - name: name
         type: text
-        value: qqq
+        value: qqqww
       - name: description
         type: text
         value: vvv

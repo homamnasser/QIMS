@@ -1,0 +1,29 @@
+info:
+  name: getAllSubject
+  type: http
+  seq: 5
+
+http:
+  method: GET
+  url: http://127.0.0.1:8000/api/subject/getAllSubjects?name=&course_id=13&course_name=qq
+  params:
+    - name: name
+      value: ""
+      type: query
+    - name: course_id
+      value: "13"
+      type: query
+    - name: course_name
+      value: qq
+      type: query
+  body:
+    type: multipart-form
+  auth:
+    type: bearer
+    token: 18|nVPl1WAbiwggMkcNvp7zNCKw45RLPslUnFIOOnLjd6dbd914
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

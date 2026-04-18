@@ -1,0 +1,42 @@
+info:
+  name: updateSubject
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: http://127.0.0.1:8000/api/subject/updateSubject/1
+  body:
+    type: multipart-form
+    data:
+      - name: name
+        type: text
+        value: taj
+      - name: description
+        type: text
+        value: sadasd
+      - name: min_marks
+        type: text
+        value: "9"
+      - name: max_marks
+        type: text
+        value: "100"
+      - name: course_id
+        type: text
+        value: "1"
+      - name: shared_with_subject_id
+        type: text
+        value: "1"
+      - name: pdf
+        type: file
+        value:
+          - C:\Users\homam\Downloads\38833FF26BA1D.UnigramPreview_g9c9v27vpyspw!App\erd-review.pdf
+  auth:
+    type: bearer
+    token: 18|nVPl1WAbiwggMkcNvp7zNCKw45RLPslUnFIOOnLjd6dbd914
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

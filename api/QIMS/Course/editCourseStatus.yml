@@ -4,8 +4,8 @@ info:
   seq: 6
 
 http:
-  method: DELETE
-  url: http://127.0.0.1:8000/api/course/deleteCourse/99
+  method: POST
+  url: http://127.0.0.1:8000/api/course/editCourseStatus/1
   body:
     type: multipart-form
   auth:

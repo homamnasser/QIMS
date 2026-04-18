@@ -7,6 +7,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\MosqueController;
 use App\Http\Controllers\CourseController;
+use App\Http\Controllers\SubjectController;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,7 +35,6 @@ Route::group([
     Route::get('/getAllStaff', [AuthController::class, 'getAllStaff']);
 });
 
-
 Route::group([
     'middleware' => ['api', 'auth:sanctum', 'role:super-admin'],
     'prefix' => 'role'
@@ -59,6 +59,7 @@ Route::group([
     Route::delete('/deleteProject/{id}', [ProjectController::class, 'deleteProject']);
     Route::post('/editProjectStatus/{id}', [ProjectController::class, 'editProjectStatus']);
 });
+
 Route::group([
     'middleware' => ['api', 'auth:sanctum', 'role:super-admin'],
     'prefix' => 'mosque'
@@ -69,6 +70,7 @@ Route::group([
     Route::post('/updateMosque/{id}', [MosqueController::class, 'updateMosque']);
     Route::delete('/deleteMosque/{id}', [MosqueController::class, 'deleteMosque']);
 });
+
 Route::group([
     'middleware' => ['api', 'auth:sanctum', 'role:super-admin'],
     'prefix' => 'course'
@@ -79,4 +81,15 @@ Route::group([
     Route::post('/updateCourse/{id}', [CourseController::class, 'updateCourse']);
     Route::delete('/deleteCourse/{id}', [CourseController::class, 'deleteCourse']);
     Route::post('/editCourseStatus/{id}', [CourseController::class, 'editCourseStatus']);
+});
+
+Route::group([
+    'middleware' => ['api', 'auth:sanctum', 'role:super-admin'],
+    'prefix' => 'subject'
+], function ($router) {
+    Route::post('/createSubject', [SubjectController::class, 'createSubject']);
+    Route::get('/getAllSubjects', [SubjectController::class, 'getAllSubjects']);
+    Route::get('/getSubject/{id}', [SubjectController::class, 'getSubject']);
+    Route::post('/updateSubject/{id}', [SubjectController::class, 'updateSubject']);
+    Route::delete('/deleteSubject/{id}', [SubjectController::class, 'deleteSubject']);
 });

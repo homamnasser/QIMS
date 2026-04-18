@@ -19,7 +19,6 @@ class CourseResource extends JsonResource
             'name'        => $this->name,
             'description' => $this->description,
             'is_active' => (bool) $this->is_active,
-            // CourseResource.php
             'dates' => [
                 'start_date' => $this->start_date instanceof \Carbon\Carbon ? $this->start_date->format('Y-m-d') : $this->start_date,
                 'end_date'   => $this->end_date instanceof \Carbon\Carbon ? $this->end_date->format('Y-m-d') : $this->end_date,
