@@ -16,6 +16,8 @@ use App\IService\ICourseService;
 use App\Services\CourseService;
 use App\IService\ISubjectService;
 use App\Services\SubjectService;
+use App\IService\ILessonService;
+use App\Services\LessonService;
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -29,6 +31,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(IMosqueService::class, MosqueService::class);
         $this->app->bind(ICourseService::class, CourseService::class);
         $this->app->bind(ISubjectService::class, SubjectService::class);
+        $this->app->bind(ILessonService::class, LessonService::class);
 
     }
 

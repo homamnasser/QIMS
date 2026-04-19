@@ -21,7 +21,7 @@ class MosqueController extends Controller
 
 
 
-
+    /* إنشاء مسجد جديد */
     public function createMosque(MosqueRequest $request): JsonResponse
     {
         $mosque = $this->mosqueService->createMosque($request->validated());
@@ -33,7 +33,7 @@ class MosqueController extends Controller
         ], 201);
     }
 
-
+    /* تحديث مسجد (مع التأكد من وجوده أولاً) */
     public function updateMosque(Request $request, int $id): JsonResponse
     {
         $mosque = $this->mosqueService->getMosqueById($id);
@@ -71,7 +71,7 @@ class MosqueController extends Controller
         ], 200);
     }
 
-
+    /* الحصول على مسجد معين (مع التأكد من وجوده أولاً) */
     public function getMosque(int $id): JsonResponse
     {
         $mosque = $this->mosqueService->getMosqueById($id);
@@ -90,7 +90,7 @@ class MosqueController extends Controller
             'data'    => new MosqueResource($mosque)
         ], 200);
     }
-
+    /* الحصول على جميع المساجد (مع دعم الفلترة بالاسم) */
     public function getAllMosques(Request $request): JsonResponse
     {
         $name = $request->query('name');
@@ -103,6 +103,7 @@ class MosqueController extends Controller
             'data'    => MosqueResource::collection($mosques)
         ], 200);
     }
+    /* حذف مسجد (مع التأكد من وجوده أولاً) */
     public function deleteMosque(int $id): JsonResponse
     {
         $mosque = $this->mosqueService->getMosqueById($id);

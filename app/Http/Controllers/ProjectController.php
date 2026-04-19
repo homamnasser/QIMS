@@ -20,7 +20,7 @@ class ProjectController extends Controller
         $this->projectService = $projectService;
     }
 
-
+    /* إنشاء مشروع جديد */
     public function createProject(StoreProjectRequest $request): JsonResponse
     {
         $project = $this->projectService->createProject($request->validated());
@@ -32,7 +32,7 @@ class ProjectController extends Controller
         ], 201);
     }
 
-
+    /* تحديث مشروع (مع التأكد من وجوده أولاً) */
     public function updateProject(Request $request, int $id): JsonResponse
     {
         $project = $this->projectService->getProjectById((int)$id);
@@ -77,7 +77,7 @@ class ProjectController extends Controller
         ], 200);
     }
 
-
+    /* الحصول على مشروع معين (مع التأكد من وجوده أولاً) */
     public function getAllProjects(Request $request): JsonResponse
     {
         $status = $request->has('active')
@@ -100,7 +100,7 @@ class ProjectController extends Controller
             'data'    => ProjectResource::collection($projects)
         ], 200);
     }
-
+    /* الحصول على مشروع معين (مع التأكد من وجوده أولاً) */
     public function getProject(int $id): JsonResponse
     {
         $project = $this->projectService->getProjectById($id);
@@ -119,7 +119,7 @@ class ProjectController extends Controller
             'data'    => new ProjectResource($project)
         ], 200);
     }
-
+    /* حذف مشروع (مع التأكد من وجوده أولاً) */
     public function editProjectStatus(int $id): JsonResponse
     {
         $project = Project::find($id);

@@ -1,0 +1,35 @@
+info:
+  name: updateLesson
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: http://127.0.0.1:8000/api/lesson/updateLesson/22
+  body:
+    type: multipart-form
+    data:
+      - name: name
+        type: text
+        value: LOg2
+      - name: description
+        type: text
+        value: LOg2
+      - name: start_page
+        type: text
+        value: "20"
+      - name: end_page
+        type: text
+        value: "40"
+      - name: subject_id
+        type: text
+        value: "1"
+  auth:
+    type: bearer
+    token: 19|EmjOtUgAWiLxdaF4SGQgPIYEDrwCsFw2oVXhGc7z8df5604e
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

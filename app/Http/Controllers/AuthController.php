@@ -26,7 +26,7 @@ class AuthController extends Controller
     {
         $this->staffService = $staffService;
     }
-
+    /* إنشاء عضو هيئة تدريس جديد */
     public function createStaffMember(StoreUserRequest $request)
     {
 
@@ -39,7 +39,7 @@ class AuthController extends Controller
         ], 201);
     }
 
-
+    /* تسجيل دخول المستخدم */
     public function loginUser(LoginRequest $request)
     {
         $token = $this->staffService->login($request->validated());
@@ -59,7 +59,7 @@ class AuthController extends Controller
             ]
         ], 200);
     }
-
+    /* تسجيل خروج المستخدم */
     public function logout(Request $request)
     {
         $user = $request->user();
@@ -73,7 +73,7 @@ class AuthController extends Controller
 
         return response()->json(['code' => 401, 'message' => 'Unauthenticated.'], 401);
     }
-
+    /* تحديث عضو هيئة تدريس (مع التأكد من وجوده أولاً) */
     public function updateStaffMember(Request $request, int $id): JsonResponse
     {
         if ($id === 1) {
@@ -123,7 +123,7 @@ class AuthController extends Controller
             'data'    => new UserResource($user)
         ], 200);
     }
-
+    /* حذف عضو هيئة تدريس (مع التأكد من عدم وجوده أولاً) */
     public function deleteStaffMember(int $id): JsonResponse
     {
         if ($id === 1) {
@@ -159,7 +159,7 @@ class AuthController extends Controller
             'data'    => null
         ], 200);
     }
-
+    /* الحصول على عضو هيئة تدريس معين (مع التأكد من وجوده أولاً) */
     public function getStaffById(int $id): JsonResponse
     {
         $user = $this->staffService->getStaffById($id);
@@ -178,7 +178,7 @@ class AuthController extends Controller
             'data'    => new UserResource($user)
         ], 200);
     }
-
+    /* الحصول على جميع أعضاء هيئة التدريس (مع دعم الفلترة بالاسم) */
     public function getAllStaff(Request $request): JsonResponse
     {
         $searchTerm = $request->query('name');

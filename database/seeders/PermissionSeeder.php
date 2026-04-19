@@ -47,7 +47,12 @@ class PermissionSeeder extends Seeder
             "getAllSubjects",
             "getSubject",
             "updateSubject",
-            "deleteSubject"
+            "deleteSubject",
+            "createLesson",
+            "getAllLessons",
+            "getLesson",
+            "updateLesson",
+            "deleteLesson",
 
 
 

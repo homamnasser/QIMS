@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RoleController;
@@ -8,6 +7,7 @@ use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\MosqueController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\SubjectController;
+use App\Http\Controllers\LessonController;
 
 /*
 |--------------------------------------------------------------------------
@@ -92,4 +92,15 @@ Route::group([
     Route::get('/getSubject/{id}', [SubjectController::class, 'getSubject']);
     Route::post('/updateSubject/{id}', [SubjectController::class, 'updateSubject']);
     Route::delete('/deleteSubject/{id}', [SubjectController::class, 'deleteSubject']);
+});
+
+Route::group([
+    'middleware' => ['api', 'auth:sanctum', 'role:super-admin'],
+    'prefix' => 'lesson'
+], function ($router) {
+    Route::post('/createLesson', [LessonController::class, 'createLesson']);
+    Route::get('/getAllLessons', [LessonController::class, 'getAllLessons']);
+    Route::get('/getLesson/{id}', [LessonController::class, 'getLesson']);
+    Route::post('/updateLesson/{id}', [LessonController::class, 'updateLesson']);
+    Route::delete('/deleteLesson/{id}', [LessonController::class, 'deleteLesson']);
 });

@@ -5,17 +5,19 @@ info:
 
 http:
   method: GET
-  url: http://127.0.0.1:8000/api/subject/getAllSubjects?name=&course_id=13&course_name=qq
+  url: http://127.0.0.1:8000/api/subject/getAllSubjects?course_id=13
   params:
     - name: name
       value: ""
       type: query
+      disabled: true
     - name: course_id
       value: "13"
       type: query
     - name: course_name
       value: qq
       type: query
+      disabled: true
   body:
     type: multipart-form
   auth:

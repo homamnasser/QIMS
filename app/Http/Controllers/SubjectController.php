@@ -20,6 +20,7 @@ class SubjectController extends Controller
     {
         $this->subjectService = $subjectService;
     }
+    /* جلب كافة المواد مع الفلترة */
     public function createSubject(StoreSubjectRequest $request): JsonResponse
     {
 
@@ -37,7 +38,7 @@ class SubjectController extends Controller
             'data'    => new SubjectResource($subject->fresh())
         ], 201);
     }
-
+    /* جلب كافة المواد مع الفلترة */
     public function updateSubject(Request $request, int $id): JsonResponse
     {
         $subject = $this->subjectService->getSubjectById((int)$id);
@@ -82,7 +83,7 @@ class SubjectController extends Controller
             'data'    => new SubjectResource($updatedSubject->fresh())
         ], 200);
     }
-
+    /*حذف مادة معينة مع التأكد من وجودها أولاً*/
     public function deleteSubject(int $id): JsonResponse
     {
         $subject = $this->subjectService->getSubjectById((int)$id);
@@ -106,6 +107,7 @@ class SubjectController extends Controller
         ], 200);
     }
 
+    /* جلب مادة معينة مع التأكد من وجودها أولاً */
     public function getSubject(int $id): JsonResponse
     {
         $subject = $this->subjectService->getSubjectById((int)$id);
@@ -124,7 +126,7 @@ class SubjectController extends Controller
         ], 200);
     }
 
-    
+    /* جلب كافة المواد مع الفلترة */
     public function getAllSubjects(Request $request): JsonResponse
     {
         $filters = $request->only([

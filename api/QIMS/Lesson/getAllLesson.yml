@@ -1,0 +1,28 @@
+info:
+  name: getAllLesson
+  type: http
+  seq: 5
+
+http:
+  method: GET
+  url: http://127.0.0.1:8000/api/lesson/getAllLessons?name=LOg&subject_name=taj
+  params:
+    - name: name
+      value: LOg
+      type: query
+    - name: subject_name
+      value: taj
+      type: query
+    - name: subject_id
+      value: "6"
+      type: query
+      disabled: true
+  auth:
+    type: bearer
+    token: 19|EmjOtUgAWiLxdaF4SGQgPIYEDrwCsFw2oVXhGc7z8df5604e
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -21,7 +21,7 @@ class RoleController extends Controller
     {
         $this->roleService = $roleService;
     }
-
+    /* جلب كافة الأدوار مع صلاحياتها */
     public function getAllRoles(): JsonResponse
     {
         $roles = $this->roleService->getAllRoles();
@@ -32,7 +32,7 @@ class RoleController extends Controller
             'data'    => RoleResource::collection($roles)
         ], 200);
     }
-
+    /* إنشاء دور جديد */
     public function createRole(StoreRoleRequest $request): JsonResponse
     {
         $validated = $request->validated();
@@ -47,7 +47,7 @@ class RoleController extends Controller
             'data'    => new RoleResource($role)
         ], 201);
     }
-
+    /* جلب دور محدد بواسطة ID */
     public function getRole(int $id): JsonResponse
     {
         try {
@@ -73,7 +73,7 @@ class RoleController extends Controller
             ], 404);
         }
     }
-
+    /* تحديث دور (مع التأكد من وجوده أولاً) */
     public function updateRole(Request $request, int $id): JsonResponse
     {
         try {
@@ -126,7 +126,7 @@ class RoleController extends Controller
     }
 
 
-
+    /* حذف دور */
     public function deleteRole(int $id): JsonResponse
     {
         try {
@@ -146,7 +146,7 @@ class RoleController extends Controller
         }
     }
 
-
+    /* جلب كافة الصلاحيات المتاحة */
     public function getAllPermissions(): \Illuminate\Http\JsonResponse
     {
         $permissions = $this->roleService->getAllPermissions();

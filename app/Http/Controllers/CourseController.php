@@ -18,7 +18,7 @@ class CourseController extends Controller
     {
         $this->courseService = $courseService;
     }
-
+    /* إنشاء دورة جديدة */
     public function createCourse(StoreCourseRequest $request): JsonResponse
     {
         if ($request->filled('parent_course_id')) {
@@ -39,6 +39,7 @@ class CourseController extends Controller
         ], 201);
     }
 
+    /* جلب كافة الدورات مع الفلترة */
     public function getAllCourses(Request $request): JsonResponse
     {
         $filters = $request->only([
@@ -58,6 +59,7 @@ class CourseController extends Controller
         ], 200);
     }
 
+    /* جلب دورة محددة بواسطة ID */
     public function getCourse(int $id): JsonResponse
     {
         $course = $this->courseService->getCourseById($id);
@@ -76,6 +78,7 @@ class CourseController extends Controller
         ], 200);
     }
 
+    /* تحديث دورة (مع التأكد من وجودها أولاً) */
     public function updateCourse(Request $request, int $id): JsonResponse
     {
         $course = $this->courseService->getCourseById((int)$id);
@@ -120,7 +123,8 @@ class CourseController extends Controller
             'data'    => new CourseResource($updatedCourse)
         ], 200);
     }
-
+    
+    /* حذف دورة (مع التأكد من وجودها أولاً) */
     public function deleteCourse(int $id): JsonResponse
     {
         $course = $this->courseService->getCourseById((int)$id);
@@ -145,7 +149,7 @@ class CourseController extends Controller
             'message' => 'Something went wrong while deleting the course.',
         ], 500);
     }
-
+    /* تفعيل أو أرشفة دورة (مع التأكد من وجودها أولاً) */
     public function editCourseStatus(int $id): JsonResponse
     {
         $course = $this->courseService->getCourseById((int)$id);
