@@ -1,0 +1,48 @@
+info:
+  name: createCourseDate
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: http://127.0.0.1:8000/api/courseDate/createCourseDate
+  body:
+    type: multipart-form
+    data:
+      - name: course_id
+        type: text
+        value: "4"
+      - name: start_date
+        type: text
+        value: 2026-05-01
+      - name: end_date
+        type: text
+        value: 2026-08-01
+      - name: days[]
+        type: text
+        value: Sunday
+      - name: days[]
+        type: text
+        value: Tuesday
+      - name: days[]
+        type: text
+        value: Thursday
+      - name: excluded_dates[]
+        type: text
+        value: 2026-05-05
+      - name: excluded_dates[]
+        type: text
+        value: 2026-05-03
+      - name: excluded_dates[]
+        type: text
+        value: ""
+        disabled: true
+  auth:
+    type: bearer
+    token: 20|NeaOxq6vksC3T1t5QgKvza8J9T2ARAgE8yJBFjrOd0bc4eb7
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

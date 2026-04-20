@@ -96,7 +96,6 @@ class LessonController extends Controller
             ], 422);
         }
 
-        // 3. التحديث عبر السيرفس
         $updatedLesson = $this->lessonService->updateLesson($lesson, $validator->validated());
 
         return response()->json([

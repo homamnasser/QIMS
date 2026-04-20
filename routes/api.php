@@ -8,6 +8,7 @@ use App\Http\Controllers\MosqueController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\LessonController;
+use App\Http\Controllers\CourseDateController;
 
 /*
 |--------------------------------------------------------------------------
@@ -104,3 +105,14 @@ Route::group([
     Route::post('/updateLesson/{id}', [LessonController::class, 'updateLesson']);
     Route::delete('/deleteLesson/{id}', [LessonController::class, 'deleteLesson']);
 });
+Route::group([
+    'middleware' => ['api', 'auth:sanctum', 'role:super-admin'],
+    'prefix' => 'courseDate'
+], function ($router) {
+    Route::post('/createCourseDate', [CourseDateController::class, 'createCourseDate']);
+    Route::get('/getDatesByCourse/{courseId}', [CourseDateController::class, 'getDateByCourse']);
+    Route::delete('/deleteDate/{id}', [CourseDateController::class, 'deleteDate']);
+    Route::post('/createDateManual', [CourseDateController::class, 'createDateManual']);
+});
+
+

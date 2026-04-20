@@ -53,7 +53,9 @@ class PermissionSeeder extends Seeder
             "getLesson",
             "updateLesson",
             "deleteLesson",
-
+            "createCourseDate",
+            "getDatesByCourse",
+            "deleteDate",
 
 
         ];

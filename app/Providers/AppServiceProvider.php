@@ -18,6 +18,8 @@ use App\IService\ISubjectService;
 use App\Services\SubjectService;
 use App\IService\ILessonService;
 use App\Services\LessonService;
+use App\IService\ICourseDateService;
+use App\Services\CourseDateService;
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -32,6 +34,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(ICourseService::class, CourseService::class);
         $this->app->bind(ISubjectService::class, SubjectService::class);
         $this->app->bind(ILessonService::class, LessonService::class);
+        $this->app->bind(ICourseDateService::class, CourseDateService::class);
 
     }
 

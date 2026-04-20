@@ -1,0 +1,19 @@
+info:
+  name: getDatesByCourse
+  type: http
+  seq: 2
+
+http:
+  method: GET
+  url: http://127.0.0.1:8000/api/courseDate/getDatesByCourse/4
+  body:
+    type: multipart-form
+  auth:
+    type: bearer
+    token: 20|NeaOxq6vksC3T1t5QgKvza8J9T2ARAgE8yJBFjrOd0bc4eb7
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
