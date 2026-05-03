@@ -1,0 +1,108 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Requests\CreateCircleRequest;
+use App\IService\ICircleService;
+use App\Http\Resources\CircleResource;
+use Illuminate\Http\JsonResponse;
+use App\Http\Resources\CourseDateScheduleResource;
+use Illuminate\Http\Request;
+
+class CircleController extends Controller
+{
+    protected $circleService;
+
+    public function __construct(ICircleService $circleService)
+    {
+        $this->circleService = $circleService;
+    }
+
+    public function createCircle(CreateCircleRequest $request): JsonResponse
+    {
+        $circle = $this->circleService->createCircle($request->validated());
+
+        return response()->json([
+            'code'    => 201,
+            'message' => 'Circle created successfully.',
+            'data'    => new CircleResource($circle->load(['teacher', 'course']))
+        ], 201);
+    }
+    /**
+     * Get the curriculum for the authenticated teacher's circle.
+     */
+    public function getMyCircleCurriculum(): JsonResponse
+    {
+        $teacherId = auth()->id();
+
+        $curriculum = $this->circleService->getCircleCurriculumByTeacher($teacherId);
+
+        if (!$curriculum) {
+            return response()->json([
+                'code'    => 404,
+                'message' => 'No circle or curriculum found for this teacher.',
+            ], 404);
+        }
+
+        return response()->json([
+            'code'    => 200,
+            'message' => 'Your circle curriculum retrieved successfully.',
+            'data'    => CourseDateScheduleResource::collection($curriculum)
+        ], 200);
+    }
+    /**
+     * Get details of a specific circle by ID.
+     */
+    public function getCircle(int $id): JsonResponse
+    {
+        $circle = $this->circleService->getCircleById($id);
+
+        if (!$circle) {
+            return response()->json([
+                'code'    => 404,
+                'message' => 'Circle not found.',
+            ], 404);
+        }
+
+        return response()->json([
+            'code'    => 200,
+            'message' => 'Circle retrieved successfully.',
+            'data'    => new CircleResource($circle->load(['teacher', 'course']))
+        ], 200);
+    }
+    /**
+     * Get a list of all circles with optional filters.
+     */
+    public function getAllCircles(Request $request): JsonResponse
+    {
+        $circles = $this->circleService->getAllCircles($request->all());
+
+        return response()->json([
+            'code'    => 200,
+            'message' => 'Circles retrieved successfully.',
+            'data'    => CircleResource::collection($circles)
+        ], 200);
+    }
+
+    /**
+     * Delete a circle by ID.
+     */
+    public function deleteCircle(int $id): JsonResponse
+    {
+        $circle = $this->circleService->getCircleById($id);
+
+        if (!$circle) {
+            return response()->json([
+                'code'    => 404,
+                'message' => 'Circle not found',
+            ], 404);
+        }
+
+        $this->circleService->deleteCircle($circle);
+
+        return response()->json([
+            'code'    => 200,
+            'message' => 'Circle deleted successfully.',
+        ], 200);
+    }
+}

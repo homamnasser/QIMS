@@ -1,16 +1,16 @@
 info:
-  name: getDatesByCourse
+  name: getMyCircleCurriculum
   type: http
   seq: 2
 
 http:
   method: GET
-  url: http://127.0.0.1:8000/api/courseDate/getDatesByCourse/1
+  url: http://127.0.0.1:8000/api/circle/getMyCircleCurriculum
   body:
     type: multipart-form
   auth:
     type: bearer
-    token: 20|NeaOxq6vksC3T1t5QgKvza8J9T2ARAgE8yJBFjrOd0bc4eb7
+    token: 22|VYvHKa5W1SJZm0HOfWEPuMT3ttf9xLGiO8n3iBZ5a38e9684
 
 settings:
   encodeUrl: true

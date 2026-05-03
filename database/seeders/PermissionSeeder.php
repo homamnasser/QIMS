@@ -56,6 +56,20 @@ class PermissionSeeder extends Seeder
             "createCourseDate",
             "getDatesByCourse",
             "deleteDate",
+            "createDateManual",
+            "assignLessonsToDate",
+            "updateAssignLessonsToDate",
+            "deleteLessonsFromDate",
+            "getLessonsByDate",
+            "getCurriculumByCourse",
+            "createCircle",
+            "getMyCircleCurriculum",
+            "getCircleById",
+            "getAllCircles",
+
+
+
+
 
 
         ];

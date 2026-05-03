@@ -9,7 +9,8 @@ use App\Http\Controllers\CourseController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\LessonController;
 use App\Http\Controllers\CourseDateController;
-
+use App\Http\Controllers\CourseCurriculumController;
+use App\Http\Controllers\CircleController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -113,6 +114,30 @@ Route::group([
     Route::get('/getDatesByCourse/{courseId}', [CourseDateController::class, 'getDateByCourse']);
     Route::delete('/deleteDate/{id}', [CourseDateController::class, 'deleteDate']);
     Route::post('/createDateManual', [CourseDateController::class, 'createDateManual']);
+});
+
+
+Route::group([
+    'middleware' => ['api', 'auth:sanctum', 'role:super-admin'],
+    'prefix' => 'dateLesson'
+], function ($router) {
+    Route::post('/assignLessonsToDate', [CourseCurriculumController::class, 'assignLessonsToDate']);
+    Route::post('/updateAssignLessonsToDate/{courseDate}', [CourseCurriculumController::class, 'updateAssignLessonsToDate']);
+    Route::delete('/detachAllLessons/{courseDateId}', [CourseCurriculumController::class, 'deleteLessonsFromDate']);
+    Route::get('/getLessonsByDate/{id}', [CourseCurriculumController::class, 'getLessonsByDate']);
+    Route::get('/getCurriculumByCourse/{courseId}', [CourseCurriculumController::class, 'getCurriculumByCourse']);
+
+});
+
+Route::group([
+    'middleware' => ['api', 'auth:sanctum', 'role:super-admin|admin'],
+    'prefix' => 'circle'
+], function ($router) {
+    Route::post('/createCircle', [CircleController::class, 'createCircle']);
+    Route::get('/getMyCircleCurriculum', [CircleController::class, 'getMyCircleCurriculum']);
+    Route::get('/getCircle/{id}', [CircleController::class, 'getCircle']);
+    Route::get('/getAllCircles', [CircleController::class, 'getAllCircles']);
+    Route::delete('/deleteCircle/{id}', [CircleController::class, 'deleteCircle']);
 });
 
 

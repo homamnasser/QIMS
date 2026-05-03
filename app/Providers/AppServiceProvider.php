@@ -20,6 +20,11 @@ use App\IService\ILessonService;
 use App\Services\LessonService;
 use App\IService\ICourseDateService;
 use App\Services\CourseDateService;
+use App\IService\ICourseCurriculumService;
+use App\Services\CourseCurriculumService;
+use App\Services\CircleService;
+use App\IService\ICircleService;
+
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -35,7 +40,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(ISubjectService::class, SubjectService::class);
         $this->app->bind(ILessonService::class, LessonService::class);
         $this->app->bind(ICourseDateService::class, CourseDateService::class);
-
+        $this->app->bind(ICourseCurriculumService::class, CourseCurriculumService::class);
+        $this->app->bind(ICircleService::class, CircleService::class);
     }
 
     /**

@@ -62,7 +62,7 @@ class StaffService implements IStaffService
         $user = User::find($id);
 
 
-        if (!$user || $user->projects()->exists()) {
+        if (!$user || $user->projects()->exists()|| $user->circles()->exists()) {
             return false;
         }
 

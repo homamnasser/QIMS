@@ -1,0 +1,27 @@
+info:
+  name: updateAssignLessonsToDate
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: http://127.0.0.1:8000/api/dateLesson/updateAssignLessonsToDate/792
+  body:
+    type: multipart-form
+    data:
+      - name: lesson_ids[]
+        type: text
+        value: "100"
+      - name: lesson_ids[]
+        type: text
+        value: "11"
+        disabled: true
+  auth:
+    type: bearer
+    token: 21|rNMkfDBoiAUm0SNCVqfwnVRy7V9dOkMU7KnrnXc0ef93c68a
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

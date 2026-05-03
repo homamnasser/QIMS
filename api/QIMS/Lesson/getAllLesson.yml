@@ -5,14 +5,16 @@ info:
 
 http:
   method: GET
-  url: http://127.0.0.1:8000/api/lesson/getAllLessons?name=LOg&subject_name=taj
+  url: http://127.0.0.1:8000/api/lesson/getAllLessons
   params:
     - name: name
       value: LOg
       type: query
+      disabled: true
     - name: subject_name
       value: taj
       type: query
+      disabled: true
     - name: subject_id
       value: "6"
       type: query

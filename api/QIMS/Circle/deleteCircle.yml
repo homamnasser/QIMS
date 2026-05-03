@@ -1,0 +1,19 @@
+info:
+  name: deleteCircle
+  type: http
+  seq: 5
+
+http:
+  method: DELETE
+  url: http://127.0.0.1:8000/api/circle/deleteCircle/4
+  body:
+    type: multipart-form
+  auth:
+    type: bearer
+    token: 21|rNMkfDBoiAUm0SNCVqfwnVRy7V9dOkMU7KnrnXc0ef93c68a
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

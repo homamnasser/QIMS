@@ -9,6 +9,10 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\Project;
+use Illuminate\Support\Facades\App;
+use App\Models\Circle;
+
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable, HasRoles;
@@ -51,5 +55,10 @@ class User extends Authenticatable
     public function projects(): HasMany
     {
         return $this->hasMany(Project::class, 'supervisor', 'id');
+    }
+
+    public function circles(): HasMany
+    {
+        return $this->hasMany(Circle::class, 'teacher_id');
     }
 }

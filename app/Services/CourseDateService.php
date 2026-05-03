@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 
 
+
 class CourseDateService implements ICourseDateService
 {
     public function generateCourseDates(int $courseId, array $data)
@@ -78,4 +79,5 @@ class CourseDateService implements ICourseDateService
     {
         return CourseDate::create($data);
     }
+   
 }

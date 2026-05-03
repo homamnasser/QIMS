@@ -1,7 +1,9 @@
 <?php
+
 namespace App\IService;
 
 use App\Models\CourseDate;
+
 interface ICourseDateService
 {
     public function generateCourseDates(int $courseId, array $data);
@@ -9,4 +11,5 @@ interface ICourseDateService
     public function deleteDate(CourseDate $courseDate);
     public function getCourseDateById(int $id);
     public function addManualDate(array $data);
+    
 }

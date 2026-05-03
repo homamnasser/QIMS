@@ -30,4 +30,11 @@ class Lesson extends Model
                 });
             });
     }
+
+    public function courseDates()
+    {
+        return $this->belongsToMany(CourseDate::class, 'course_date_lesson')
+            ->using(CourseDateLesson::class)
+            ->withTimestamps();
+    }
 }

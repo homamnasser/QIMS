@@ -1,0 +1,44 @@
+<?php
+
+namespace App\Services;
+
+use App\IService\ICircleService;
+use App\Models\Circle;
+use App\Models\CourseDate;
+use Illuminate\Support\Collection;
+
+class CircleService implements ICircleService
+{
+    public function createCircle(array $data): Circle
+    {
+        return Circle::create($data);
+    }
+    public function getCircleCurriculumByTeacher(int $teacherId)
+    {
+        $circle = Circle::where('teacher_id', $teacherId)->first();
+
+        if (!$circle) {
+            return null;
+        }
+
+        return CourseDate::with(['lessons'])
+            ->where('course_id', $circle->course_id)
+            ->orderBy('session_date', 'asc')
+            ->get();
+    }
+    public function getCircleById(int $id): ?Circle
+    {
+        return Circle::find($id);
+    }
+
+    public function getAllCircles(array $filters): Collection
+    {
+        return Circle::with(['teacher', 'course'])
+            ->filter($filters)
+            ->get();
+    }
+    public function deleteCircle(Circle $circle): bool
+    {
+        return $circle->delete();
+    }
+}
