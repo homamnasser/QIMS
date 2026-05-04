@@ -138,6 +138,7 @@ Route::group([
     Route::get('/getCircle/{id}', [CircleController::class, 'getCircle']);
     Route::get('/getAllCircles', [CircleController::class, 'getAllCircles']);
     Route::delete('/deleteCircle/{id}', [CircleController::class, 'deleteCircle']);
+    Route::post('/updateCircle/{id}', [CircleController::class, 'updateCircle']);
 });
 
 

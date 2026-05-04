@@ -8,6 +8,8 @@ use App\Http\Resources\CircleResource;
 use Illuminate\Http\JsonResponse;
 use App\Http\Resources\CourseDateScheduleResource;
 use Illuminate\Http\Request;
+use App\Http\Requests\UpdateCircleRequest;
+use Illuminate\Support\Facades\Validator;
 
 class CircleController extends Controller
 {
@@ -103,6 +105,44 @@ class CircleController extends Controller
         return response()->json([
             'code'    => 200,
             'message' => 'Circle deleted successfully.',
+        ], 200);
+    }
+    /* تحديث حلقة (مع التأكد من وجودها أولاً) */
+    public function updateCircle(Request $request, int $id): JsonResponse
+    {
+        $circle = $this->circleService->getCircleById((int)$id);
+
+        if (!$circle) {
+            return response()->json([
+                'code'    => 404,
+                'message' => 'Circle not found',
+            ], 404);
+        }
+
+
+        $circleRequest = app(UpdateCircleRequest::class);
+
+        $validator = Validator::make(
+            $request->all(),
+            $circleRequest->rules(),
+            $circleRequest->messages()
+        );
+
+        if ($validator->fails()) {
+            return response()->json([
+                'code'    => 422,
+                'message' => $validator->errors()
+            ], 422);
+        }
+
+        $validatedData = $validator->validated();
+
+        $updatedCircle = $this->circleService->updateCircle($circle, $validatedData);
+
+        return response()->json([
+            'code'    => 200,
+            'message' => 'Circle updated successfully.',
+            'data'    => new CircleResource($updatedCircle->load(['teacher', 'course']))
         ], 200);
     }
 }

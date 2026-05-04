@@ -12,4 +12,5 @@ interface ICircleService
     public function getCircleById(int $id): ?Circle;
     public function getAllCircles(array $filters): Collection;
     public function deleteCircle(Circle $circle): bool;
+    public function updateCircle(Circle $circle, array $data): Circle;
 }

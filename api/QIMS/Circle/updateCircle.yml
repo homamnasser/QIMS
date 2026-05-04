@@ -1,0 +1,29 @@
+info:
+  name: updateCircle
+  type: http
+  seq: 6
+
+http:
+  method: POST
+  url: http://127.0.0.1:8000/api/circle/updateCircle/1
+  body:
+    type: multipart-form
+    data:
+      - name: name
+        type: text
+        value: "qqq "
+      - name: teacher_id
+        type: text
+        value: "3"
+      - name: course_id
+        type: text
+        value: "2"
+  auth:
+    type: bearer
+    token: 21|rNMkfDBoiAUm0SNCVqfwnVRy7V9dOkMU7KnrnXc0ef93c68a
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

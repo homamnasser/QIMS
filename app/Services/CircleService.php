@@ -41,4 +41,11 @@ class CircleService implements ICircleService
     {
         return $circle->delete();
     }
+
+    public function updateCircle(Circle $circle, array $data): Circle
+{
+    $circle->update($data);
+
+    return $circle->fresh();
+}
 }
