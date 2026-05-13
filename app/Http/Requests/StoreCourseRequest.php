@@ -5,6 +5,8 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 
 class StoreCourseRequest extends FormRequest
 {
@@ -18,8 +20,6 @@ class StoreCourseRequest extends FormRequest
 
     /**
      * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
@@ -32,17 +32,32 @@ class StoreCourseRequest extends FormRequest
                 'exists:projects,id',
                 function ($attribute, $value, $fail) {
                     $project = \App\Models\Project::find($value);
-
                     if ($project && !$project->is_active) {
                         $fail('The selected project is not active.');
                     }
                 },
+            ],
+            'supervisor_id' => [
+                'required',
+                Rule::exists('users', 'id')->where(function ($query) {
+                    $query->whereExists(function ($q) {
+                        $q->select(DB::raw(1))
+                            ->from('model_has_roles')
+                            ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
+                            ->whereRaw('model_has_roles.model_id = users.id')
+                            ->where('roles.name', 'admin');
+                    });
+                }),
             ],
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
             'parent_course_id' => 'nullable|exists:courses,id',
         ];
     }
+
+    /**
+     * Get custom messages for validator errors.
+     */
     public function messages(): array
     {
         return [
@@ -53,13 +68,14 @@ class StoreCourseRequest extends FormRequest
             'description.required' => 'Course description is required.',
             'description.string' => 'Course description must be a string.',
 
-
             'mosque_id.required' => 'A mosque must be selected for the course.',
             'mosque_id.exists' => 'The selected mosque does not exist.',
 
             'project_id.required' => 'A project must be selected for the course.',
             'project_id.exists' => 'The selected project does not exist.',
-            'project_id.is_active' => 'The selected project is not active.',
+
+            'supervisor_id.required' => 'A supervisor must be assigned to the course.',
+            'supervisor_id.exists' => 'The selected supervisor does not exist or does not have the admin role.',
 
             'start_date.required' => 'Start date is required.',
             'start_date.date' => 'Start date must be a valid date.',
@@ -68,15 +84,18 @@ class StoreCourseRequest extends FormRequest
             'end_date.date' => 'End date must be a valid date.',
             'end_date.after_or_equal' => 'End date must be after or equal to the start date.',
 
-
             'parent_course_id.exists' => 'The selected parent course does not exist.',
         ];
     }
+
+    /**
+     * Handle a failed validation attempt.
+     */
     protected function failedValidation(Validator $validator): void
     {
         throw new HttpResponseException(response()->json([
             'code'    => 422,
-            'message' =>  $validator->errors(),
+            'message' => $validator->errors(),
         ], 422));
     }
 }

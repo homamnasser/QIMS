@@ -11,7 +11,7 @@ http:
     data:
       - name: name
         type: text
-        value: admin3
+        value: admin
       - name: permissions[]
         type: text
         value: "1"
@@ -20,7 +20,7 @@ http:
         value: "2"
   auth:
     type: bearer
-    token: 7|XUAa10P6yEi0IP5kD0AJF0qom1EoGYql2NcaW6TP0c59dc7e
+    token: 1|R1XB8zU5ocvnm9vTPXBtLo382pBlPJkIfaLMYNzd59b1d8f7
 
 settings:
   encodeUrl: true

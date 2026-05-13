@@ -18,7 +18,7 @@ return new class extends Migration
 
             $table->foreignId('mosque_id')->constrained('mosques')->onDelete('restrict');
             $table->foreignId('project_id')->constrained('projects')->onDelete('restrict');
-
+            $table->foreignId('supervisor_id')->constrained('users')->onDelete('restrict');
             $table->foreignId('parent_course_id')->nullable()->constrained('courses')->onDelete('set null');
 
             $table->date('start_date');

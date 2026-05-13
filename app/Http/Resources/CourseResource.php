@@ -28,10 +28,12 @@ class CourseResource extends JsonResource
             'mosque'      => $this->mosque?->name,
 
             'project'     => $this->project?->name,
+            'supervisor'  => $this->supervisor?->first_name . ' ' . $this->supervisor?->last_name,
 
             'parent' => $this->parentCourse?->name,
 
             'created_at'  => $this->created_at->format('Y-m-d H:i:s'),
+
         ];
     }
 }

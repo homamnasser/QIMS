@@ -12,4 +12,8 @@ interface IProjectService
     public function getAllProjects($status = null);
     public function getProjectById(int $id): ?Project;
     public function editProjectStatus(Project $project): Project;
+    public function authorizeProjectAccess(int $projectId): bool;
+    public function getMyProjectCourses(): Collection;
+    public function getCurrentSupervisorProject(): ?Project;
+    public function getMyProjects(int $userId);
 }

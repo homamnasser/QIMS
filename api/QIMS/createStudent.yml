@@ -1,0 +1,56 @@
+info:
+  name: createStudent
+  type: http
+  seq: 8
+
+http:
+  method: POST
+  url: http://127.0.0.1:8000/api/student/createStudent
+  headers:
+    - name: Accept
+      value: application/json
+  body:
+    type: multipart-form
+    data:
+      - name: first_name
+        type: text
+        value: Homam
+      - name: last_name
+        type: text
+        value: nasser
+      - name: phone_number
+        type: text
+        value: "0938316302"
+      - name: birth_date
+        type: text
+        value: 2011-05-05
+      - name: academic_class
+        type: text
+        value: الصف العاشر
+      - name: reading_level
+        type: text
+        value: level_1
+      - name: father_name
+        type: text
+        value: Muhamad
+      - name: parent_social_state
+        type: text
+        value: married
+      - name: father_phone
+        type: text
+        value: "0935452177"
+      - name: password
+        type: text
+        value: "123456789"
+      - name: password_confirmation
+        type: text
+        value: "123456789"
+  auth:
+    type: bearer
+    token: 15|8US3IEhpbOnorDzKLqD7WXr7DlFcLcJTYmuVzm07c884bf7d
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

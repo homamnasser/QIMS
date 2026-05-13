@@ -11,13 +11,7 @@ http:
     data:
       - name: course_id
         type: text
-        value: "4"
-      - name: start_date
-        type: text
-        value: 2026-05-01
-      - name: end_date
-        type: text
-        value: 2026-08-01
+        value: "1"
       - name: days[]
         type: text
         value: Sunday
@@ -39,7 +33,7 @@ http:
         disabled: true
   auth:
     type: bearer
-    token: 20|NeaOxq6vksC3T1t5QgKvza8J9T2ARAgE8yJBFjrOd0bc4eb7
+    token: 9|nXT99533SpTCXJyzBzuT8BQRwoUJmfOaGCdFeZak8f3d0667
 
 settings:
   encodeUrl: true

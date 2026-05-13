@@ -10,6 +10,7 @@ use App\Models\Course;
 use App\Http\Resources\CourseResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 
 class CourseController extends Controller
 {
@@ -123,7 +124,7 @@ class CourseController extends Controller
             'data'    => new CourseResource($updatedCourse)
         ], 200);
     }
-    
+
     /* حذف دورة (مع التأكد من وجودها أولاً) */
     public function deleteCourse(int $id): JsonResponse
     {
@@ -167,6 +168,19 @@ class CourseController extends Controller
             'code'    => 200,
             'message' => $updatedCourse->is_active ? 'Course activated successfully' : 'Course archived successfully',
             'data'    => new CourseResource($updatedCourse)
+        ], 200);
+    }
+
+    public function getMyCourses()
+    {
+        $userId = Auth::id();
+
+        $courses = $this->courseService->getMyCourses($userId);
+
+        return response()->json([
+            'code'    => 200,
+            'message' => 'My courses retrieved successfully',
+            'data'    => CourseResource::collection($courses)
         ], 200);
     }
 }

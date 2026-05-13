@@ -11,6 +11,7 @@ use App\Http\Controllers\LessonController;
 use App\Http\Controllers\CourseDateController;
 use App\Http\Controllers\CourseCurriculumController;
 use App\Http\Controllers\CircleController;
+use App\Http\Controllers\StudentController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -51,7 +52,7 @@ Route::group([
 
 
 Route::group([
-    'middleware' => ['api', 'auth:sanctum', 'role:super-admin'],
+    'middleware' => ['api', 'auth:sanctum', 'role:super-admin|supervisor'],
     'prefix' => 'project'
 ], function ($router) {
     Route::post('/createProject', [ProjectController::class, 'createProject']);
@@ -60,6 +61,7 @@ Route::group([
     Route::post('/updateProject/{id}', [ProjectController::class, 'updateProject']);
     Route::delete('/deleteProject/{id}', [ProjectController::class, 'deleteProject']);
     Route::post('/editProjectStatus/{id}', [ProjectController::class, 'editProjectStatus']);
+    Route::get('/getMyProjects', [ProjectController::class, 'getMyProjects']);
 });
 
 Route::group([
@@ -74,7 +76,7 @@ Route::group([
 });
 
 Route::group([
-    'middleware' => ['api', 'auth:sanctum', 'role:super-admin'],
+    'middleware' => ['api', 'auth:sanctum', 'role:super-admin|admin|supervisor'],
     'prefix' => 'course'
 ], function ($router) {
     Route::post('/createCourse', [CourseController::class, 'createCourse']);
@@ -83,6 +85,7 @@ Route::group([
     Route::post('/updateCourse/{id}', [CourseController::class, 'updateCourse']);
     Route::delete('/deleteCourse/{id}', [CourseController::class, 'deleteCourse']);
     Route::post('/editCourseStatus/{id}', [CourseController::class, 'editCourseStatus']);
+    Route::get('/getMyCourses', [CourseController::class, 'getMyCourses']);
 });
 
 Route::group([
@@ -130,7 +133,7 @@ Route::group([
 });
 
 Route::group([
-    'middleware' => ['api', 'auth:sanctum', 'role:super-admin|admin'],
+    'middleware' => ['api', 'auth:sanctum', 'role:super-admin|admin|supervisor'],
     'prefix' => 'circle'
 ], function ($router) {
     Route::post('/createCircle', [CircleController::class, 'createCircle']);
@@ -139,6 +142,17 @@ Route::group([
     Route::get('/getAllCircles', [CircleController::class, 'getAllCircles']);
     Route::delete('/deleteCircle/{id}', [CircleController::class, 'deleteCircle']);
     Route::post('/updateCircle/{id}', [CircleController::class, 'updateCircle']);
+});
+
+Route::group([
+    'middleware' => ['api', 'auth:sanctum', 'role:super-admin|admin'],
+    'prefix' => 'student'
+], function ($router) {
+    Route::post('/createStudent', [StudentController::class, 'createStudent']);
+    Route::get('/getStudentById/{id}', [StudentController::class, 'getStudentById']);
+    Route::get('/getAllStudents', [StudentController::class, 'getAllStudents']);
+    Route::post('/updateStudent/{id}', [StudentController::class, 'updateStudent']);
+    Route::delete('/deleteStudent/{id}', [StudentController::class, 'deleteStudent']);
 });
 
 

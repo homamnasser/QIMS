@@ -66,6 +66,13 @@ class PermissionSeeder extends Seeder
             "getMyCircleCurriculum",
             "getCircleById",
             "getAllCircles",
+            "updateCircle",
+            "deleteCircle",
+            "getAllStudents",
+            "getStudentById",
+            "createStudent",
+            "updateStudent",
+            "deleteStudent",    
 
 
 

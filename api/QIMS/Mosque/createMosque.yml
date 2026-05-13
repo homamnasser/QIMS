@@ -17,7 +17,7 @@ http:
         value: ANsar
   auth:
     type: bearer
-    token: 10|ZBi2ztSwoH6WBPSfharqn5ChF6jmiDnqIqWvwC3460744771
+    token: 6|tUKZCZczVkA7oWc9Zynl2Hc84GAJnkgOWA4XqC1Nb5635003
 
 settings:
   encodeUrl: true

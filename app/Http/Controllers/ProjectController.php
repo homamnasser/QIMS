@@ -10,6 +10,7 @@ use App\Http\Requests\UpdateProjectRequest;
 use App\Models\Project;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 
 class ProjectController extends Controller
 {
@@ -137,6 +138,20 @@ class ProjectController extends Controller
             'code'    => 200,
             'message' => $updatedProject->is_active ? 'Project activated' : 'Project archived',
             'data'    => new ProjectResource($updatedProject)
+        ], 200);
+    }
+
+    public function getMyProjects()
+    {
+        $userId = Auth::id();
+        $projects = $this->projectService->getMyProjects($userId);
+
+        // تحويل الـ Collection إلى Resource Collection
+        // حتى لو كانت فارغة، سيرجع مصفوفة JSON نظيفة []
+        return response()->json([
+            'code'    => 200,
+            'message' => 'Projects retrieved successfully.',
+            'data'    => ProjectResource::collection($projects)
         ], 200);
     }
 }

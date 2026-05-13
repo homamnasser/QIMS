@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Course;
 use Exception;
+use App\Models\User;
 use App\IService\ICourseService;
 
 class CourseService implements ICourseService
@@ -43,5 +44,11 @@ class CourseService implements ICourseService
         $course->save();
 
         return $course;
+    }
+
+   public function getMyCourses(int $userId)
+    {
+        // جلب الكورسات بناءً على المعرف الممرر فقط
+        return Course::where('supervisor_id', $userId)->get();
     }
 }

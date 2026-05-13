@@ -24,6 +24,8 @@ use App\IService\ICourseCurriculumService;
 use App\Services\CourseCurriculumService;
 use App\Services\CircleService;
 use App\IService\ICircleService;
+use App\IService\IStudentService;
+use App\Services\StudentService;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -42,11 +44,10 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(ICourseDateService::class, CourseDateService::class);
         $this->app->bind(ICourseCurriculumService::class, CourseCurriculumService::class);
         $this->app->bind(ICircleService::class, CircleService::class);
+        $this->app->bind(IStudentService::class, StudentService::class);
     }
 
-    /**
-     * Bootstrap any application services.
-     */
+
     public function boot(): void
     {
         Gate::before(function ($user, $ability) {

@@ -11,7 +11,7 @@ http:
     data:
       - name: name
         type: text
-        value: wwwss
+        value: testttt
       - name: description
         type: text
         value: fds
@@ -20,14 +20,14 @@ http:
         value: wf
       - name: supervisor
         type: text
-        value: "2"
+        value: "4"
       - name: logo
         type: file
         value:
           - C:\Users\homam\OneDrive\Pictures\Screenshots\Screenshot 2026-04-08 205528.png
   auth:
     type: bearer
-    token: 10|ZBi2ztSwoH6WBPSfharqn5ChF6jmiDnqIqWvwC3460744771
+    token: 1|R1XB8zU5ocvnm9vTPXBtLo382pBlPJkIfaLMYNzd59b1d8f7
 
 settings:
   encodeUrl: true

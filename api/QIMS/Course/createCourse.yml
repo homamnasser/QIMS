@@ -11,16 +11,16 @@ http:
     data:
       - name: name
         type: text
-        value: qqq
+        value: asfdghasdf
       - name: description
         type: text
         value: vvv
       - name: mosque_id
         type: text
-        value: "6"
+        value: "1"
       - name: project_id
         type: text
-        value: "6"
+        value: "2"
       - name: start_date
         type: text
         value: 2026-02-18
@@ -30,9 +30,12 @@ http:
       - name: parent_course_id
         type: text
         value: ""
+      - name: supervisor_id
+        type: text
+        value: "6"
   auth:
     type: bearer
-    token: 16|6RCQaLQg0VUyjtdeNxBki7l9TnKCFFBYsSD6tDXxb9d3b12e
+    token: 6|tUKZCZczVkA7oWc9Zynl2Hc84GAJnkgOWA4XqC1Nb5635003
 
 settings:
   encodeUrl: true

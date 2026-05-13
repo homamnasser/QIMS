@@ -1,14 +1,14 @@
 info:
-  name: getProject
+  name: getMyProjects
   type: http
-  seq: 4
+  seq: 6
 
 http:
   method: GET
-  url: http://127.0.0.1:8000/api/project/getProject/2
+  url: http://127.0.0.1:8000/api/project/getMyProjects
   auth:
     type: bearer
-    token: 19|doTXFRa6ZU7l6Inx4UdGqkt0F1XrtJdad3FR5hsgff2e4b38
+    token: 5|1ZOExdU2fCmq6WHUZnuwlYktRNJ6K5ZGmtVwGRO034a5f333
 
 settings:
   encodeUrl: true

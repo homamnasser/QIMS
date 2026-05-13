@@ -5,12 +5,12 @@ info:
 
 http:
   method: GET
-  url: http://127.0.0.1:8000/api/circle/getCircle/1
+  url: http://127.0.0.1:8000/api/circle/getCircle/7
   body:
     type: multipart-form
   auth:
     type: bearer
-    token: 21|rNMkfDBoiAUm0SNCVqfwnVRy7V9dOkMU7KnrnXc0ef93c68a
+    token: 22|yrCtdEM0hLeLWVV0cxQkY46bZYmC8f1sSDlUzmNp94ef824f
 
 settings:
   encodeUrl: true

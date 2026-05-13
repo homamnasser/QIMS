@@ -5,7 +5,7 @@ info:
 
 http:
   method: POST
-  url: http://127.0.0.1:8000/api/course/updateCourse/3
+  url: http://127.0.0.1:8000/api/course/updateCourse/5
   body:
     type: multipart-form
     data:
@@ -18,9 +18,11 @@ http:
       - name: mosque_id
         type: text
         value: "6"
+        disabled: true
       - name: project_id
         type: text
         value: "6"
+        disabled: true
       - name: start_date
         type: text
         value: 2026-02-18
@@ -30,9 +32,12 @@ http:
       - name: parent_course_id
         type: text
         value: ""
+      - name: supervisor_id
+        type: text
+        value: "5"
   auth:
     type: bearer
-    token: 16|6RCQaLQg0VUyjtdeNxBki7l9TnKCFFBYsSD6tDXxb9d3b12e
+    token: 16|cWRuiXMVQUg1Nty79kqtMOneRBe2LIXRugexlb3l4eb571de
 
 settings:
   encodeUrl: true

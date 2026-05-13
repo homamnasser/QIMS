@@ -13,14 +13,10 @@ class UpdateCircleRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        // بما أنك لم تضع قيوداً بعد، نتركها true
         return true;
     }
 
-    /**
-     * القواعد الخاصة بعملية التحديث.
-     * استخدمنا 'sometimes' لتسمح بتحديث حقول معينة دون غيرها.
-     */
+
     public function rules(): array
     {
         return [

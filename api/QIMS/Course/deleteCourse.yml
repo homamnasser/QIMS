@@ -5,12 +5,12 @@ info:
 
 http:
   method: DELETE
-  url: http://127.0.0.1:8000/api/course/deleteCourse/99
+  url: http://127.0.0.1:8000/api/course/deleteCourse/4
   body:
     type: multipart-form
   auth:
     type: bearer
-    token: 16|6RCQaLQg0VUyjtdeNxBki7l9TnKCFFBYsSD6tDXxb9d3b12e
+    token: 16|cWRuiXMVQUg1Nty79kqtMOneRBe2LIXRugexlb3l4eb571de
 
 settings:
   encodeUrl: true

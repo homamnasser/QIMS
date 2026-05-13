@@ -16,7 +16,7 @@ http:
       type: query
       disabled: true
     - name: project_id
-      value: "6"
+      value: "2"
       type: query
       disabled: true
     - name: mosque_name
@@ -31,7 +31,7 @@ http:
     type: multipart-form
   auth:
     type: bearer
-    token: 16|6RCQaLQg0VUyjtdeNxBki7l9TnKCFFBYsSD6tDXxb9d3b12e
+    token: 9|nXT99533SpTCXJyzBzuT8BQRwoUJmfOaGCdFeZak8f3d0667
 
 settings:
   encodeUrl: true

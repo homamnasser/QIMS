@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Models\Project;
 use Illuminate\Support\Facades\App;
 use App\Models\Circle;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class User extends Authenticatable
 {
@@ -56,9 +57,17 @@ class User extends Authenticatable
     {
         return $this->hasMany(Project::class, 'supervisor', 'id');
     }
+    public function supervisedProject(): HasOne
+    {
+        return $this->hasOne(Project::class, 'supervisor', 'id');
+    }
 
     public function circles(): HasMany
     {
         return $this->hasMany(Circle::class, 'teacher_id');
+    }
+    public function supervisedCourses(): HasMany
+    {
+        return $this->hasMany(Course::class, 'supervisor_id');
     }
 }

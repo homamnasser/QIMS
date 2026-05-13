@@ -5,12 +5,12 @@ info:
 
 http:
   method: GET
-  url: http://127.0.0.1:8000/api/course/getCourse/2
+  url: http://127.0.0.1:8000/api/course/getCourse/
   body:
     type: multipart-form
   auth:
     type: bearer
-    token: 16|6RCQaLQg0VUyjtdeNxBki7l9TnKCFFBYsSD6tDXxb9d3b12e
+    token: 24|5jlGoiNHBJc7NlL5onJCE8K8dMvatFlPAeg6jMpp3fce67cc
 
 settings:
   encodeUrl: true

@@ -29,8 +29,8 @@ class StoreProjectRequest extends FormRequest
                 function ($attribute, $value, $fail) {
                     $user = User::find($value);
 
-                    if ($user && !$user->hasRole('admin')) {
-                        $fail('The selected user must have an Admin role to be a project supervisor.');
+                    if ($user && !$user->hasRole('supervisor')) {
+                        $fail('The selected user must have a Supervisor role to be a project supervisor.');
                     }
                 },
             ],

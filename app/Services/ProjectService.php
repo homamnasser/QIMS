@@ -5,8 +5,9 @@ namespace App\Services;
 use App\IService\IProjectService;
 use App\Models\Project;
 use App\Traits\FileTrait;
-use Illuminate\Support\Str;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Course;
 
 
 class ProjectService implements IProjectService
@@ -50,7 +51,7 @@ class ProjectService implements IProjectService
 
         return $query->orderBy('created_at', 'desc')->get();
     }
-    
+
     public function getProjectById(int $id): ?Project
     {
         return Project::find($id);
@@ -62,5 +63,40 @@ class ProjectService implements IProjectService
         $project->save();
 
         return $project;
+    }
+
+    public function getCurrentSupervisorProject(): ?Project
+    {
+        // جلب المشروع حيث supervisor يساوي ID المستخدم المسجل دخوله
+        return Project::where('supervisor', Auth::id())->first();
+    }
+
+    public function getMyProjectCourses(): Collection
+    {
+        $project = $this->getCurrentSupervisorProject();
+
+        if (!$project) {
+            return collect();
+        }
+
+
+        return Course::where('project_id', $project->id)->get();
+    }
+
+    public function authorizeProjectAccess(int $projectId): bool
+    {
+        $myProject = $this->getCurrentSupervisorProject();
+        return $myProject && $myProject->id === $projectId;
+    }
+
+    public function getMyProjects(int $userId)
+    {
+        $user = Auth::user();
+
+        if ($user->hasRole('supervisor')) {
+            return Project::where('supervisor', $userId)->get();
+        }
+
+        return collect();
     }
 }

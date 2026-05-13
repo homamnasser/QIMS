@@ -5,6 +5,8 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 
 class UpdateCourseRequest extends FormRequest
 {
@@ -37,6 +39,18 @@ class UpdateCourseRequest extends FormRequest
                         $fail('The selected project is not active.');
                     }
                 },
+            ],
+          'supervisor_id' => [
+                'sometimes',
+                Rule::exists('users', 'id')->where(function ($query) {
+                    $query->whereExists(function ($q) {
+                        $q->select(DB::raw(1))
+                            ->from('model_has_roles')
+                            ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
+                            ->whereRaw('model_has_roles.model_id = users.id')
+                            ->where('roles.name', 'admin');
+                    });
+                }),
             ],
             'start_date' => 'sometimes|date',
             'end_date' => 'sometimes|date|after_or_equal:start_date',
