@@ -12,7 +12,7 @@ http:
       type: query
   auth:
     type: bearer
-    token: 8|k1R9sBJrjn8fynOFquACSeYvzOQe6jwO1kyMqtVd414c63b8
+    token: 1|R1XB8zU5ocvnm9vTPXBtLo382pBlPJkIfaLMYNzd59b1d8f7
 
 settings:
   encodeUrl: true

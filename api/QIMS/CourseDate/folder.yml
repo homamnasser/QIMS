@@ -1,7 +1,7 @@
 info:
   name: CourseDate
   type: folder
-  seq: 8
+  seq: 11
 
 request:
   auth: inherit

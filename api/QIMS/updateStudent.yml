@@ -1,11 +1,11 @@
 info:
-  name: createStudent
+  name: updateStudent
   type: http
-  seq: 8
+  seq: 5
 
 http:
   method: POST
-  url: http://127.0.0.1:8000/api/student/createStudent
+  url: http://127.0.0.1:8000/api/student/updateStudent/1
   headers:
     - name: Accept
       value: application/json
@@ -14,13 +14,13 @@ http:
     data:
       - name: first_name
         type: text
-        value: adnan
+        value: Homam
       - name: last_name
         type: text
         value: naser
       - name: phone_number
         type: text
-        value: "0938316310"
+        value: "0938316302"
       - name: birth_date
         type: text
         value: 2011-05-05
@@ -29,13 +29,13 @@ http:
         value: الصف العاشر
       - name: reading_level
         type: text
-        value: level_3
+        value: level_1
       - name: father_name
         type: text
         value: Muhamad
       - name: parent_social_state
         type: text
-        value: divorced
+        value: married
       - name: father_phone
         type: text
         value: "0935452177"

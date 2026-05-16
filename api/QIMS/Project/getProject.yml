@@ -8,7 +8,7 @@ http:
   url: http://127.0.0.1:8000/api/project/getProject/2
   auth:
     type: bearer
-    token: 19|doTXFRa6ZU7l6Inx4UdGqkt0F1XrtJdad3FR5hsgff2e4b38
+    token: 25|rldnp32vXnKQGA99WYy9OPvkmcqn3DQnCtXu9sw2de51989e
 
 settings:
   encodeUrl: true

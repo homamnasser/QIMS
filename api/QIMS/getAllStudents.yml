@@ -1,0 +1,40 @@
+info:
+  name: getAllStudents
+  type: http
+  seq: 5
+
+http:
+  method: GET
+  url: http://127.0.0.1:8000/api/student/getAllStudents?parent_social_state=divorced
+  headers:
+    - name: Accept
+      value: application/json
+  params:
+    - name: first_name
+      value: homam
+      type: query
+      disabled: true
+    - name: last_name
+      value: ""
+      type: query
+      disabled: true
+    - name: academic_class
+      value: ""
+      type: query
+      disabled: true
+    - name: reading_level
+      value: level_2
+      type: query
+      disabled: true
+    - name: parent_social_state
+      value: divorced
+      type: query
+  auth:
+    type: bearer
+    token: 28|9qgAujjlVIKeG2vPojtxRj29j0WKOD0XM97j21Xw8c1992c0
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

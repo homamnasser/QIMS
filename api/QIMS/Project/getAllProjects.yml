@@ -13,7 +13,7 @@ http:
       disabled: true
   auth:
     type: bearer
-    token: 9|nXT99533SpTCXJyzBzuT8BQRwoUJmfOaGCdFeZak8f3d0667
+    token: 25|rldnp32vXnKQGA99WYy9OPvkmcqn3DQnCtXu9sw2de51989e
 
 settings:
   encodeUrl: true

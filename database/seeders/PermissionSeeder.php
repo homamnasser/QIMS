@@ -72,7 +72,8 @@ class PermissionSeeder extends Seeder
             "getStudentById",
             "createStudent",
             "updateStudent",
-            "deleteStudent",    
+            "deleteStudent",
+            
 
 
 

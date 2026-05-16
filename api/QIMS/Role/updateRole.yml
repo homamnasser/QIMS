@@ -14,17 +14,19 @@ http:
     data:
       - name: name
         type: text
-        value: admin
+        value: supervisor
       - name: permissions[]
         type: text
         value: "1"
       - name: permissions[]
         type: text
         value: "2"
-        disabled: true
+      - name: permissions[]
+        type: text
+        value: "12"
   auth:
     type: bearer
-    token: 11|0lzeVMvOeag3VFl9lORqIKomZlxGLpzvpti4j9x4a7a213f3
+    token: 1|R1XB8zU5ocvnm9vTPXBtLo382pBlPJkIfaLMYNzd59b1d8f7
 
 settings:
   encodeUrl: true

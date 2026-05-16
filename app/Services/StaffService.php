@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\User;
 use App\IService\IStaffService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class StaffService implements IStaffService
 {
@@ -31,14 +32,24 @@ class StaffService implements IStaffService
 
     public function login(array $credentials): ?string
     {
-        if (!Auth::attempt($credentials)) {
+        if (filter_var($credentials['email'], FILTER_VALIDATE_EMAIL)) {
+
+            if (!Auth::attempt(['email' => $credentials['email'], 'password' => $credentials['password']])) {
+                return null;
+            }
+
+            /** @var User $user */
+            $user = Auth::user();
+            return $user->createToken('API TOKEN')->plainTextToken;
+        }
+
+        $student = \App\Models\Student::where('username', $credentials['email'])->first();
+
+        if (!$student || !\Illuminate\Support\Facades\Hash::check($credentials['password'], $student->password)) {
             return null;
         }
 
-        /** @var User $user */
-        $user = Auth::user();
-
-        return $user->createToken('API TOKEN')->plainTextToken;
+        return $student->createToken('API TOKEN')->plainTextToken;
     }
 
     public function logout(User $user): bool
@@ -62,7 +73,7 @@ class StaffService implements IStaffService
         $user = User::find($id);
 
 
-        if (!$user || $user->projects()->exists()|| $user->circles()->exists()) {
+        if (!$user || $user->projects()->exists() || $user->circles()->exists()) {
             return false;
         }
 

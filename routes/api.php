@@ -52,12 +52,12 @@ Route::group([
 
 
 Route::group([
-    'middleware' => ['api', 'auth:sanctum', 'role:super-admin|supervisor'],
+    'middleware' => ['api', 'auth:sanctum', 'role:super-admin|supervisor|admin'],
     'prefix' => 'project'
 ], function ($router) {
     Route::post('/createProject', [ProjectController::class, 'createProject']);
     Route::get('/getAllProjects', [ProjectController::class, 'getAllProjects']);
-    Route::get('/getProject/{id}', [ProjectController::class, 'getProject']);
+    Route::get('/getProject/{id}', [ProjectController::class, 'getProject'])->middleware('permission:getProject');
     Route::post('/updateProject/{id}', [ProjectController::class, 'updateProject']);
     Route::delete('/deleteProject/{id}', [ProjectController::class, 'deleteProject']);
     Route::post('/editProjectStatus/{id}', [ProjectController::class, 'editProjectStatus']);
