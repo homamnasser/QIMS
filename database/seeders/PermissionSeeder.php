@@ -73,7 +73,9 @@ class PermissionSeeder extends Seeder
             "createStudent",
             "updateStudent",
             "deleteStudent",
-            
+            "addStudentsToCircle",
+            "removeStudentFromCircle",
+            "getStudentsByCircle"
 
 
 

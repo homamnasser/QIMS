@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Student extends Authenticatable
 {
@@ -55,5 +56,10 @@ class Student extends Authenticatable
             ->when($filters['parent_social_state'] ?? null, function ($q, $parentSocialState) {
                 $q->where('parent_social_state', $parentSocialState);
             });
+    }
+    
+    public function studentCircles(): HasMany
+    {
+        return $this->hasMany(StudentCircle::class, 'student');
     }
 }

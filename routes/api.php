@@ -12,6 +12,7 @@ use App\Http\Controllers\CourseDateController;
 use App\Http\Controllers\CourseCurriculumController;
 use App\Http\Controllers\CircleController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\StudentCircleController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -155,4 +156,11 @@ Route::group([
     Route::delete('/deleteStudent/{id}', [StudentController::class, 'deleteStudent']);
 });
 
-
+Route::group([
+    'middleware' => ['api', 'auth:sanctum', 'role:super-admin|admin|supervisor'],
+    'prefix' => 'studentCircle'
+], function ($router) {
+    Route::post('/addStudentsToCircle', [StudentCircleController::class, 'addStudents']);
+    Route::post('/removeStudentFromCircle', [StudentCircleController::class, 'removeStudent']);
+    Route::get('/getStudentsByCircle/{circleId}', [StudentCircleController::class, 'getStudents']);
+});

@@ -1,0 +1,34 @@
+info:
+  name: addStudentsForCircles
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: http://127.0.0.1:8000/api/studentCircle/addStudentsToCircle
+  body:
+    type: multipart-form
+    data:
+      - name: circle_id
+        type: text
+        value: "1"
+      - name: student_ids[]
+        type: text
+        value: "2"
+      - name: student_ids[]
+        type: text
+        value: "6"
+        disabled: true
+      - name: student_ids[]
+        type: text
+        value: "5"
+        disabled: true
+  auth:
+    type: bearer
+    token: 31|NX25FdVQez5gtpHPdZiarpnCZq0viVQuy0SwmOaS74a1cd98
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

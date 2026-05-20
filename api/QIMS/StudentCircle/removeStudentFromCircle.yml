@@ -1,0 +1,26 @@
+info:
+  name: removeStudentFromCircle
+  type: http
+  seq: 3
+
+http:
+  method: POST
+  url: http://127.0.0.1:8000/api/studentCircle/removeStudentFromCircle
+  body:
+    type: multipart-form
+    data:
+      - name: circle_id
+        type: text
+        value: "1"
+      - name: student_id
+        type: text
+        value: "2"
+  auth:
+    type: bearer
+    token: 31|NX25FdVQez5gtpHPdZiarpnCZq0viVQuy0SwmOaS74a1cd98
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
