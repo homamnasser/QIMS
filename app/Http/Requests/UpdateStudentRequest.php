@@ -28,7 +28,7 @@ class UpdateStudentRequest extends FormRequest
                 'nullable',
                 'string',
                 'regex:/^09[0-9]{8}$/',
-                'unique:students,phone_number,' . $this->route('id') // استثناء رقم الهاتف للطالب الحالي
+                'unique:students,phone_number,' . $this->route('id') 
             ],
             'birth_date'          => 'sometimes|required|date',
             'academic_class'      => 'sometimes|required|string',

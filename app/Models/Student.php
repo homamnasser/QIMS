@@ -57,9 +57,14 @@ class Student extends Authenticatable
                 $q->where('parent_social_state', $parentSocialState);
             });
     }
-    
+
     public function studentCircles(): HasMany
     {
         return $this->hasMany(StudentCircle::class, 'student');
+    }
+
+    public function notes(): HasMany
+    {
+        return $this->hasMany(Note::class, 'student_id');
     }
 }

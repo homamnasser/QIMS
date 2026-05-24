@@ -13,6 +13,7 @@ use App\Http\Controllers\CourseCurriculumController;
 use App\Http\Controllers\CircleController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\StudentCircleController;
+use App\Http\Controllers\NoteController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -163,4 +164,14 @@ Route::group([
     Route::post('/addStudentsToCircle', [StudentCircleController::class, 'addStudents']);
     Route::post('/removeStudentFromCircle', [StudentCircleController::class, 'removeStudent']);
     Route::get('/getStudentsByCircle/{circleId}', [StudentCircleController::class, 'getStudents']);
+});
+
+Route::group([
+    'middleware' => ['api', 'auth:sanctum', 'role:super-admin|admin|supervisor|teacher'],
+    'prefix' => 'note'
+], function ($router) {
+    Route::post('/createNote', [NoteController::class, 'createNote']);
+    Route::get('/getNotesByStudentId/{studentId}', [NoteController::class, 'getNotesByStudentId']);
+    Route::delete('/deleteNote/{noteId}', [NoteController::class, 'deleteNote']);
+    Route::get('/getMyNotes', [NoteController::class, 'getMyNotes']);
 });

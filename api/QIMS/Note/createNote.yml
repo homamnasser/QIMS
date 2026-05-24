@@ -1,0 +1,29 @@
+info:
+  name: createNote
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: http://127.0.0.1:8000/api/note/createNote
+  body:
+    type: multipart-form
+    data:
+      - name: student_id
+        type: text
+        value: "2"
+      - name: title
+        type: text
+        value: remove
+      - name: description
+        type: text
+        value: tytytytytytyt
+  auth:
+    type: bearer
+    token: 34|Kf6miwpBQLF1NGvDcgbZnT5kcVcGxGHSfLqkiDEAdf850a03
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
