@@ -99,4 +99,13 @@ class ProjectService implements IProjectService
 
         return collect();
     }
+
+    public function deleteProject(int $id): bool
+    {
+        $project = Project::findOrFail($id);
+        if ($project->logo) {
+            $this->deleteFile($project->logo);
+        }
+        return $project->delete();
+    }
 }

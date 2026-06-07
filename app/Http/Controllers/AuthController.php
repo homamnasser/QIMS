@@ -34,7 +34,7 @@ class AuthController extends Controller
 
         return response()->json([
             'code' => 201,
-            'message' => 'User created successfully',
+            'message' => 'تم إنشاء مستخدم جديد',
             'data' => new UserResource($user)
         ], 201);
     }
@@ -42,20 +42,43 @@ class AuthController extends Controller
     /* تسجيل دخول المستخدم */
     public function loginUser(LoginRequest $request)
     {
-        $token = $this->staffService->login($request->validated());
+        $credentials = $request->validated();
+        $token = $this->staffService->login($credentials);
 
         if (!$token) {
             return response()->json([
                 'code' => 401,
-                'message' => 'The username/email or password provided is incorrect.'
+                'message' => 'بريد إلكتروني أو كلمة مرور غير صحيحة'
             ], 401);
+        }
+
+        $user = null;
+        if (filter_var($credentials['email'], FILTER_VALIDATE_EMAIL)) {
+            $user = User::where('email', $credentials['email'])->first();
+        }
+
+        $userData = null;
+        if ($user) {
+            $userData = new UserResource($user);
+        } else {
+            $student = \App\Models\Student::where('username', $credentials['email'])->first();
+            if ($student) {
+                $userData = [
+                    'id'         => $student->id,
+                    'first_name' => $student->first_name ?? $student->name,
+                    'last_name'  => $student->last_name ?? '',
+                    'email'      => $student->username,
+                    'role'       => 'student'
+                ];
+            }
         }
 
         return response()->json([
             'code' => 200,
-            'message' => 'User logged in successfully.',
+            'message' => 'تم تسجيل دخول المستخدم بنجاح',
             'data' => [
-                'token' => $token
+                'token' => $token,
+                'user'  => $userData
             ]
         ], 200);
     }
@@ -67,7 +90,7 @@ class AuthController extends Controller
         if ($user && $this->staffService->logout($user)) {
             return response()->json([
                 'code' => 200,
-                'message' => 'User successfully signed out'
+                'message' => 'تم تسجيل خروج المستخدم بنجاح'
             ], 200);
         }
 
@@ -89,7 +112,7 @@ class AuthController extends Controller
         if (!$user) {
             return response()->json([
                 'code'    => 404,
-                'message' => 'Staff member not found.',
+                'message' => 'المستخدم غير موجود!',
                 'data'    => null
             ], 404);
         }
@@ -119,7 +142,7 @@ class AuthController extends Controller
 
         return response()->json([
             'code'    => 200,
-            'message' => 'Staff member updated successfully.',
+            'message' => 'تم تحديث المستخدم العضو بنجاح',
             'data'    => new UserResource($user)
         ], 200);
     }
@@ -138,7 +161,7 @@ class AuthController extends Controller
         if (!$user) {
             return response()->json([
                 'code'    => 404,
-                'message' => 'Staff member not found.',
+                'message' => 'المستخدم غير موجود',
                 'data'    => null
             ], 404);
         }
@@ -148,14 +171,14 @@ class AuthController extends Controller
         if (!$isDeleted) {
             return response()->json([
                 'code'    => 400,
-                'message' => 'Cannot delete staff: This user is assigned as a supervisor to existing projects.',
+                'message' => 'لا يمكن حذف المستخدم: هذا المستخدم تم إسناده كمشرف على مشروع فعال.',
                 'data'    => null
             ], 400);
         }
 
         return response()->json([
             'code'    => 200,
-            'message' => 'Staff member deleted successfully.',
+            'message' => 'تم حذف المستخدم بنجاح',
             'data'    => null
         ], 200);
     }
@@ -167,14 +190,14 @@ class AuthController extends Controller
         if (!$user) {
             return response()->json([
                 'code'    => 404,
-                'message' => 'Staff member not found.',
+                'message' => 'المستخدم غير موجود',
                 'data'    => null
             ], 404);
         }
 
         return response()->json([
             'code'    => 200,
-            'message' => 'Staff member retrieved successfully.',
+            'message' => 'تم جلب المستخدم بنجاح',
             'data'    => new UserResource($user)
         ], 200);
     }
@@ -187,7 +210,7 @@ class AuthController extends Controller
 
         return response()->json([
             'code'    => 200,
-            'message' => 'Staff members retrieved successfully.',
+            'message' => 'تم جلب المستخدمين بنجاح',
             'data'    => UserResource::collection($staff)
         ], 200);
     }

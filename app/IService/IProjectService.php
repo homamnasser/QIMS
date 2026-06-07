@@ -16,4 +16,5 @@ interface IProjectService
     public function getMyProjectCourses(): Collection;
     public function getCurrentSupervisorProject(): ?Project;
     public function getMyProjects(int $userId);
+    public function deleteProject(int $id): bool;
 }

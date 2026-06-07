@@ -141,6 +141,28 @@ class ProjectController extends Controller
         ], 200);
     }
 
+    /* حذف مشروع نهائياً */
+    public function deleteProject(int $id): JsonResponse
+    {
+        $project = $this->projectService->getProjectById($id);
+
+        if (!$project) {
+            return response()->json([
+                'code'    => 404,
+                'message' => 'Project not found',
+                'data'    => null
+            ], 404);
+        }
+
+        $this->projectService->deleteProject($id);
+
+        return response()->json([
+            'code'    => 200,
+            'message' => 'Project deleted successfully.',
+            'data'    => null
+        ], 200);
+    }
+
     public function getMyProjects()
     {
         $userId = Auth::id();

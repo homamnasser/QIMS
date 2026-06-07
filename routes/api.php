@@ -31,50 +31,50 @@ Route::post('/loginUser', [AuthController::class, 'loginUser']);
 Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
 
 Route::group([
-    'middleware' => ['api', 'auth:sanctum', 'role:super-admin|admin'],
+    'middleware' => ['api', 'auth:sanctum'],
 ], function ($router) {
-    Route::post('/createStaffMember', [AuthController::class, 'createStaffMember']);
-    Route::post('/updateStaffMember/{id}', [AuthController::class, 'updateStaffMember']);
-    Route::delete('/deleteStaffMember/{id}', [AuthController::class, 'deleteStaffMember']);
-    Route::get('/getStaffById/{id}', [AuthController::class, 'getStaffById']);
-    Route::get('/getAllStaff', [AuthController::class, 'getAllStaff']);
+    Route::post('/createStaffMember', [AuthController::class, 'createStaffMember'])->middleware('permission:createStaffMember');
+    Route::post('/updateStaffMember/{id}', [AuthController::class, 'updateStaffMember'])->middleware('permission:updateStaffMember');
+    Route::delete('/deleteStaffMember/{id}', [AuthController::class, 'deleteStaffMember'])->middleware('permission:deleteStaff');
+    Route::get('/getStaffById/{id}', [AuthController::class, 'getStaffById'])->middleware('permission:getStaffById');
+    Route::get('/getAllStaff', [AuthController::class, 'getAllStaff'])->middleware('permission:getAllStaff');
 });
 
 Route::group([
-    'middleware' => ['api', 'auth:sanctum', 'role:super-admin'],
+    'middleware' => ['api', 'auth:sanctum'],
     'prefix' => 'role'
 ], function ($router) {
-    Route::post('/createRole', [RoleController::class, 'createRole']);
-    Route::get('/getAllRoles', [RoleController::class, 'getAllRoles']);
-    Route::get('/getRole/{id}', [RoleController::class, 'getRole']);
-    Route::post('/updateRole/{id}', [RoleController::class, 'updateRole']);
-    Route::delete('/deleteRole/{id}', [RoleController::class, 'deleteRole']);
-    Route::get('/getAllPermissions', [RoleController::class, 'getAllPermissions']);
+    Route::post('/createRole', [RoleController::class, 'createRole'])->middleware('permission:createRole');
+    Route::get('/getAllRoles', [RoleController::class, 'getAllRoles'])->middleware('permission:getAllRoles');
+    Route::get('/getRole/{id}', [RoleController::class, 'getRole'])->middleware('permission:getRole');
+    Route::post('/updateRole/{id}', [RoleController::class, 'updateRole'])->middleware('permission:updateRole');
+    Route::delete('/deleteRole/{id}', [RoleController::class, 'deleteRole'])->middleware('permission:deleteRole');
+    Route::get('/getAllPermissions', [RoleController::class, 'getAllPermissions'])->middleware('permission:getAllPermissions');
 });
 
 
 Route::group([
-    'middleware' => ['api', 'auth:sanctum', 'role:super-admin|supervisor|admin'],
+    'middleware' => ['api', 'auth:sanctum'],
     'prefix' => 'project'
 ], function ($router) {
-    Route::post('/createProject', [ProjectController::class, 'createProject']);
-    Route::get('/getAllProjects', [ProjectController::class, 'getAllProjects']);
+    Route::post('/createProject', [ProjectController::class, 'createProject'])->middleware('permission:createProject');
+    Route::get('/getAllProjects', [ProjectController::class, 'getAllProjects'])->middleware('permission:getAllProjects');
     Route::get('/getProject/{id}', [ProjectController::class, 'getProject'])->middleware('permission:getProject');
-    Route::post('/updateProject/{id}', [ProjectController::class, 'updateProject']);
-    Route::delete('/deleteProject/{id}', [ProjectController::class, 'deleteProject']);
-    Route::post('/editProjectStatus/{id}', [ProjectController::class, 'editProjectStatus']);
+    Route::post('/updateProject/{id}', [ProjectController::class, 'updateProject'])->middleware('permission:updateProject');
+    Route::delete('/deleteProject/{id}', [ProjectController::class, 'deleteProject'])->middleware('permission:deleteProject');
+    Route::post('/editProjectStatus/{id}', [ProjectController::class, 'editProjectStatus'])->middleware('permission:editProjectStatus');
     Route::get('/getMyProjects', [ProjectController::class, 'getMyProjects']);
 });
 
 Route::group([
-    'middleware' => ['api', 'auth:sanctum', 'role:super-admin'],
+    'middleware' => ['api', 'auth:sanctum'],
     'prefix' => 'mosque'
 ], function ($router) {
-    Route::post('/createMosque', [MosqueController::class, 'createMosque']);
-    Route::get('/getAllMosques', [MosqueController::class, 'getAllMosques']);
-    Route::get('/getMosque/{id}', [MosqueController::class, 'getMosque']);
-    Route::post('/updateMosque/{id}', [MosqueController::class, 'updateMosque']);
-    Route::delete('/deleteMosque/{id}', [MosqueController::class, 'deleteMosque']);
+    Route::post('/createMosque', [MosqueController::class, 'createMosque'])->middleware('permission:createMosque');
+    Route::get('/getAllMosques', [MosqueController::class, 'getAllMosques'])->middleware('permission:getAllMosques');
+    Route::get('/getMosque/{id}', [MosqueController::class, 'getMosque'])->middleware('permission:getMosque');
+    Route::post('/updateMosque/{id}', [MosqueController::class, 'updateMosque'])->middleware('permission:updateMosque');
+    Route::delete('/deleteMosque/{id}', [MosqueController::class, 'deleteMosque'])->middleware('permission:deleteMosque');
 });
 
 Route::group([

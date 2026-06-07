@@ -40,7 +40,12 @@ class UpdateProjectRequest extends FormRequest
                 'exists:users,id',
                 function ($attribute, $value, $fail) {
                     $user = User::find($value);
-                    if ($user && !$user->hasRole('supervisor')) {
+                    $hasSupervisorRole = $user && $user->roles()->where(function($q) {
+                        $q->where('name', 'like', '%supervisor%')
+                          ->orWhere('name', 'like', '%admin%');
+                    })->exists();
+
+                    if ($user && !$hasSupervisorRole) {
                         $fail('The selected user must have a Supervisor role to be a project supervisor.');
                     }
                 },
