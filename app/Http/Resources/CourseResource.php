@@ -26,11 +26,16 @@ class CourseResource extends JsonResource
             ],
 
             'mosque'      => $this->mosque?->name,
+            'mosque_id'   => $this->mosque_id,
 
             'project'     => $this->project?->name,
+            'project_id'  => $this->project_id,
+            
             'supervisor'  => $this->supervisor?->first_name . ' ' . $this->supervisor?->last_name,
+            'supervisor_id' => $this->supervisor_id,
 
             'parent' => $this->parentCourse?->name,
+            'parent_course_id' => $this->parent_course_id,
 
             'created_at'  => $this->created_at->format('Y-m-d H:i:s'),
 

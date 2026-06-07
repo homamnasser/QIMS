@@ -40,7 +40,7 @@ class UpdateCourseRequest extends FormRequest
                     }
                 },
             ],
-          'supervisor_id' => [
+            'supervisor_id' => [
                 'sometimes',
                 Rule::exists('users', 'id')->where(function ($query) {
                     $query->whereExists(function ($q) {
@@ -48,7 +48,10 @@ class UpdateCourseRequest extends FormRequest
                             ->from('model_has_roles')
                             ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
                             ->whereRaw('model_has_roles.model_id = users.id')
-                            ->where('roles.name', 'admin');
+                            ->where(function ($roleQuery) {
+                                $roleQuery->where('roles.name', 'like', '%supervisor%')
+                                          ->orWhere('roles.name', 'like', '%admin%');
+                            });
                     });
                 }),
             ],
@@ -69,6 +72,8 @@ class UpdateCourseRequest extends FormRequest
             'mosque_id.exists' => 'The selected mosque does not exist.',
 
             'project_id.exists' => 'The selected project does not exist.',
+
+            'supervisor_id.exists' => 'The selected supervisor does not exist or does not have a supervisor/admin role.',
 
             'start_date.date' => 'Start date must be a valid date.',
 

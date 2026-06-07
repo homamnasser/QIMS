@@ -78,59 +78,59 @@ Route::group([
 });
 
 Route::group([
-    'middleware' => ['api', 'auth:sanctum', 'role:super-admin|admin|supervisor'],
+    'middleware' => ['api', 'auth:sanctum'],
     'prefix' => 'course'
 ], function ($router) {
-    Route::post('/createCourse', [CourseController::class, 'createCourse']);
-    Route::get('/getAllCourses', [CourseController::class, 'getAllCourses']);
-    Route::get('/getCourse/{id}', [CourseController::class, 'getCourse']);
-    Route::post('/updateCourse/{id}', [CourseController::class, 'updateCourse']);
-    Route::delete('/deleteCourse/{id}', [CourseController::class, 'deleteCourse']);
-    Route::post('/editCourseStatus/{id}', [CourseController::class, 'editCourseStatus']);
+    Route::post('/createCourse', [CourseController::class, 'createCourse'])->middleware('permission:createCourse');
+    Route::get('/getAllCourses', [CourseController::class, 'getAllCourses'])->middleware('permission:getAllCourses');
+    Route::get('/getCourse/{id}', [CourseController::class, 'getCourse'])->middleware('permission:getCourse');
+    Route::post('/updateCourse/{id}', [CourseController::class, 'updateCourse'])->middleware('permission:updateCourse');
+    Route::delete('/deleteCourse/{id}', [CourseController::class, 'deleteCourse'])->middleware('permission:deleteCourse');
+    Route::post('/editCourseStatus/{id}', [CourseController::class, 'editCourseStatus'])->middleware('permission:editCourseStatus');
     Route::get('/getMyCourses', [CourseController::class, 'getMyCourses']);
 });
 
 Route::group([
-    'middleware' => ['api', 'auth:sanctum', 'role:super-admin'],
+    'middleware' => ['api', 'auth:sanctum'],
     'prefix' => 'subject'
 ], function ($router) {
-    Route::post('/createSubject', [SubjectController::class, 'createSubject']);
-    Route::get('/getAllSubjects', [SubjectController::class, 'getAllSubjects']);
-    Route::get('/getSubject/{id}', [SubjectController::class, 'getSubject']);
-    Route::post('/updateSubject/{id}', [SubjectController::class, 'updateSubject']);
-    Route::delete('/deleteSubject/{id}', [SubjectController::class, 'deleteSubject']);
+    Route::post('/createSubject', [SubjectController::class, 'createSubject'])->middleware('permission:createSubject');
+    Route::get('/getAllSubjects', [SubjectController::class, 'getAllSubjects'])->middleware('permission:getAllSubjects');
+    Route::get('/getSubject/{id}', [SubjectController::class, 'getSubject'])->middleware('permission:getSubject');
+    Route::post('/updateSubject/{id}', [SubjectController::class, 'updateSubject'])->middleware('permission:updateSubject');
+    Route::delete('/deleteSubject/{id}', [SubjectController::class, 'deleteSubject'])->middleware('permission:deleteSubject');
 });
 
 Route::group([
-    'middleware' => ['api', 'auth:sanctum', 'role:super-admin'],
+    'middleware' => ['api', 'auth:sanctum'],
     'prefix' => 'lesson'
 ], function ($router) {
-    Route::post('/createLesson', [LessonController::class, 'createLesson']);
-    Route::get('/getAllLessons', [LessonController::class, 'getAllLessons']);
-    Route::get('/getLesson/{id}', [LessonController::class, 'getLesson']);
-    Route::post('/updateLesson/{id}', [LessonController::class, 'updateLesson']);
-    Route::delete('/deleteLesson/{id}', [LessonController::class, 'deleteLesson']);
+    Route::post('/createLesson', [LessonController::class, 'createLesson'])->middleware('permission:createLesson');
+    Route::get('/getAllLessons', [LessonController::class, 'getAllLessons'])->middleware('permission:getAllLessons');
+    Route::get('/getLesson/{id}', [LessonController::class, 'getLesson'])->middleware('permission:getLesson');
+    Route::post('/updateLesson/{id}', [LessonController::class, 'updateLesson'])->middleware('permission:updateLesson');
+    Route::delete('/deleteLesson/{id}', [LessonController::class, 'deleteLesson'])->middleware('permission:deleteLesson');
 });
 Route::group([
-    'middleware' => ['api', 'auth:sanctum', 'role:super-admin'],
+    'middleware' => ['api', 'auth:sanctum'],
     'prefix' => 'courseDate'
 ], function ($router) {
-    Route::post('/createCourseDate', [CourseDateController::class, 'createCourseDate']);
-    Route::get('/getDatesByCourse/{courseId}', [CourseDateController::class, 'getDateByCourse']);
-    Route::delete('/deleteDate/{id}', [CourseDateController::class, 'deleteDate']);
-    Route::post('/createDateManual', [CourseDateController::class, 'createDateManual']);
+    Route::post('/createCourseDate', [CourseDateController::class, 'createCourseDate'])->middleware('permission:createCourseDate');
+    Route::get('/getDatesByCourse/{courseId}', [CourseDateController::class, 'getDateByCourse'])->middleware('permission:getDatesByCourse');
+    Route::delete('/deleteDate/{id}', [CourseDateController::class, 'deleteDate'])->middleware('permission:deleteDate');
+    Route::post('/createDateManual', [CourseDateController::class, 'createDateManual'])->middleware('permission:createDateManual');
 });
 
 
 Route::group([
-    'middleware' => ['api', 'auth:sanctum', 'role:super-admin'],
+    'middleware' => ['api', 'auth:sanctum'],
     'prefix' => 'dateLesson'
 ], function ($router) {
-    Route::post('/assignLessonsToDate', [CourseCurriculumController::class, 'assignLessonsToDate']);
-    Route::post('/updateAssignLessonsToDate/{courseDate}', [CourseCurriculumController::class, 'updateAssignLessonsToDate']);
-    Route::delete('/detachAllLessons/{courseDateId}', [CourseCurriculumController::class, 'deleteLessonsFromDate']);
-    Route::get('/getLessonsByDate/{id}', [CourseCurriculumController::class, 'getLessonsByDate']);
-    Route::get('/getCurriculumByCourse/{courseId}', [CourseCurriculumController::class, 'getCurriculumByCourse']);
+    Route::post('/assignLessonsToDate', [CourseCurriculumController::class, 'assignLessonsToDate'])->middleware('permission:assignLessonsToDate');
+    Route::post('/updateAssignLessonsToDate/{courseDate}', [CourseCurriculumController::class, 'updateAssignLessonsToDate'])->middleware('permission:updateAssignLessonsToDate');
+    Route::delete('/detachAllLessons/{courseDateId}', [CourseCurriculumController::class, 'deleteLessonsFromDate'])->middleware('permission:deleteLessonsFromDate');
+    Route::get('/getLessonsByDate/{id}', [CourseCurriculumController::class, 'getLessonsByDate'])->middleware('permission:getLessonsByDate');
+    Route::get('/getCurriculumByCourse/{courseId}', [CourseCurriculumController::class, 'getCurriculumByCourse'])->middleware('permission:getCurriculumByCourse');
 
 });
 
