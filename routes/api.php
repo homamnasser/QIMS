@@ -135,35 +135,35 @@ Route::group([
 });
 
 Route::group([
-    'middleware' => ['api', 'auth:sanctum', 'role:super-admin|admin|supervisor'],
+    'middleware' => ['api', 'auth:sanctum'],
     'prefix' => 'circle'
 ], function ($router) {
-    Route::post('/createCircle', [CircleController::class, 'createCircle']);
-    Route::get('/getMyCircleCurriculum', [CircleController::class, 'getMyCircleCurriculum']);
-    Route::get('/getCircle/{id}', [CircleController::class, 'getCircle']);
-    Route::get('/getAllCircles', [CircleController::class, 'getAllCircles']);
-    Route::delete('/deleteCircle/{id}', [CircleController::class, 'deleteCircle']);
-    Route::post('/updateCircle/{id}', [CircleController::class, 'updateCircle']);
+    Route::post('/createCircle', [CircleController::class, 'createCircle'])->middleware('permission:createCircle');
+    Route::get('/getMyCircleCurriculum', [CircleController::class, 'getMyCircleCurriculum'])->middleware('permission:getMyCircleCurriculum');
+    Route::get('/getCircle/{id}', [CircleController::class, 'getCircle'])->middleware('permission:getCircleById');
+    Route::get('/getAllCircles', [CircleController::class, 'getAllCircles'])->middleware('permission:getAllCircles');
+    Route::delete('/deleteCircle/{id}', [CircleController::class, 'deleteCircle'])->middleware('permission:deleteCircle');
+    Route::post('/updateCircle/{id}', [CircleController::class, 'updateCircle'])->middleware('permission:updateCircle');
 });
 
 Route::group([
-    'middleware' => ['api', 'auth:sanctum', 'role:super-admin|admin'],
+    'middleware' => ['api', 'auth:sanctum'],
     'prefix' => 'student'
 ], function ($router) {
-    Route::post('/createStudent', [StudentController::class, 'createStudent']);
-    Route::get('/getStudentById/{id}', [StudentController::class, 'getStudentById']);
-    Route::get('/getAllStudents', [StudentController::class, 'getAllStudents']);
-    Route::post('/updateStudent/{id}', [StudentController::class, 'updateStudent']);
-    Route::delete('/deleteStudent/{id}', [StudentController::class, 'deleteStudent']);
+    Route::post('/createStudent', [StudentController::class, 'createStudent'])->middleware('permission:createStudent');
+    Route::get('/getStudentById/{id}', [StudentController::class, 'getStudentById'])->middleware('permission:getStudentById');
+    Route::get('/getAllStudents', [StudentController::class, 'getAllStudents'])->middleware('permission:getAllStudents');
+    Route::post('/updateStudent/{id}', [StudentController::class, 'updateStudent'])->middleware('permission:updateStudent');
+    Route::delete('/deleteStudent/{id}', [StudentController::class, 'deleteStudent'])->middleware('permission:deleteStudent');
 });
 
 Route::group([
-    'middleware' => ['api', 'auth:sanctum', 'role:super-admin|admin|supervisor'],
+    'middleware' => ['api', 'auth:sanctum'],
     'prefix' => 'studentCircle'
 ], function ($router) {
-    Route::post('/addStudentsToCircle', [StudentCircleController::class, 'addStudents']);
-    Route::post('/removeStudentFromCircle', [StudentCircleController::class, 'removeStudent']);
-    Route::get('/getStudentsByCircle/{circleId}', [StudentCircleController::class, 'getStudents']);
+    Route::post('/addStudentsToCircle', [StudentCircleController::class, 'addStudents'])->middleware('permission:addStudentsToCircle');
+    Route::post('/removeStudentFromCircle', [StudentCircleController::class, 'removeStudent'])->middleware('permission:removeStudentFromCircle');
+    Route::get('/getStudentsByCircle/{circleId}', [StudentCircleController::class, 'getStudents'])->middleware('permission:getStudentsByCircle');
 });
 
 Route::group([

@@ -15,15 +15,17 @@ class CircleResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id'      => $this->id,
-            'name'    => $this->name,
-            'teacher' => [
+            'id'         => $this->id,
+            'name'       => $this->name,
+            'teacher_id' => $this->teacher_id,
+            'course_id'  => $this->course_id,
+            'teacher'    => [
                 'id'   => $this->teacher->id ?? null,
-                'name' => $this->teacher->first_name . ' ' . $this->teacher->last_name ?? 'N/A',
+                'name' => $this->teacher ? ($this->teacher->first_name . ' ' . $this->teacher->last_name) : 'N/A',
             ],
-            'course'  => [
+            'course'     => [
                 'id'   => $this->course->id ?? null,
-                'name'=> $this->course->name ?? 'N/A',
+                'name' => $this->course->name ?? 'N/A',
             ],
             'created_at' => $this->created_at->format('Y-m-d'),
         ];
