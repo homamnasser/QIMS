@@ -1,0 +1,31 @@
+info:
+  name: getAllSabrs
+  type: http
+  seq: 4
+
+http:
+  method: GET
+  url: http://127.0.0.1:8000/api/sabr/getAllSabrs?course=5
+  params:
+    - name: student
+      value: ""
+      type: query
+      disabled: true
+    - name: giver
+      value: "2"
+      type: query
+      disabled: true
+    - name: course
+      value: "5"
+      type: query
+  body:
+    type: multipart-form
+  auth:
+    type: bearer
+    token: 35|2q4HQvXaUXc8EnBvJbTMu4IqoToa7SgSGN32aS2l5902f52d
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

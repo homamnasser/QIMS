@@ -74,4 +74,8 @@ class User extends Authenticatable
     {
         return $this->hasMany(Note::class, 'user_id');
     }
+    public function givenSabrs(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Sabr::class, 'giver');
+    }
 }

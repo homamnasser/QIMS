@@ -5,7 +5,11 @@ info:
 
 http:
   method: GET
-  url: http://127.0.0.1:8000/api/note/getMyNotes
+  url: http://127.0.0.1:8000/api/note/getMyNotes?student_id=2
+  params:
+    - name: student_id
+      value: "2"
+      type: query
   body:
     type: multipart-form
   auth:

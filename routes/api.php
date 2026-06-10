@@ -14,6 +14,7 @@ use App\Http\Controllers\CircleController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\StudentCircleController;
 use App\Http\Controllers\NoteController;
+use App\Http\Controllers\SabrController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -174,4 +175,16 @@ Route::group([
     Route::get('/getNotesByStudentId/{studentId}', [NoteController::class, 'getNotesByStudentId']);
     Route::delete('/deleteNote/{noteId}', [NoteController::class, 'deleteNote']);
     Route::get('/getMyNotes', [NoteController::class, 'getMyNotes']);
+});
+
+Route::group([
+    'middleware' => ['api', 'auth:sanctum', 'role:super-admin|teacher|student'],
+    'prefix' => 'sabr'
+], function ($router) {
+    Route::post('/createSabr', [SabrController::class, 'createSabr']);
+    Route::get('/getSabrById/{id}', [SabrController::class, 'getSabrById']);
+    Route::post('/updateSabrResult/{id}', [SabrController::class, 'updateResult']);
+    Route::get('/getMySabrs', [SabrController::class, 'getMySabrs']);
+    Route::get('/getAllSabrs', [SabrController::class, 'getAllSabrs']);
+    Route::delete('/deleteSabr/{id}', [SabrController::class, 'deleteSabr']);
 });

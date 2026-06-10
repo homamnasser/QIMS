@@ -1,11 +1,11 @@
 info:
-  name: getCircle
+  name: deleteSabr
   type: http
-  seq: 3
+  seq: 5
 
 http:
-  method: GET
-  url: http://127.0.0.1:8000/api/circle/getCircle/1
+  method: DELETE
+  url: http://127.0.0.1:8000/api/sabr/deleteSabr/2
   body:
     type: multipart-form
   auth:

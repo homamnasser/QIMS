@@ -51,7 +51,11 @@ class Course extends Model
         return $this->belongsTo(User::class, 'supervisor_id');
     }
 
-
+    public function sabrs(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Sabr::class, 'course');
+    }
+    
     public function scopeFilter($query, array $filters)
     {
         $query->when($filters['name'] ?? null, function ($q, $name) {

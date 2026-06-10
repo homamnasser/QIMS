@@ -6,7 +6,7 @@ use App\Http\Resources\NoteResource;
 use App\IService\INoteService;
 use App\IService\IStudentService;
 use Illuminate\Http\JsonResponse;
-
+use Illuminate\Http\Request;
 class NoteController extends Controller
 {
     protected $noteService;
@@ -100,15 +100,37 @@ class NoteController extends Controller
     /**
      * 3. 🔑 جلب الملاحظات التي كتبها الأستاذ الحالي (الخاصة بي)
      */
-    public function getMyNotes(): JsonResponse
+    public function getMyNotes(Request $request): JsonResponse
     {
         $userId = auth()->id();
+        $filters = [];
 
-        $notes = $this->noteService->getNotesByTeacherId($userId);
+        if ($request->has('student_id')) {
+            $studentId = $request->query('student_id');
+            $student = $this->studentService->getStudentById($studentId);
+
+            if (!$student) {
+                return response()->json([
+                    'code'    => 404,
+                    'status'  => 'error',
+                    'message' => 'Student not found.',
+                    'data'    => null
+                ], 404);
+            }
+
+            $filters['student_id'] = $student->id;
+        }
+
+        $notes = $this->noteService->getNotesByTeacher($userId, $filters);
+
+        $message = isset($filters['student_id'])
+            ? 'Student notes retrieved successfully.'
+            : 'Your created notes retrieved successfully.';
 
         return response()->json([
             'code'    => 200,
-            'message' => 'Your created notes retrieved successfully.',
+            'status'  => 'success',
+            'message' => $message,
             'data'    => NoteResource::collection($notes)
         ], 200);
     }

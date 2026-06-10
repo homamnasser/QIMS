@@ -1,16 +1,16 @@
 info:
-  name: getCircle
+  name: getMySabrs
   type: http
-  seq: 3
+  seq: 6
 
 http:
   method: GET
-  url: http://127.0.0.1:8000/api/circle/getCircle/1
+  url: http://127.0.0.1:8000/api/sabr/getMySabrs
   body:
     type: multipart-form
   auth:
     type: bearer
-    token: 35|2q4HQvXaUXc8EnBvJbTMu4IqoToa7SgSGN32aS2l5902f52d
+    token: 36|F6SHMuIaaPwXhOdMAQPksbUCI84xP4eYg4fo0QAK4dfd23f1
 
 settings:
   encodeUrl: true

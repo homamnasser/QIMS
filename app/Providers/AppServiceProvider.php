@@ -30,6 +30,8 @@ use App\IService\IStudentCircleService;
 use App\Services\StudentCircleService;
 use App\IService\INoteService;
 use App\Services\NoteService;
+use App\IService\ISabrService;
+use App\Services\SabrService;
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -50,6 +52,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(IStudentService::class, StudentService::class);
         $this->app->bind(IStudentCircleService::class, StudentCircleService::class);
         $this->app->bind(INoteService::class, NoteService::class);
+        $this->app->bind(ISabrService::class, SabrService::class);
     }
 
 

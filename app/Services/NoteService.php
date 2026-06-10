@@ -4,7 +4,7 @@ namespace App\Services;
 
 use App\IService\INoteService;
 use App\Models\Note;
-
+use Illuminate\Support\Collection;
 class NoteService implements INoteService
 {
     /**
@@ -40,10 +40,11 @@ class NoteService implements INoteService
                              ->delete();
     }
 
-    public function getNotesByTeacherId(int $userId)
-    {
-        return Note::where('user_id', $userId)
-            ->with(['student', 'author'])
-            ->get();
-    }
+    public function getNotesByTeacher(int $teacherId, array $filters = []): Collection
+{
+    return Note::where('user_id', $teacherId)
+        ->filter($filters)
+        ->latest()
+        ->get();
+}
 }

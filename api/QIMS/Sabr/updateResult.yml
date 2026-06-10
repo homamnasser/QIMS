@@ -1,13 +1,20 @@
 info:
-  name: getCircle
+  name: updateResult
   type: http
   seq: 3
 
 http:
-  method: GET
-  url: http://127.0.0.1:8000/api/circle/getCircle/1
+  method: POST
+  url: http://127.0.0.1:8000/api/sabr/updateSabrResult/1
   body:
     type: multipart-form
+    data:
+      - name: value
+        type: text
+        value: "100"
+      - name: note
+        type: text
+        value: exe
   auth:
     type: bearer
     token: 35|2q4HQvXaUXc8EnBvJbTMu4IqoToa7SgSGN32aS2l5902f52d

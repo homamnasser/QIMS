@@ -22,9 +22,16 @@ class Note extends Model
         return $this->belongsTo(Student::class, 'student_id');
     }
 
-   
+
     public function author(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function scopeFilter($query, array $filters)
+    {
+        $query->when($filters['student_id'] ?? null, function ($q, $studentId) {
+            $q->where('student_id', $studentId);
+        });
     }
 }
