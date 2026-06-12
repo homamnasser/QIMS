@@ -80,6 +80,17 @@ class PermissionSeeder extends Seeder
             "getNotesByStudentId",
             "getMyNotes",
             "deleteNote",
+            "createSabr",
+            "getSabrByStudentId",
+            "getMySabr",
+            "deleteSabr",
+            "updateSabrResult",
+            "getAllSabrs",
+            "createMemorization",
+            "getMemorizationsByStudentId",
+            "getMyMemorizations",
+            "deleteMemorization",
+            "getAllMemorizations",
 
 
 

@@ -15,6 +15,7 @@ use App\Http\Controllers\StudentController;
 use App\Http\Controllers\StudentCircleController;
 use App\Http\Controllers\NoteController;
 use App\Http\Controllers\SabrController;
+use App\Http\Controllers\MemorizationController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -132,7 +133,6 @@ Route::group([
     Route::delete('/detachAllLessons/{courseDateId}', [CourseCurriculumController::class, 'deleteLessonsFromDate'])->middleware('permission:deleteLessonsFromDate');
     Route::get('/getLessonsByDate/{id}', [CourseCurriculumController::class, 'getLessonsByDate'])->middleware('permission:getLessonsByDate');
     Route::get('/getCurriculumByCourse/{courseId}', [CourseCurriculumController::class, 'getCurriculumByCourse'])->middleware('permission:getCurriculumByCourse');
-
 });
 
 Route::group([
@@ -187,4 +187,15 @@ Route::group([
     Route::get('/getMySabrs', [SabrController::class, 'getMySabrs']);
     Route::get('/getAllSabrs', [SabrController::class, 'getAllSabrs']);
     Route::delete('/deleteSabr/{id}', [SabrController::class, 'deleteSabr']);
+});
+
+Route::group([
+    'middleware' => ['api', 'auth:sanctum'],
+    'prefix' => 'memorization'
+], function ($router) {
+    Route::post('/createMemorization', [MemorizationController::class, 'createMemorization']);
+    Route::get('/getMemorizationById/{id}', [MemorizationController::class, 'getMemorizationById']);
+    Route::delete('/deleteMemorization/{id}', [MemorizationController::class, 'deleteMemorization']);
+    Route::get('/getMyMemorizations', [MemorizationController::class, 'getMyMemorizations']);
+    Route::get('/getAllMemorizations', [MemorizationController::class, 'getAllMemorizations']);
 });

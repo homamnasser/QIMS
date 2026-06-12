@@ -1,0 +1,32 @@
+info:
+  name: createMemorization
+  type: http
+  seq: 7
+
+http:
+  method: POST
+  url: http://127.0.0.1:8000/api/memorization/createMemorization
+  body:
+    type: multipart-form
+    data:
+      - name: student_id
+        type: text
+        value: "4"
+      - name: name
+        type: text
+        value: ddييي
+      - name: start_page
+        type: text
+        value: "601"
+      - name: end_page
+        type: text
+        value: "601"
+  auth:
+    type: bearer
+    token: 35|2q4HQvXaUXc8EnBvJbTMu4IqoToa7SgSGN32aS2l5902f52d
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

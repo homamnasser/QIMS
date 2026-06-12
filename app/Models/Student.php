@@ -72,4 +72,8 @@ class Student extends Authenticatable
     {
         return $this->hasMany(Sabr::class, 'student');
     }
+    public function memorizations()
+{
+    return $this->hasMany(Memorization::class, 'student');
+}
 }

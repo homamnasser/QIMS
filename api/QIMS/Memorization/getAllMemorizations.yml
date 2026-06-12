@@ -1,21 +1,25 @@
 info:
-  name: getMyNotes
+  name: getAllMemorizations
   type: http
-  seq: 4
+  seq: 5
 
 http:
   method: GET
-  url: http://127.0.0.1:8000/api/note/getMyNotes
+  url: http://127.0.0.1:8000/api/memorization/getAllMemorizations
   params:
     - name: student_id
       value: "2"
+      type: query
+      disabled: true
+    - name: giver_id
+      value: "1"
       type: query
       disabled: true
   body:
     type: multipart-form
   auth:
     type: bearer
-    token: 33|mv1vTNlBHq5lDEQAW5efHUGdfxayXG8JPgd87rYE71d8a4ce
+    token: 35|2q4HQvXaUXc8EnBvJbTMu4IqoToa7SgSGN32aS2l5902f52d
 
 settings:
   encodeUrl: true

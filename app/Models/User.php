@@ -78,4 +78,8 @@ class User extends Authenticatable
     {
         return $this->hasMany(Sabr::class, 'giver');
     }
+    public function givenMemorizations()
+    {
+        return $this->hasMany(Memorization::class, 'giver');
+    }
 }

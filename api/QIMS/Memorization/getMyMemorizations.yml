@@ -1,0 +1,19 @@
+info:
+  name: getMyMemorizations
+  type: http
+  seq: 4
+
+http:
+  method: GET
+  url: http://127.0.0.1:8000/api/memorization/getMyMemorizations
+  body:
+    type: multipart-form
+  auth:
+    type: bearer
+    token: 39|utD1LfxUWCnGu6uFj7fMuLBIEtMV0M9nJl6AR5owe16f13d8
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
