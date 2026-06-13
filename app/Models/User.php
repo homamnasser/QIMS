@@ -82,4 +82,8 @@ class User extends Authenticatable
     {
         return $this->hasMany(Memorization::class, 'giver');
     }
+    public function issuedWarnings(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Warning::class, 'warner');
+    }
 }

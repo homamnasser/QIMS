@@ -33,7 +33,10 @@ use App\Services\NoteService;
 use App\IService\ISabrService;
 use App\Services\SabrService;
 use App\IService\IMemorizationService;
+use App\IService\IWarningService;
 use App\Services\MemorizationService;
+use App\Services\WarningService;
+
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -56,6 +59,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(INoteService::class, NoteService::class);
         $this->app->bind(ISabrService::class, SabrService::class);
         $this->app->bind(IMemorizationService::class, MemorizationService::class);
+        $this->app->bind(IWarningService::class,WarningService::class);
     }
 
 

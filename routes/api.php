@@ -16,6 +16,10 @@ use App\Http\Controllers\StudentCircleController;
 use App\Http\Controllers\NoteController;
 use App\Http\Controllers\SabrController;
 use App\Http\Controllers\MemorizationController;
+use App\Http\Controllers\WarningController;
+
+
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -198,4 +202,16 @@ Route::group([
     Route::delete('/deleteMemorization/{id}', [MemorizationController::class, 'deleteMemorization']);
     Route::get('/getMyMemorizations', [MemorizationController::class, 'getMyMemorizations']);
     Route::get('/getAllMemorizations', [MemorizationController::class, 'getAllMemorizations']);
+});
+
+Route::group([
+    'middleware' => ['api', 'auth:sanctum'],
+    'prefix' => 'warning'
+], function ($router) {
+    Route::post('/createWarning', [WarningController::class, 'createWarning']);
+    Route::get('/getWarningById/{id}', [WarningController::class, 'getWarningById']);
+    Route::delete('/deleteWarning/{id}', [WarningController::class, 'deleteWarning']);
+    Route::get('/getAllWarnigns', [WarningController::class, 'getAllWarnigns']);
+    Route::get('/getMyWarnings', [WarningController::class, 'getMyWarnings']);
+
 });

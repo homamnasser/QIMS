@@ -1,16 +1,16 @@
 info:
-  name: deleteMemorization
+  name: deleteWarning
   type: http
-  seq: 2
+  seq: 3
 
 http:
   method: DELETE
-  url: http://127.0.0.1:8000/api/memorization/deleteMemorization/1
+  url: http://127.0.0.1:8000/api/warning/deleteWarning/3
   body:
     type: multipart-form
   auth:
     type: bearer
-    token: 35|2q4HQvXaUXc8EnBvJbTMu4IqoToa7SgSGN32aS2l5902f52d
+    token: 40|TEacExI5IISQPEPygtBfEFtpZ4UnMEdkdd5c8sOH2b40eae2
 
 settings:
   encodeUrl: true

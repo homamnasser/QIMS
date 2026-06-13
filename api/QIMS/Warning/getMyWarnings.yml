@@ -1,16 +1,16 @@
 info:
-  name: getMyMemorizations
+  name: getMyWarnings
   type: http
-  seq: 3
+  seq: 5
 
 http:
   method: GET
-  url: http://127.0.0.1:8000/api/memorization/getMyMemorizations
+  url: http://127.0.0.1:8000/api/warning/getMyWarnings
   body:
     type: multipart-form
   auth:
     type: bearer
-    token: 39|utD1LfxUWCnGu6uFj7fMuLBIEtMV0M9nJl6AR5owe16f13d8
+    token: 40|TEacExI5IISQPEPygtBfEFtpZ4UnMEdkdd5c8sOH2b40eae2
 
 settings:
   encodeUrl: true

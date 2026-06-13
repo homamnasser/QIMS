@@ -73,7 +73,11 @@ class Student extends Authenticatable
         return $this->hasMany(Sabr::class, 'student');
     }
     public function memorizations()
-{
-    return $this->hasMany(Memorization::class, 'student');
-}
+    {
+        return $this->hasMany(Memorization::class, 'student');
+    }
+    public function warnings(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Warning::class, 'student');
+    }
 }

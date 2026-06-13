@@ -91,6 +91,11 @@ class PermissionSeeder extends Seeder
             "getMyMemorizations",
             "deleteMemorization",
             "getAllMemorizations",
+            "createWarning",
+            "getWarningById",
+            "deleteWarning",
+            "getAllWarnings",
+            "getMyWarnings",
 
 
 

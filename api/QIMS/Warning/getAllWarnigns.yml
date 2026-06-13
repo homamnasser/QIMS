@@ -1,20 +1,23 @@
 info:
-  name: getAllMemorizations
+  name: getAllWarnigns
   type: http
   seq: 4
 
 http:
   method: GET
-  url: http://127.0.0.1:8000/api/memorization/getAllMemorizations
+  url: http://127.0.0.1:8000/api/warning/getAllWarnigns?title=t
   params:
     - name: student_id
       value: "2"
       type: query
       disabled: true
-    - name: giver_id
+    - name: warner_id
       value: "1"
       type: query
       disabled: true
+    - name: title
+      value: t
+      type: query
   body:
     type: multipart-form
   auth:

@@ -88,7 +88,7 @@ class SabrController extends Controller
 
         return response()->json([
             'code'    => 200,
-            'status'  => 'success',
+            'message' => 'Sabrs retrieved successfully.',
             'data'    => SabrResource::collection($sabrs)
         ], 200);
     }
@@ -135,7 +135,7 @@ class SabrController extends Controller
 
         return response()->json([
             'code'    => 200,
-            'status'  => 'success',
+            'message' => 'Sabrs retrieved successfully.',
             'data'    => SabrResource::collection($sabrs)
         ], 200);
     }

@@ -1,26 +1,23 @@
 info:
-  name: createMemorization
+  name: createWarning
   type: http
-  seq: 5
+  seq: 2
 
 http:
   method: POST
-  url: http://127.0.0.1:8000/api/memorization/createMemorization
+  url: http://127.0.0.1:8000/api/warning/createWarning
   body:
     type: multipart-form
     data:
-      - name: student_id
+      - name: student
         type: text
-        value: "4"
-      - name: name
+        value: "2"
+      - name: title
         type: text
-        value: ddييي
-      - name: start_page
+        value: thzer
+      - name: description
         type: text
-        value: "601"
-      - name: end_page
-        type: text
-        value: "601"
+        value: thzer
   auth:
     type: bearer
     token: 35|2q4HQvXaUXc8EnBvJbTMu4IqoToa7SgSGN32aS2l5902f52d
