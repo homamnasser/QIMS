@@ -80,4 +80,8 @@ class Student extends Authenticatable
     {
         return $this->hasMany(Warning::class, 'student');
     }
+    public function exams(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Exam::class, 'student', 'id');
+    }
 }

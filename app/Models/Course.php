@@ -55,7 +55,7 @@ class Course extends Model
     {
         return $this->hasMany(Sabr::class, 'course');
     }
-    
+
     public function scopeFilter($query, array $filters)
     {
         $query->when($filters['name'] ?? null, function ($q, $name) {
@@ -77,5 +77,9 @@ class Course extends Model
                     $q->where('name', 'like', '%' . $projectName . '%');
                 });
             });
+    }
+    public function exams(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Exam::class, 'course', 'id');
     }
 }

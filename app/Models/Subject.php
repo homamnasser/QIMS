@@ -41,4 +41,8 @@ class Subject extends Model
                 });
             });
     }
+    public function exams(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Exam::class, 'subject', 'id');
+    }
 }
