@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignId('subject')->constrained('subjects')->onDelete('cascade');
             $table->foreignId('course')->constrained('courses')->onDelete('cascade');
             $table->float('mark');
+            $table->unique(['student', 'subject', 'course'], 'unique_student_subject_course_exam');
             $table->timestamps();
         });
     }

@@ -1,16 +1,16 @@
 info:
-  name: getWarningById
+  name: myExams
   type: http
-  seq: 5
+  seq: 6
 
 http:
   method: GET
-  url: http://127.0.0.1:8000/api/warning/getWarningById/1
+  url: http://127.0.0.1:8000/api/exam/getExamById/1
   body:
     type: multipart-form
   auth:
     type: bearer
-    token: ""
+    token: 35|2q4HQvXaUXc8EnBvJbTMu4IqoToa7SgSGN32aS2l5902f52d
 
 settings:
   encodeUrl: true

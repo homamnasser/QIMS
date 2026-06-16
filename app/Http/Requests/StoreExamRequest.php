@@ -49,7 +49,7 @@ class StoreExamRequest extends FormRequest
     }
 
     /**
-     * 🔐 Advanced business logic validations (Course bindings & Max mark)
+     * 🔐 Advanced business logic validations (Course bindings, Max mark, & Unique Exam)
      */
     public function withValidator(Validator $validator)
     {
@@ -66,42 +66,52 @@ class StoreExamRequest extends FormRequest
             // 1️⃣ First Condition: Check if the subject actually belongs to the selected course
             $subjectInCourse = DB::table('subjects')
                 ->where('id', $subjectId)
-                ->where('course_id', $courseId)
+                ->where('course_id', $courseId) // تأكد من اسم حقل الكورس في جدول المواد
                 ->exists();
 
             if (!$subjectInCourse) {
                 $validator->errors()->add('subject', 'The selected subject does not belong to this specific course.');
             }
 
-            // 2️⃣ Second Condition: Check if the student is registered/enrolled in this course
-            $studentInCourse = DB::table('course_student')
-                ->where('student_id', $studentId)
-                ->where('course_id', $courseId)
+            // 2️⃣ Second Condition: Check if the student belongs to a circle inside this course 🎯
+            $studentInCourse = DB::table('student_circles')
+                ->join('circles', 'student_circles.circle', '=', 'circles.id')
+                ->where('student_circles.student', $studentId)
+                ->where('circles.course_id', $courseId) // 👈 تم التعديل إلى course_id ليطابق جدولك تماماً
                 ->exists();
 
             if (!$studentInCourse) {
-                $validator->errors()->add('student', 'The selected student is not registered in this course.');
+                $validator->errors()->add('student', 'The selected student is not registered in any circle belonging to this course.');
             }
 
             // 3️⃣ Third Condition: Verify that the entered mark does not exceed the subject max_mark
             $subject = DB::table('subjects')->where('id', $subjectId)->first();
 
-            if ($subject && isset($subject->max_mark)) {
-                if ($mark > $subject->max_mark) {
-                    $validator->errors()->add('mark', "The exam mark cannot be greater than the subject max mark limit ({$subject->max_mark}).");
+            if ($subject && isset($subject->max_marks)) {
+                if ($mark > $subject->max_marks) {
+                    $validator->errors()->add('mark', "The exam mark cannot be greater than the subject max mark limit ({$subject->max_marks}).");
                 }
+            }
+
+            // 4️⃣ Fourth Condition: Check if the student already has a recorded mark for this subject in this course
+            $examExists = DB::table('exams')
+                ->where('student', $studentId)
+                ->where('subject', $subjectId)
+                ->where('course', $courseId)
+                ->exists();
+
+            if ($examExists) {
+                $validator->errors()->add('student', 'The student already has a recorded mark for this subject in this course.');
             }
         });
     }
 
-    /**
-     * ⛔ Customized JSON structure for validation errors (422 Unprocessable Entity)
-     */
+
     protected function failedValidation(Validator $validator): void
     {
         throw new HttpResponseException(response()->json([
             'code'    => 422,
-            'message' =>  $validator->errors(),
+            'message' => $validator->errors(),
         ], 422));
     }
 }

@@ -17,6 +17,7 @@ use App\Http\Controllers\NoteController;
 use App\Http\Controllers\SabrController;
 use App\Http\Controllers\MemorizationController;
 use App\Http\Controllers\WarningController;
+use App\Http\Controllers\ExamController;
 
 
 
@@ -215,3 +216,15 @@ Route::group([
     Route::get('/getMyWarnings', [WarningController::class, 'getMyWarnings']);
 
 });
+Route::group([
+    'middleware' => ['api', 'auth:sanctum'],
+    'prefix' => 'exam'
+], function ($router) {
+    Route::post('/createExam', [ExamController::class, 'createExam']);
+    Route::get('/getExamById/{id}', [ExamController::class, 'getExamById']);
+    Route::delete('/deleteExam/{id}', [ExamController::class, 'deleteExam']);
+    Route::get('/getAllExams', [ExamController::class, 'getAllExams']);
+    Route::post('/updateExam/{id}', [ExamController::class, 'updateExam']);
+    Route::get('/myExams', [ExamController::class, 'myExams']);
+});
+

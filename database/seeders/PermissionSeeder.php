@@ -96,6 +96,12 @@ class PermissionSeeder extends Seeder
             "deleteWarning",
             "getAllWarnings",
             "getMyWarnings",
+            "createExam",
+            "getExamById",
+            "deleteExam",
+            "getAllExams",
+            "updateExam",
+            "myExams",
 
 
 

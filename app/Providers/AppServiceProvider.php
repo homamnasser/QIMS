@@ -36,7 +36,8 @@ use App\IService\IMemorizationService;
 use App\IService\IWarningService;
 use App\Services\MemorizationService;
 use App\Services\WarningService;
-
+use App\IService\IExamService;
+use App\Services\ExamService;
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -60,6 +61,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(ISabrService::class, SabrService::class);
         $this->app->bind(IMemorizationService::class, MemorizationService::class);
         $this->app->bind(IWarningService::class,WarningService::class);
+        $this->app->bind(IExamService::class, ExamService::class);
     }
 
 

@@ -14,13 +14,9 @@ class ExamResource extends JsonResource
     {
         return [
             'id'   => $this->id,
-            // الـ cast إلى float يضمن عودة الرقم بفاصلة (مثال: 95.5) أو صافي بدون أصفار زائدة (مثال: 95) 🎯
             'mark' => $this->mark !== null ? (float)$this->mark : null,
 
-            // استخراج التاريخ والوقت تلقائياً من الـ timestamps الموحدة بالنظام ⏱️
-            'date' => $this->created_at ? $this->created_at->format('Y-m-d') : null,
 
-            // تفاصيل الطالب المحمية مع دمج الاسم بستايلك الخاص
             'student' => [
                 'id'        => $this->studentDetails ? $this->studentDetails->id : null,
                 'full_name' => $this->studentDetails
@@ -28,14 +24,14 @@ class ExamResource extends JsonResource
                     : null,
             ],
 
-            // تفاصيل المادة الدراسية
             'subject' => [
                 'id'       => $this->subjectDetails ? $this->subjectDetails->id : null,
                 'name'     => $this->subjectDetails ? $this->subjectDetails->name : null,
-                'max_mark' => $this->subjectDetails ? (float)$this->subjectDetails->max_mark : null,
+                'max_marks' => $this->subjectDetails ? (float)$this->subjectDetails->max_marks : null,
+                'min_marks' => $this->subjectDetails ? (float)$this->subjectDetails->min_marks : null,
+
             ],
 
-            // تفاصيل الكورس التابع له الامتحان
             'course' => [
                 'id'   => $this->courseDetails ? $this->courseDetails->id : null,
                 'name' => $this->courseDetails ? $this->courseDetails->name : null,

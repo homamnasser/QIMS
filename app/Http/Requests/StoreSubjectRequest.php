@@ -25,6 +25,7 @@ class StoreSubjectRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
             'course_id' => 'required|exists:courses,id',
             'min_marks' => 'required|integer|min:0',
             'max_marks' => 'required|integer|gt:min_marks',
