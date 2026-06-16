@@ -5,22 +5,13 @@ info:
 
 http:
   method: POST
-  url: http://127.0.0.1:8000/api/exam/createExam
+  url: http://127.0.0.1:8000/api/exam/updateExam/1
   body:
     type: multipart-form
     data:
-      - name: student
-        type: text
-        value: "2"
-      - name: subject
-        type: text
-        value: "5"
-      - name: course
-        type: text
-        value: "5"
       - name: mark
         type: text
-        value: "150"
+        value: "100"
   auth:
     type: bearer
     token: 35|2q4HQvXaUXc8EnBvJbTMu4IqoToa7SgSGN32aS2l5902f52d

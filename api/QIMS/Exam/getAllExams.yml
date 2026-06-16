@@ -5,7 +5,19 @@ info:
 
 http:
   method: GET
-  url: http://127.0.0.1:8000/api/exam/getExamById/1
+  url: http://127.0.0.1:8000/api/exam/getAllExams?course_id=5
+  params:
+    - name: student_id
+      value: "2"
+      type: query
+      disabled: true
+    - name: subject_id
+      value: "5"
+      type: query
+      disabled: true
+    - name: course_id
+      value: "5"
+      type: query
   body:
     type: multipart-form
   auth:

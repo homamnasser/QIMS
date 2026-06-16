@@ -12,12 +12,15 @@ http:
       - name: student
         type: text
         value: "2"
-      - name: title
+      - name: subject
         type: text
-        value: thzer
-      - name: description
+        value: "5"
+      - name: course
         type: text
-        value: thzer
+        value: "5"
+      - name: mark
+        type: text
+        value: "100"
   auth:
     type: bearer
     token: 35|2q4HQvXaUXc8EnBvJbTMu4IqoToa7SgSGN32aS2l5902f52d

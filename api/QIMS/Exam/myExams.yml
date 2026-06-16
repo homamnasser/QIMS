@@ -5,12 +5,12 @@ info:
 
 http:
   method: GET
-  url: http://127.0.0.1:8000/api/exam/getExamById/1
+  url: http://127.0.0.1:8000/api/exam/myExams
   body:
     type: multipart-form
   auth:
     type: bearer
-    token: 35|2q4HQvXaUXc8EnBvJbTMu4IqoToa7SgSGN32aS2l5902f52d
+    token: 42|Ioan8DJKidHaBQwNxfv4FjWL5yWMfHetdoqz3LlR1999bdd6
 
 settings:
   encodeUrl: true
