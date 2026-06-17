@@ -51,7 +51,7 @@ class CreateStudentRequest extends FormRequest
     {
         if ($this->first_name && $this->last_name) {
             $this->merge([
-                'username' => strtolower($this->first_name . '.' . $this->last_name),
+                'username' => strtolower($this->first_name . '-' . $this->last_name),
             ]);
         }
     }
