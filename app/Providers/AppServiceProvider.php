@@ -38,6 +38,8 @@ use App\Services\MemorizationService;
 use App\Services\WarningService;
 use App\IService\IExamService;
 use App\Services\ExamService;
+use App\IService\IStudentCourseAbsenceService;
+use App\Services\StudentCourseAbsenceService;
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -62,8 +64,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(IMemorizationService::class, MemorizationService::class);
         $this->app->bind(IWarningService::class,WarningService::class);
         $this->app->bind(IExamService::class, ExamService::class);
+        $this->app->bind(IStudentCourseAbsenceService::class,StudentCourseAbsenceService::class);
     }
-
 
     public function boot(): void
     {

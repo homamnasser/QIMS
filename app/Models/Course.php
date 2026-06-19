@@ -82,4 +82,8 @@ class Course extends Model
     {
         return $this->hasMany(Exam::class, 'course', 'id');
     }
+    public function absences(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(StudentCourseAbsence::class, 'course', 'id');
+    }
 }

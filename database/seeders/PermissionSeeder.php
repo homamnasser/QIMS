@@ -102,6 +102,11 @@ class PermissionSeeder extends Seeder
             "getAllExams",
             "updateExam",
             "myExams",
+            "getAllAbsences",
+            "createAbsence",
+            "getAbsenceById",
+            "updateAbsence",
+            "deleteAbsence",
 
 
 

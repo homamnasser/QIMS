@@ -1,23 +1,23 @@
 info:
-  name: getAllExams
+  name: getAllAbsences
   type: http
-  seq: 4
+  seq: 5
 
 http:
   method: GET
-  url: http://127.0.0.1:8000/api/exam/getAllExams?course_id=5
+  url: http://127.0.0.1:8000/api/absence/getAllAbsences/?student=1
   params:
-    - name: student_id
-      value: "2"
+    - name: student
+      value: "1"
+      type: query
+    - name: type
+      value: present
       type: query
       disabled: true
-    - name: subject_id
+    - name: course
       value: "5"
       type: query
       disabled: true
-    - name: course_id
-      value: "5"
-      type: query
   body:
     type: multipart-form
   auth:

@@ -1,26 +1,29 @@
 info:
-  name: createExam
+  name: createAbsence
   type: http
-  seq: 5
+  seq: 7
 
 http:
   method: POST
-  url: http://127.0.0.1:8000/api/exam/createExam
+  url: http://127.0.0.1:8000/api/absence/createAbsence
   body:
     type: multipart-form
     data:
       - name: student
         type: text
-        value: "2"
-      - name: subject
-        type: text
-        value: "5"
+        value: "3"
       - name: course
         type: text
         value: "5"
-      - name: mark
+      - name: note
         type: text
-        value: "100"
+        value: gg
+      - name: type
+        type: text
+        value: present
+      - name: date
+        type: text
+        value: 2026-02-19
   auth:
     type: bearer
     token: 35|2q4HQvXaUXc8EnBvJbTMu4IqoToa7SgSGN32aS2l5902f52d

@@ -18,6 +18,7 @@ use App\Http\Controllers\SabrController;
 use App\Http\Controllers\MemorizationController;
 use App\Http\Controllers\WarningController;
 use App\Http\Controllers\ExamController;
+use App\Http\Controllers\StudentCourseAbsenceController;
 
 
 
@@ -226,5 +227,17 @@ Route::group([
     Route::get('/getAllExams', [ExamController::class, 'getAllExams']);
     Route::post('/updateExam/{id}', [ExamController::class, 'updateExam']);
     Route::get('/myExams', [ExamController::class, 'myExams']);
+});
+
+Route::group([
+    'middleware' => ['api', 'auth:sanctum'],
+    'prefix' => 'absence'
+], function ($router) {
+    Route::post('/createAbsence', [StudentCourseAbsenceController::class, 'createAbsence']);
+    Route::get('/getAbsenceById/{id}', [StudentCourseAbsenceController::class, 'getAbsenceById']);
+    Route::post('/updateAbsence/{id}', [StudentCourseAbsenceController::class, 'updateAbsence']);
+    Route::delete('/deleteAbsence/{id}', [StudentCourseAbsenceController::class, 'deleteAbsence']);
+    Route::get('/getAllAbsences', [StudentCourseAbsenceController::class, 'getAllAbsence']);
+
 });
 

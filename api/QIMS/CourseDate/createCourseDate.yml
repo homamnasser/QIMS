@@ -11,7 +11,7 @@ http:
     data:
       - name: course_id
         type: text
-        value: "1"
+        value: "5"
       - name: days[]
         type: text
         value: Sunday
@@ -33,7 +33,7 @@ http:
         disabled: true
   auth:
     type: bearer
-    token: 9|nXT99533SpTCXJyzBzuT8BQRwoUJmfOaGCdFeZak8f3d0667
+    token: 35|2q4HQvXaUXc8EnBvJbTMu4IqoToa7SgSGN32aS2l5902f52d
 
 settings:
   encodeUrl: true
