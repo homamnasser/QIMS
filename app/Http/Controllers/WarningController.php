@@ -53,7 +53,7 @@ class WarningController extends Controller
     }
 
 
-    public function getAllWarnigns(Request $request): JsonResponse
+    public function getAllWarnings(Request $request): JsonResponse
     {
         $filters = $request->only(['student_id', 'warner_id', 'title']);
         $warnings = $this->warningService->getAllWarnings($filters);

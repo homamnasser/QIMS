@@ -41,23 +41,23 @@ Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logo
 Route::group([
     'middleware' => ['api', 'auth:sanctum'],
 ], function ($router) {
-    Route::post('/createStaffMember', [AuthController::class, 'createStaffMember'])->middleware('permission:createStaffMember');
-    Route::post('/updateStaffMember/{id}', [AuthController::class, 'updateStaffMember'])->middleware('permission:updateStaffMember');
-    Route::delete('/deleteStaffMember/{id}', [AuthController::class, 'deleteStaffMember'])->middleware('permission:deleteStaff');
-    Route::get('/getStaffById/{id}', [AuthController::class, 'getStaffById'])->middleware('permission:getStaffById');
-    Route::get('/getAllStaff', [AuthController::class, 'getAllStaff'])->middleware('permission:getAllStaff');
+    Route::post('/createStaffMember', [AuthController::class, 'createStaffMember'])->middleware('permission:إنشاء موظف');
+    Route::post('/updateStaffMember/{id}', [AuthController::class, 'updateStaffMember'])->middleware('permission:تعديل موظف');
+    Route::delete('/deleteStaffMember/{id}', [AuthController::class, 'deleteStaffMember'])->middleware('permission:حذف موظف');
+    Route::get('/getStaffById/{id}', [AuthController::class, 'getStaffById'])->middleware('permission:عرض تفاصيل الموظف');
+    Route::get('/getAllStaff', [AuthController::class, 'getAllStaff'])->middleware('permission:عرض كافة الموظفين');
 });
 
 Route::group([
     'middleware' => ['api', 'auth:sanctum'],
     'prefix' => 'role'
 ], function ($router) {
-    Route::post('/createRole', [RoleController::class, 'createRole'])->middleware('permission:createRole');
-    Route::get('/getAllRoles', [RoleController::class, 'getAllRoles'])->middleware('permission:getAllRoles');
-    Route::get('/getRole/{id}', [RoleController::class, 'getRole'])->middleware('permission:getRole');
-    Route::post('/updateRole/{id}', [RoleController::class, 'updateRole'])->middleware('permission:updateRole');
-    Route::delete('/deleteRole/{id}', [RoleController::class, 'deleteRole'])->middleware('permission:deleteRole');
-    Route::get('/getAllPermissions', [RoleController::class, 'getAllPermissions'])->middleware('permission:getAllPermissions');
+    Route::post('/createRole', [RoleController::class, 'createRole'])->middleware('permission:إنشاء دور');
+    Route::get('/getAllRoles', [RoleController::class, 'getAllRoles'])->middleware('permission:عرض كافة الأدوار');
+    Route::get('/getRole/{id}', [RoleController::class, 'getRole'])->middleware('permission:عرض تفاصيل الدور');
+    Route::post('/updateRole/{id}', [RoleController::class, 'updateRole'])->middleware('permission:تعديل الدور');
+    Route::delete('/deleteRole/{id}', [RoleController::class, 'deleteRole'])->middleware('permission:حذف الدور');
+    Route::get('/getAllPermissions', [RoleController::class, 'getAllPermissions'])->middleware('permission:عرض كافة الصلاحيات');
 });
 
 
@@ -65,12 +65,12 @@ Route::group([
     'middleware' => ['api', 'auth:sanctum'],
     'prefix' => 'project'
 ], function ($router) {
-    Route::post('/createProject', [ProjectController::class, 'createProject'])->middleware('permission:createProject');
-    Route::get('/getAllProjects', [ProjectController::class, 'getAllProjects'])->middleware('permission:getAllProjects');
-    Route::get('/getProject/{id}', [ProjectController::class, 'getProject'])->middleware('permission:getProject');
-    Route::post('/updateProject/{id}', [ProjectController::class, 'updateProject'])->middleware('permission:updateProject');
-    Route::delete('/deleteProject/{id}', [ProjectController::class, 'deleteProject'])->middleware('permission:deleteProject');
-    Route::post('/editProjectStatus/{id}', [ProjectController::class, 'editProjectStatus'])->middleware('permission:editProjectStatus');
+    Route::post('/createProject', [ProjectController::class, 'createProject'])->middleware('permission:إنشاء مشروع');
+    Route::get('/getAllProjects', [ProjectController::class, 'getAllProjects'])->middleware('permission:عرض كافة المشاريع');
+    Route::get('/getProject/{id}', [ProjectController::class, 'getProject'])->middleware('permission:عرض تفاصيل المشروع');
+    Route::post('/updateProject/{id}', [ProjectController::class, 'updateProject'])->middleware('permission:تعديل المشروع');
+    Route::delete('/deleteProject/{id}', [ProjectController::class, 'deleteProject'])->middleware('permission:حذف المشروع');
+    Route::post('/editProjectStatus/{id}', [ProjectController::class, 'editProjectStatus'])->middleware('permission:تعديل حالة المشروع');
     Route::get('/getMyProjects', [ProjectController::class, 'getMyProjects']);
 });
 
@@ -78,23 +78,23 @@ Route::group([
     'middleware' => ['api', 'auth:sanctum'],
     'prefix' => 'mosque'
 ], function ($router) {
-    Route::post('/createMosque', [MosqueController::class, 'createMosque'])->middleware('permission:createMosque');
-    Route::get('/getAllMosques', [MosqueController::class, 'getAllMosques'])->middleware('permission:getAllMosques');
-    Route::get('/getMosque/{id}', [MosqueController::class, 'getMosque'])->middleware('permission:getMosque');
-    Route::post('/updateMosque/{id}', [MosqueController::class, 'updateMosque'])->middleware('permission:updateMosque');
-    Route::delete('/deleteMosque/{id}', [MosqueController::class, 'deleteMosque'])->middleware('permission:deleteMosque');
+    Route::post('/createMosque', [MosqueController::class, 'createMosque'])->middleware('permission:إنشاء مسجد');
+    Route::get('/getAllMosques', [MosqueController::class, 'getAllMosques'])->middleware('permission:عرض كافة المساجد');
+    Route::get('/getMosque/{id}', [MosqueController::class, 'getMosque'])->middleware('permission:عرض تفاصيل المسجد');
+    Route::post('/updateMosque/{id}', [MosqueController::class, 'updateMosque'])->middleware('permission:تعديل مسجد');
+    Route::delete('/deleteMosque/{id}', [MosqueController::class, 'deleteMosque'])->middleware('permission:حذف مسجد');
 });
 
 Route::group([
     'middleware' => ['api', 'auth:sanctum'],
     'prefix' => 'course'
 ], function ($router) {
-    Route::post('/createCourse', [CourseController::class, 'createCourse'])->middleware('permission:createCourse');
-    Route::get('/getAllCourses', [CourseController::class, 'getAllCourses'])->middleware('permission:getAllCourses');
-    Route::get('/getCourse/{id}', [CourseController::class, 'getCourse'])->middleware('permission:getCourse');
-    Route::post('/updateCourse/{id}', [CourseController::class, 'updateCourse'])->middleware('permission:updateCourse');
-    Route::delete('/deleteCourse/{id}', [CourseController::class, 'deleteCourse'])->middleware('permission:deleteCourse');
-    Route::post('/editCourseStatus/{id}', [CourseController::class, 'editCourseStatus'])->middleware('permission:editCourseStatus');
+    Route::post('/createCourse', [CourseController::class, 'createCourse'])->middleware('permission:إنشاء كورس');
+    Route::get('/getAllCourses', [CourseController::class, 'getAllCourses'])->middleware('permission:عرض كافة الكورسات');
+    Route::get('/getCourse/{id}', [CourseController::class, 'getCourse'])->middleware('permission:عرض تفاصيل الكورس');
+    Route::post('/updateCourse/{id}', [CourseController::class, 'updateCourse'])->middleware('permission:تعديل الكورس');
+    Route::delete('/deleteCourse/{id}', [CourseController::class, 'deleteCourse'])->middleware('permission:حذف كورس');
+    Route::post('/editCourseStatus/{id}', [CourseController::class, 'editCourseStatus'])->middleware('permission:تعديل حالة الكورس');
     Route::get('/getMyCourses', [CourseController::class, 'getMyCourses']);
 });
 
@@ -102,31 +102,31 @@ Route::group([
     'middleware' => ['api', 'auth:sanctum'],
     'prefix' => 'subject'
 ], function ($router) {
-    Route::post('/createSubject', [SubjectController::class, 'createSubject'])->middleware('permission:createSubject');
-    Route::get('/getAllSubjects', [SubjectController::class, 'getAllSubjects'])->middleware('permission:getAllSubjects');
-    Route::get('/getSubject/{id}', [SubjectController::class, 'getSubject'])->middleware('permission:getSubject');
-    Route::post('/updateSubject/{id}', [SubjectController::class, 'updateSubject'])->middleware('permission:updateSubject');
-    Route::delete('/deleteSubject/{id}', [SubjectController::class, 'deleteSubject'])->middleware('permission:deleteSubject');
+    Route::post('/createSubject', [SubjectController::class, 'createSubject'])->middleware('permission:إنشاء مادة');
+    Route::get('/getAllSubjects', [SubjectController::class, 'getAllSubjects'])->middleware('permission:عرض كافة المواد');
+    Route::get('/getSubject/{id}', [SubjectController::class, 'getSubject'])->middleware('permission:عرض تفاصيل المادة');
+    Route::post('/updateSubject/{id}', [SubjectController::class, 'updateSubject'])->middleware('permission:تعديل المادة');
+    Route::delete('/deleteSubject/{id}', [SubjectController::class, 'deleteSubject'])->middleware('permission:حذف مادة');
 });
 
 Route::group([
     'middleware' => ['api', 'auth:sanctum'],
     'prefix' => 'lesson'
 ], function ($router) {
-    Route::post('/createLesson', [LessonController::class, 'createLesson'])->middleware('permission:createLesson');
-    Route::get('/getAllLessons', [LessonController::class, 'getAllLessons'])->middleware('permission:getAllLessons');
-    Route::get('/getLesson/{id}', [LessonController::class, 'getLesson'])->middleware('permission:getLesson');
-    Route::post('/updateLesson/{id}', [LessonController::class, 'updateLesson'])->middleware('permission:updateLesson');
-    Route::delete('/deleteLesson/{id}', [LessonController::class, 'deleteLesson'])->middleware('permission:deleteLesson');
+    Route::post('/createLesson', [LessonController::class, 'createLesson'])->middleware('permission:إنشاء درس');
+    Route::get('/getAllLessons', [LessonController::class, 'getAllLessons'])->middleware('permission:عرض كافة الدروس');
+    Route::get('/getLesson/{id}', [LessonController::class, 'getLesson'])->middleware('permission:عرض تفاصيل الدرس');
+    Route::post('/updateLesson/{id}', [LessonController::class, 'updateLesson'])->middleware('permission:تعديل الدرس');
+    Route::delete('/deleteLesson/{id}', [LessonController::class, 'deleteLesson'])->middleware('permission:حذف درس');
 });
 Route::group([
     'middleware' => ['api', 'auth:sanctum'],
     'prefix' => 'courseDate'
 ], function ($router) {
-    Route::post('/createCourseDate', [CourseDateController::class, 'createCourseDate'])->middleware('permission:createCourseDate');
-    Route::get('/getDatesByCourse/{courseId}', [CourseDateController::class, 'getDateByCourse'])->middleware('permission:getDatesByCourse');
-    Route::delete('/deleteDate/{id}', [CourseDateController::class, 'deleteDate'])->middleware('permission:deleteDate');
-    Route::post('/createDateManual', [CourseDateController::class, 'createDateManual'])->middleware('permission:createDateManual');
+    Route::post('/createCourseDate', [CourseDateController::class, 'createCourseDate'])->middleware('permission:إنشاء تاريخ الكورس');
+    Route::get('/getDatesByCourse/{courseId}', [CourseDateController::class, 'getDateByCourse'])->middleware('permission:عرض تواريخ الكورس');
+    Route::delete('/deleteDate/{id}', [CourseDateController::class, 'deleteDate'])->middleware('permission:حذف تاريخ');
+    Route::post('/createDateManual', [CourseDateController::class, 'createDateManual'])->middleware('permission:إضافة تاريخ يدوياً');
 });
 
 
@@ -134,99 +134,99 @@ Route::group([
     'middleware' => ['api', 'auth:sanctum'],
     'prefix' => 'dateLesson'
 ], function ($router) {
-    Route::post('/assignLessonsToDate', [CourseCurriculumController::class, 'assignLessonsToDate'])->middleware('permission:assignLessonsToDate');
-    Route::post('/updateAssignLessonsToDate/{courseDate}', [CourseCurriculumController::class, 'updateAssignLessonsToDate'])->middleware('permission:updateAssignLessonsToDate');
-    Route::delete('/detachAllLessons/{courseDateId}', [CourseCurriculumController::class, 'deleteLessonsFromDate'])->middleware('permission:deleteLessonsFromDate');
-    Route::get('/getLessonsByDate/{id}', [CourseCurriculumController::class, 'getLessonsByDate'])->middleware('permission:getLessonsByDate');
-    Route::get('/getCurriculumByCourse/{courseId}', [CourseCurriculumController::class, 'getCurriculumByCourse'])->middleware('permission:getCurriculumByCourse');
+    Route::post('/assignLessonsToDate', [CourseCurriculumController::class, 'assignLessonsToDate'])->middleware('permission:إسناد الدروس للتاريخ');
+    Route::post('/updateAssignLessonsToDate/{courseDate}', [CourseCurriculumController::class, 'updateAssignLessonsToDate'])->middleware('permission:تعديل إسناد دروس التاريخ');
+    Route::delete('/detachAllLessons/{courseDateId}', [CourseCurriculumController::class, 'deleteLessonsFromDate'])->middleware('permission:حذف دروس التاريخ');
+    Route::get('/getLessonsByDate/{id}', [CourseCurriculumController::class, 'getLessonsByDate'])->middleware('permission:عرض دروس التاريخ');
+    Route::get('/getCurriculumByCourse/{courseId}', [CourseCurriculumController::class, 'getCurriculumByCourse'])->middleware('permission:عرض المنهج الدراسي للكورس');
 });
 
 Route::group([
     'middleware' => ['api', 'auth:sanctum'],
     'prefix' => 'circle'
 ], function ($router) {
-    Route::post('/createCircle', [CircleController::class, 'createCircle'])->middleware('permission:createCircle');
-    Route::get('/getMyCircleCurriculum', [CircleController::class, 'getMyCircleCurriculum'])->middleware('permission:getMyCircleCurriculum');
-    Route::get('/getCircle/{id}', [CircleController::class, 'getCircle'])->middleware('permission:getCircleById');
-    Route::get('/getAllCircles', [CircleController::class, 'getAllCircles'])->middleware('permission:getAllCircles');
-    Route::delete('/deleteCircle/{id}', [CircleController::class, 'deleteCircle'])->middleware('permission:deleteCircle');
-    Route::post('/updateCircle/{id}', [CircleController::class, 'updateCircle'])->middleware('permission:updateCircle');
+    Route::post('/createCircle', [CircleController::class, 'createCircle'])->middleware('permission:إنشاء حلقة');
+    Route::get('/getMyCircleCurriculum', [CircleController::class, 'getMyCircleCurriculum'])->middleware('permission:عرض منهج حلقتي');
+    Route::get('/getCircle/{id}', [CircleController::class, 'getCircle'])->middleware('permission:عرض تفاصيل الحلقة');
+    Route::get('/getAllCircles', [CircleController::class, 'getAllCircles'])->middleware('permission:عرض كافة الحلقات');
+    Route::delete('/deleteCircle/{id}', [CircleController::class, 'deleteCircle'])->middleware('permission:حذف الحلقة');
+    Route::post('/updateCircle/{id}', [CircleController::class, 'updateCircle'])->middleware('permission:تعديل الحلقة');
 });
 
 Route::group([
     'middleware' => ['api', 'auth:sanctum'],
     'prefix' => 'student'
 ], function ($router) {
-    Route::post('/createStudent', [StudentController::class, 'createStudent'])->middleware('permission:createStudent');
-    Route::get('/getStudentById/{id}', [StudentController::class, 'getStudentById'])->middleware('permission:getStudentById');
-    Route::get('/getAllStudents', [StudentController::class, 'getAllStudents'])->middleware('permission:getAllStudents');
-    Route::post('/updateStudent/{id}', [StudentController::class, 'updateStudent'])->middleware('permission:updateStudent');
-    Route::delete('/deleteStudent/{id}', [StudentController::class, 'deleteStudent'])->middleware('permission:deleteStudent');
+    Route::post('/createStudent', [StudentController::class, 'createStudent'])->middleware('permission:إنشاء طالب');
+    Route::get('/getStudentById/{id}', [StudentController::class, 'getStudentById'])->middleware('permission:عرض تفاصيل الطالب');
+    Route::get('/getAllStudents', [StudentController::class, 'getAllStudents'])->middleware('permission:عرض كافة الطلاب');
+    Route::post('/updateStudent/{id}', [StudentController::class, 'updateStudent'])->middleware('permission:تعديل الطالب');
+    Route::delete('/deleteStudent/{id}', [StudentController::class, 'deleteStudent'])->middleware('permission:حذف الطالب');
 });
 
 Route::group([
     'middleware' => ['api', 'auth:sanctum'],
     'prefix' => 'studentCircle'
 ], function ($router) {
-    Route::post('/addStudentsToCircle', [StudentCircleController::class, 'addStudents'])->middleware('permission:addStudentsToCircle');
-    Route::post('/removeStudentFromCircle', [StudentCircleController::class, 'removeStudent'])->middleware('permission:removeStudentFromCircle');
-    Route::get('/getStudentsByCircle/{circleId}', [StudentCircleController::class, 'getStudents'])->middleware('permission:getStudentsByCircle');
+    Route::post('/addStudentsToCircle', [StudentCircleController::class, 'addStudents'])->middleware('permission:إضافة طلاب للحلقة');
+    Route::post('/removeStudentFromCircle', [StudentCircleController::class, 'removeStudent'])->middleware('permission:إلغاء التحاق طالب بالحلقة');
+    Route::get('/getStudentsByCircle/{circleId}', [StudentCircleController::class, 'getStudents'])->middleware('permission:عرض طلاب الحلقة');
 });
 
 Route::group([
-    'middleware' => ['api', 'auth:sanctum', 'role:super-admin|admin|supervisor|teacher'],
+    'middleware' => ['api', 'auth:sanctum'],
     'prefix' => 'note'
 ], function ($router) {
-    Route::post('/createNote', [NoteController::class, 'createNote']);
-    Route::get('/getNotesByStudentId/{studentId}', [NoteController::class, 'getNotesByStudentId']);
-    Route::delete('/deleteNote/{noteId}', [NoteController::class, 'deleteNote']);
-    Route::get('/getMyNotes', [NoteController::class, 'getMyNotes']);
+    Route::post('/createNote', [NoteController::class, 'createNote'])->middleware('permission:إنشاء ملاحظة');
+    Route::get('/getNotesByStudentId/{studentId}', [NoteController::class, 'getNotesByStudentId'])->middleware('permission:عرض ملاحظات الطالب');
+    Route::delete('/deleteNote/{noteId}', [NoteController::class, 'deleteNote'])->middleware('permission:حذف ملاحظة');
+    Route::get('/getMyNotes', [NoteController::class, 'getMyNotes'])->middleware('permission:عرض ملاحظاتي');
 });
 
 Route::group([
-    'middleware' => ['api', 'auth:sanctum', 'role:super-admin|teacher|student'],
+    'middleware' => ['api', 'auth:sanctum'],
     'prefix' => 'sabr'
 ], function ($router) {
-    Route::post('/createSabr', [SabrController::class, 'createSabr']);
-    Route::get('/getSabrById/{id}', [SabrController::class, 'getSabrById']);
-    Route::post('/updateSabrResult/{id}', [SabrController::class, 'updateResult']);
-    Route::get('/getMySabrs', [SabrController::class, 'getMySabrs']);
-    Route::get('/getAllSabrs', [SabrController::class, 'getAllSabrs']);
-    Route::delete('/deleteSabr/{id}', [SabrController::class, 'deleteSabr']);
+    Route::post('/createSabr', [SabrController::class, 'createSabr'])->middleware('permission:إنشاء سبر');
+    Route::get('/getSabrById/{id}', [SabrController::class, 'getSabrById'])->middleware('permission:عرض سبر الطالب');
+    Route::post('/updateSabrResult/{id}', [SabrController::class, 'updateResult'])->middleware('permission:تعديل نتيجة السبر');
+    Route::get('/getMySabrs', [SabrController::class, 'getMySabrs'])->middleware('permission:عرض سبري');
+    Route::get('/getAllSabrs', [SabrController::class, 'getAllSabrs'])->middleware('permission:عرض كافة السبور');
+    Route::delete('/deleteSabr/{id}', [SabrController::class, 'deleteSabr'])->middleware('permission:حذف سبر');
 });
 
 Route::group([
     'middleware' => ['api', 'auth:sanctum'],
     'prefix' => 'memorization'
 ], function ($router) {
-    Route::post('/createMemorization', [MemorizationController::class, 'createMemorization']);
-    Route::get('/getMemorizationById/{id}', [MemorizationController::class, 'getMemorizationById']);
-    Route::delete('/deleteMemorization/{id}', [MemorizationController::class, 'deleteMemorization']);
-    Route::get('/getMyMemorizations', [MemorizationController::class, 'getMyMemorizations']);
-    Route::get('/getAllMemorizations', [MemorizationController::class, 'getAllMemorizations']);
+    Route::post('/createMemorization', [MemorizationController::class, 'createMemorization'])->middleware('permission:إنشاء تسميع');
+    Route::get('/getMemorizationById/{id}', [MemorizationController::class, 'getMemorizationById'])->middleware('permission:عرض تسميع الطالب');
+    Route::delete('/deleteMemorization/{id}', [MemorizationController::class, 'deleteMemorization'])->middleware('permission:حذف تسميع');
+    Route::get('/getMyMemorizations', [MemorizationController::class, 'getMyMemorizations'])->middleware('permission:عرض تسميعاتي');
+    Route::get('/getAllMemorizations', [MemorizationController::class, 'getAllMemorizations'])->middleware('permission:عرض كافة التسميعات');
 });
 
 Route::group([
     'middleware' => ['api', 'auth:sanctum'],
     'prefix' => 'warning'
 ], function ($router) {
-    Route::post('/createWarning', [WarningController::class, 'createWarning']);
-    Route::get('/getWarningById/{id}', [WarningController::class, 'getWarningById']);
-    Route::delete('/deleteWarning/{id}', [WarningController::class, 'deleteWarning']);
-    Route::get('/getAllWarnigns', [WarningController::class, 'getAllWarnigns']);
-    Route::get('/getMyWarnings', [WarningController::class, 'getMyWarnings']);
+    Route::post('/createWarning', [WarningController::class, 'createWarning'])->middleware('permission:إنشاء إنذار');
+    Route::get('/getWarningById/{id}', [WarningController::class, 'getWarningById'])->middleware('permission:عرض تفاصيل الإنذار');
+    Route::delete('/deleteWarning/{id}', [WarningController::class, 'deleteWarning'])->middleware('permission:حذف إنذار');
+    Route::get('/getAllWarnings', [WarningController::class, 'getAllWarnings'])->middleware('permission:عرض كافة الإنذارات');
+    Route::get('/getMyWarnings', [WarningController::class, 'getMyWarnings'])->middleware('permission:عرض إنذاراتي');
 
 });
 Route::group([
     'middleware' => ['api', 'auth:sanctum'],
     'prefix' => 'exam'
 ], function ($router) {
-    Route::post('/createExam', [ExamController::class, 'createExam']);
-    Route::get('/getExamById/{id}', [ExamController::class, 'getExamById']);
-    Route::delete('/deleteExam/{id}', [ExamController::class, 'deleteExam']);
-    Route::get('/getAllExams', [ExamController::class, 'getAllExams']);
-    Route::post('/updateExam/{id}', [ExamController::class, 'updateExam']);
-    Route::get('/myExams', [ExamController::class, 'myExams']);
+    Route::post('/createExam', [ExamController::class, 'createExam'])->middleware('permission:إنشاء امتحان');
+    Route::get('/getExamById/{id}', [ExamController::class, 'getExamById'])->middleware('permission:عرض تفاصيل الامتحان');
+    Route::delete('/deleteExam/{id}', [ExamController::class, 'deleteExam'])->middleware('permission:حذف امتحان');
+    Route::get('/getAllExams', [ExamController::class, 'getAllExams'])->middleware('permission:عرض كافة الامتحانات');
+    Route::post('/updateExam/{id}', [ExamController::class, 'updateExam'])->middleware('permission:تعديل الامتحان');
+    Route::get('/myExams', [ExamController::class, 'myExams'])->middleware('permission:امتحاناتي');
 });
 
 Route::group([
