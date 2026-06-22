@@ -32,10 +32,24 @@ class ExamResource extends JsonResource
 
             ],
 
+            'subject_details' => [
+                'id'       => $this->subjectDetails ? $this->subjectDetails->id : null,
+                'name'     => $this->subjectDetails ? $this->subjectDetails->name : null,
+                'max_marks' => $this->subjectDetails ? (float)$this->subjectDetails->max_marks : null,
+                'min_marks' => $this->subjectDetails ? (float)$this->subjectDetails->min_marks : null,
+            ],
+
             'course' => [
                 'id'   => $this->courseDetails ? $this->courseDetails->id : null,
                 'name' => $this->courseDetails ? $this->courseDetails->name : null,
             ],
+
+            'course_details' => [
+                'id'   => $this->courseDetails ? $this->courseDetails->id : null,
+                'name' => $this->courseDetails ? $this->courseDetails->name : null,
+            ],
+
+            'created_at' => $this->created_at ? $this->created_at->toDateTimeString() : null,
         ];
     }
 }

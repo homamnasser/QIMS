@@ -15,6 +15,7 @@ class SabrResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            'id'         => $this->id,
             'sabr_id'    => $this->id,
             'value'      => $this->value,
             'type'       => $this->type,
@@ -36,10 +37,20 @@ class SabrResource extends JsonResource
                     : null,
             ],
 
+            'giver_details' => [
+                'id'         => $this->giverDetails ? $this->giverDetails->id : null,
+                'first_name' => $this->giverDetails ? $this->giverDetails->first_name : null,
+                'last_name'  => $this->giverDetails ? $this->giverDetails->last_name : null,
+            ],
 
             'course' => [
                 'id'    => $this->courseDetails ? $this->courseDetails->id : null,
                 'title' => $this->courseDetails ? $this->courseDetails->name : null, 
+            ],
+
+            'course_details' => [
+                'id'   => $this->courseDetails ? $this->courseDetails->id : null,
+                'name' => $this->courseDetails ? $this->courseDetails->name : null,
             ],
 
             'created_at' => $this->created_at ? $this->created_at->format('Y-m-d H:i:s') : null,

@@ -15,6 +15,7 @@ class NoteResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+            'id'          => $this->id,
             'note_id'     => $this->id,
             'title'       => $this->title,
             'description' => $this->description,
@@ -31,6 +32,12 @@ class NoteResource extends JsonResource
                 'full_name' => $this->author->first_name && $this->author->last_name
                     ? ($this->author->first_name . ' ' . $this->author->last_name)
                     : null,
+            ],
+
+            'author' => [
+                'id'         => $this->author ? $this->author->id : null,
+                'first_name' => $this->author ? $this->author->first_name : null,
+                'last_name'  => $this->author ? $this->author->last_name : null,
             ],
 
             'created_at'  => $this->created_at ? $this->created_at->format('Y-m-d H:i:s') : null,

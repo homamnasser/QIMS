@@ -26,12 +26,15 @@ class WarningResource extends JsonResource
                     : null,
             ],
 
-            'warner'      => [
-                'id'        => $this->warner,
-                'full_name' => $this->warnerDetails
-                    ? ($this->warnerDetails->first_name . ' ' . $this->warnerDetails->last_name)
-                    : null,
+            'warner'      => $this->warner,
+
+            'warner_details' => [
+                'id'         => $this->warnerDetails ? $this->warnerDetails->id : null,
+                'first_name' => $this->warnerDetails ? $this->warnerDetails->first_name : null,
+                'last_name'  => $this->warnerDetails ? $this->warnerDetails->last_name : null,
             ],
+
+            'created_at'  => $this->created_at ? $this->created_at->toDateTimeString() : null,
         ];
     }
 }
