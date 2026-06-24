@@ -35,6 +35,7 @@ class StudentResource extends JsonResource
             ],
             'roles'               => $this->getRoleNames(),
             'created_at'          => $this->created_at->format('Y-m-d'),
+            'image_url'           => $this->image ? asset('storage/' . $this->image) : null,
         ];
     }
 }

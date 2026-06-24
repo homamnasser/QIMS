@@ -25,6 +25,7 @@ class Student extends Authenticatable
         'parent_social_state',
         'father_phone',
         'password',
+        'image',
     ];
 
 

@@ -24,6 +24,7 @@ class ProjectResource extends JsonResource
                 'email' => $this->supervisorUser->email,
             ],
             'logo_url'    => $this->logo ? asset('storage/' . $this->logo) : null,
+            'audience'    => $this->audience,
             'created_at'  => $this->created_at->format('Y-m-d'),
             'is_active'   => $this->is_active,
         ];

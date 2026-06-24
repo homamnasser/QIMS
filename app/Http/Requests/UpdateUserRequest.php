@@ -24,8 +24,8 @@ class UpdateUserRequest extends FormRequest
             'password'   => 'sometimes|required|string|min:8|confirmed',
             'email'      => 'sometimes|required|email|unique:users,email,'. $this->route('id'),
             'birth_date' => 'sometimes|required|date',
-            'role_id'    => 'exists:roles,id'
-
+            'role_id'    => 'exists:roles,id',
+            'image'      => 'sometimes|nullable|file|image|mimes:jpg,jpeg,png|max:5120',
         ];
     }
 

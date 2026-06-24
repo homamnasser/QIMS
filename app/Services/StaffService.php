@@ -4,13 +4,23 @@ namespace App\Services;
 
 use App\Models\User;
 use App\IService\IStaffService;
+use App\Traits\FileTrait;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class StaffService implements IStaffService
 {
+    use FileTrait;
+
     public function updateStaff(User $user, array $data): User
     {
+        if (isset($data['image']) && $data['image'] instanceof \Illuminate\Http\UploadedFile) {
+            if ($user->image) {
+                $this->deleteFile($user->image);
+            }
+            $data['image'] = $this->saveFile($data['image'], 'users/images');
+        }
+
         $user->update($data);
         if (isset($data['role_id'])) {
             $user->assignRole((int)$data['role_id']);
@@ -20,6 +30,10 @@ class StaffService implements IStaffService
 
     public function createStaff(array $data): User
     {
+        if (isset($data['image']) && $data['image'] instanceof \Illuminate\Http\UploadedFile) {
+            $data['image'] = $this->saveFile($data['image'], 'users/images');
+        }
+
         $user = User::create($data);
 
         if (isset($data['role_id'])) {
@@ -75,6 +89,10 @@ class StaffService implements IStaffService
 
         if (!$user || $user->projects()->exists() || $user->circles()->exists()) {
             return false;
+        }
+
+        if ($user->image) {
+            $this->deleteFile($user->image);
         }
 
         return $user->delete();

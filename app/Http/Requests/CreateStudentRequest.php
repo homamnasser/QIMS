@@ -44,6 +44,7 @@ class CreateStudentRequest extends FormRequest
             ],
             'password'            => 'required|min:8|confirmed',
             'username'            => 'nullable|string|unique:students,username',
+            'image'               => 'sometimes|nullable|file|image|mimes:jpg,jpeg,png|max:5120',
         ];
     }
 

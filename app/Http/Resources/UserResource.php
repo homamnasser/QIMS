@@ -23,6 +23,7 @@ class UserResource extends JsonResource
             'birth_date'  => $this->birth_date,
             'role'        => $this->getRoleNames()->first(),
             'permissions' => $this->getAllPermissions()->pluck('name'),
+            'image_url'   => $this->image ? asset('storage/' . $this->image) : null,
         ];
     }
 }

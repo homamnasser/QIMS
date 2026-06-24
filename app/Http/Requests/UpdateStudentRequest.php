@@ -43,6 +43,7 @@ class UpdateStudentRequest extends FormRequest
             ],
             'password'            => 'sometimes|required|min:8|confirmed',
             'username'            => 'nullable|string|unique:students,username,' . $this->route('id'), // استثناء اليوزر نيم للطالب الحالي
+            'image'               => 'sometimes|nullable|file|image|mimes:jpg,jpeg,png|max:5120',
         ];
     }
 
