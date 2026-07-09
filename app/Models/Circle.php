@@ -49,4 +49,12 @@ class Circle extends Model
                 });
             });
     }
+    public function circleMarks(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(StudentMark::class, 'circle', 'id');
+    }
+    public function registeredMarks(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(StudentMark::class, 'teacher', 'id');
+    }
 }

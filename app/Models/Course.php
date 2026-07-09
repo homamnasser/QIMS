@@ -86,4 +86,8 @@ class Course extends Model
     {
         return $this->hasMany(StudentCourseAbsence::class, 'course', 'id');
     }
+    public function studentsMarks(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(StudentMark::class, 'course', 'id');
+    }
 }
