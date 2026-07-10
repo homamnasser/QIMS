@@ -30,7 +30,7 @@ class StoreSubjectRequest extends FormRequest
             'min_marks' => 'required|integer|min:0',
             'max_marks' => 'required|integer|gt:min_marks',
             'shared_with_subject_id' => 'nullable|exists:subjects,id',
-            'pdf' => 'required|file|mimes:pdf'
+            'pdf' => 'nullable|file|mimes:pdf'
         ];
     }
 
