@@ -19,7 +19,7 @@ use App\Http\Controllers\MemorizationController;
 use App\Http\Controllers\WarningController;
 use App\Http\Controllers\ExamController;
 use App\Http\Controllers\StudentCourseAbsenceController;
-
+use App\Http\Controllers\ReportApiController;
 
 
 /*
@@ -241,3 +241,9 @@ Route::group([
 
 });
 
+Route::group([
+    'middleware' => ['api'],
+], function ($router) {
+    Route::get('/courses-students', [ReportApiController::class, 'getCoursesStudents']);
+    Route::get('/student-info', [ReportApiController::class, 'getStudentInfo']);
+});
