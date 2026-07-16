@@ -242,7 +242,7 @@ Route::group([
 });
 
 Route::group([
-    'middleware' => ['api'],
+    'middleware' => ['api', 'auth:sanctum'],
 ], function ($router) {
     Route::get('/courses-students', [ReportApiController::class, 'getCoursesStudents']);
     Route::get('/student-info', [ReportApiController::class, 'getStudentInfo']);

@@ -73,14 +73,15 @@ class AuthController extends Controller
             }
         }
 
+        $cookie = cookie('qims_auth_token', $token, 60*24*7, '/', null, env('APP_ENV') === 'production', true, false, 'Strict');
+
         return response()->json([
             'code' => 200,
             'message' => 'تم تسجيل دخول المستخدم بنجاح',
             'data' => [
-                'token' => $token,
                 'user'  => $userData
             ]
-        ], 200);
+        ], 200)->cookie($cookie);
     }
     /* تسجيل خروج المستخدم */
     public function logout(Request $request)
@@ -88,10 +89,11 @@ class AuthController extends Controller
         $user = $request->user();
 
         if ($user && $this->staffService->logout($user)) {
+            $cookie = cookie()->forget('qims_auth_token');
             return response()->json([
                 'code' => 200,
                 'message' => 'تم تسجيل خروج المستخدم بنجاح'
-            ], 200);
+            ], 200)->withCookie($cookie);
         }
 
         return response()->json(['code' => 401, 'message' => 'Unauthenticated.'], 401);

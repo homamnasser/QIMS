@@ -1,0 +1,22 @@
+meta {
+  name: logout copy
+  type: http
+  seq: 8
+}
+
+post {
+  url: http://127.0.0.1:8000/api/logout
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: 7|XUAa10P6yEi0IP5kD0AJF0qom1EoGYql2NcaW6TP0c59dc7e
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+}
