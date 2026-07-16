@@ -13,5 +13,5 @@ interface IStaffService
     public function assignRoleToUser(User $user, string $roleName): void;
     public function deleteStaff(int $id): bool;
     public function getStaffById(int $id): ?User;
-    public function getAllStaff(?string $firstName = null);
+    public function getAllStaff(?string $firstName = null, $limit = null);
     }

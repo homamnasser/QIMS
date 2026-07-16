@@ -41,7 +41,7 @@ class ProjectService implements IProjectService
         return $project;
     }
 
-    public function getAllProjects($status = null)
+    public function getAllProjects($status = null, $limit = null)
     {
         $query = Project::query();
 
@@ -49,7 +49,9 @@ class ProjectService implements IProjectService
             $query->where('is_active', (bool)$status);
         }
 
-        return $query->orderBy('created_at', 'desc')->get();
+        $query->orderBy('created_at', 'desc');
+
+        return $limit ? $query->paginate($limit) : $query->get();
     }
 
     public function getProjectById(int $id): ?Project

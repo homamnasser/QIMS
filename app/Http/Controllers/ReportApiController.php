@@ -7,9 +7,10 @@ use Illuminate\Http\JsonResponse;
 class ReportApiController extends Controller
 {
     /* Endpoint 1: Courses and Students */
-    public function getCoursesStudents(): JsonResponse
+    public function getCoursesStudents(\Illuminate\Http\Request $request): JsonResponse
     {
-        $courses = \App\Models\Course::all();
+        $limit = $request->query('limit', 9);
+        $courses = \App\Models\Course::paginate($limit);
         $data = [];
 
         foreach ($courses as $course) {
@@ -30,14 +31,21 @@ class ReportApiController extends Controller
         return response()->json([
             'status' => 200,
             'message' => 'ok',
-            'data' => $data
+            'data' => $data,
+            'meta' => [
+                'current_page' => $courses->currentPage(),
+                'last_page' => $courses->lastPage(),
+                'per_page' => $courses->perPage(),
+                'total' => $courses->total(),
+            ]
         ], 200);
     }
 
     /* Endpoint 2: User and Student Name */
-    public function getStudentInfo(): JsonResponse
+    public function getStudentInfo(\Illuminate\Http\Request $request): JsonResponse
     {
-        $students = \App\Models\Student::all();
+        $limit = $request->query('limit', 9);
+        $students = \App\Models\Student::paginate($limit);
         $data = [];
 
         foreach ($students as $student) {
@@ -49,7 +57,13 @@ class ReportApiController extends Controller
 
         return response()->json([
             'status' => 200,
-            'data' => $data
+            'data' => $data,
+            'meta' => [
+                'current_page' => $students->currentPage(),
+                'last_page' => $students->lastPage(),
+                'per_page' => $students->perPage(),
+                'total' => $students->total(),
+            ]
         ], 200);
     }
 }

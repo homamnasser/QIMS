@@ -123,15 +123,20 @@ class StudentController extends Controller
             'last_name',
             'academic_class',
             'reading_level',
-            'parent_social_state'
+            'parent_social_state',
+            'limit'
         ]);
 
         $students = $this->studentService->getAllStudents($filters);
+        
+        $resource = StudentResource::collection($students)->response()->getData(true);
 
         return response()->json([
             'code'    => 200,
             'message' => 'Students retrieved successfully.',
-            'data'    => StudentResource::collection($students)
+            'data'    => $resource['data'],
+            'meta'    => $resource['meta'] ?? null,
+            'links'   => $resource['links'] ?? null
         ], 200);
     }
 }

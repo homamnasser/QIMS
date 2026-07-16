@@ -31,11 +31,12 @@ class CircleService implements ICircleService
         return Circle::find($id);
     }
 
-    public function getAllCircles(array $filters): Collection
+    public function getAllCircles(array $filters)
     {
-        return Circle::with(['teacher', 'course'])
-            ->filter($filters)
-            ->get();
+        $query = Circle::with(['teacher', 'course'])
+            ->filter($filters);
+            
+        return isset($filters['limit']) ? $query->paginate($filters['limit']) : $query->get();
     }
     public function deleteCircle(Circle $circle): bool
     {

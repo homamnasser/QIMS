@@ -17,10 +17,11 @@ class CourseService implements ICourseService
 
     public function getAllCourses(array $filters)
     {
-        return Course::with(['mosque', 'project', 'parentCourse'])
+        $query = Course::with(['mosque', 'project', 'parentCourse'])
             ->filter($filters)
-            ->latest()
-            ->get();
+            ->latest();
+            
+        return isset($filters['limit']) ? $query->paginate($filters['limit']) : $query->get();
     }
     public function getCourseById(int $id): ?Course
     {

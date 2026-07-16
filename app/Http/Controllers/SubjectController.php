@@ -126,21 +126,25 @@ class SubjectController extends Controller
         ], 200);
     }
 
-    /* جلب كافة المواد مع الفلترة */
     public function getAllSubjects(Request $request): JsonResponse
     {
         $filters = $request->only([
             'name',
             'course_id',
-            'course_name'
+            'course_name',
+            'limit'
         ]);
 
         $subjects = $this->subjectService->getAllSubjects($filters);
+        
+        $resource = SubjectResource::collection($subjects)->response()->getData(true);
 
         return response()->json([
             'code'    => 200,
             'message' => 'Subjects retrieved successfully.',
-            'data'    => SubjectResource::collection($subjects)
+            'data'    => $resource['data'],
+            'meta'    => $resource['meta'] ?? null,
+            'links'   => $resource['links'] ?? null
         ], 200);
     }
 }

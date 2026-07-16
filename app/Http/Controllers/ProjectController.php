@@ -84,8 +84,9 @@ class ProjectController extends Controller
         $status = $request->has('active')
             ? filter_var($request->query('active'), FILTER_VALIDATE_BOOLEAN)
             : null;
+        $limit = $request->query('limit');
 
-        $projects = $this->projectService->getAllProjects($status);
+        $projects = $this->projectService->getAllProjects($status, $limit);
 
         if ($projects->isEmpty()) {
             return response()->json([
@@ -95,10 +96,14 @@ class ProjectController extends Controller
             ], 200);
         }
 
+        $resource = ProjectResource::collection($projects)->response()->getData(true);
+
         return response()->json([
             'code'    => 200,
             'message' => is_null($status) ? 'All projects retrieved.' : 'Projects filtered by status.',
-            'data'    => ProjectResource::collection($projects)
+            'data'    => $resource['data'],
+            'meta'    => $resource['meta'] ?? null,
+            'links'   => $resource['links'] ?? null
         ], 200);
     }
     /* الحصول على مشروع معين (مع التأكد من وجوده أولاً) */

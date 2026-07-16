@@ -26,7 +26,7 @@ class MosqueService implements IMosqueService
         return Mosque::find($id);
     }
 
-    public function getAllMosques(?string $name = null)
+    public function getAllMosques(?string $name = null, $limit = null)
     {
         $query = Mosque::query();
 
@@ -34,7 +34,7 @@ class MosqueService implements IMosqueService
             $query->where('name', 'LIKE', '%' . $name . '%');
         }
 
-        return $query->get();
+        return $limit ? $query->paginate($limit) : $query->get();
     }
 
     public function deleteMosque(int $id): bool

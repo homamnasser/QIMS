@@ -78,11 +78,15 @@ class CircleController extends Controller
     public function getAllCircles(Request $request): JsonResponse
     {
         $circles = $this->circleService->getAllCircles($request->all());
+        
+        $resource = CircleResource::collection($circles)->response()->getData(true);
 
         return response()->json([
             'code'    => 200,
             'message' => 'Circles retrieved successfully.',
-            'data'    => CircleResource::collection($circles)
+            'data'    => $resource['data'],
+            'meta'    => $resource['meta'] ?? null,
+            'links'   => $resource['links'] ?? null
         ], 200);
     }
 

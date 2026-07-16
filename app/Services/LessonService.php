@@ -7,13 +7,14 @@ use App\Models\Lesson;
 
 class LessonService implements ILessonService
 {
-   public function getAllLessons(array $filters)
-{
-    return Lesson::with('subject')
-        ->filter($filters)
-        ->latest()
-        ->get();
-}
+    public function getAllLessons(array $filters)
+    {
+        $query = Lesson::with('subject')
+            ->filter($filters)
+            ->latest();
+            
+        return isset($filters['limit']) ? $query->paginate($filters['limit']) : $query->get();
+    }
 
     public function getLessonById(int $id): ?Lesson
     {

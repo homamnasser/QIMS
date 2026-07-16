@@ -24,14 +24,18 @@ class LessonController extends Controller
      */
     public function getAllLessons(Request $request): JsonResponse
     {
-        $filters = $request->only(['name', 'subject_id', 'subject_name']);
+        $filters = $request->only(['name', 'subject_id', 'subject_name', 'limit']);
 
         $lessons = $this->lessonService->getAllLessons($filters);
+        
+        $resource = LessonResource::collection($lessons)->response()->getData(true);
 
         return response()->json([
             'code'    => 200,
             'message' => 'Lessons retrieved successfully.',
-            'data'    => LessonResource::collection($lessons)
+            'data'    => $resource['data'],
+            'meta'    => $resource['meta'] ?? null,
+            'links'   => $resource['links'] ?? null
         ], 200);
     }
 

@@ -98,16 +98,17 @@ class StaffService implements IStaffService
         return $user->delete();
     }
 
-    public function getAllStaff(?string $name = null)
+    public function getAllStaff(?string $name = null, $limit = null)
     {
-        return User::with('roles')
+        $query = User::with('roles')
             ->when($name, function ($query, $name) {
                 return $query->where(function ($q) use ($name) {
                     $q->where('first_name', 'LIKE', '%' . $name . '%')
                         ->orWhere('last_name', 'LIKE', '%' . $name . '%');
                 });
             })
-            ->orderBy('id', 'desc')
-            ->get();
+            ->orderBy('id', 'desc');
+            
+        return $limit ? $query->paginate($limit) : $query->get();
     }
 }

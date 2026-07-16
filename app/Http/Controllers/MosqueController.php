@@ -90,17 +90,21 @@ class MosqueController extends Controller
             'data'    => new MosqueResource($mosque)
         ], 200);
     }
-    /* الحصول على جميع المساجد (مع دعم الفلترة بالاسم) */
     public function getAllMosques(Request $request): JsonResponse
     {
         $name = $request->query('name');
+        $limit = $request->query('limit');
 
-        $mosques = $this->mosqueService->getAllMosques($name);
+        $mosques = $this->mosqueService->getAllMosques($name, $limit);
+        
+        $resource = MosqueResource::collection($mosques)->response()->getData(true);
 
         return response()->json([
             'code'    => 200,
             'message' => 'Data retrieved successfully.',
-            'data'    => MosqueResource::collection($mosques)
+            'data'    => $resource['data'],
+            'meta'    => $resource['meta'] ?? null,
+            'links'   => $resource['links'] ?? null
         ], 200);
     }
     /* حذف مسجد (مع التأكد من وجوده أولاً) */

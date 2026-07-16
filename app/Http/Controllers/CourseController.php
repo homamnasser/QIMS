@@ -40,7 +40,6 @@ class CourseController extends Controller
         ], 201);
     }
 
-    /* جلب كافة الدورات مع الفلترة */
     public function getAllCourses(Request $request): JsonResponse
     {
         $filters = $request->only([
@@ -48,15 +47,20 @@ class CourseController extends Controller
             'mosque_id',
             'project_id',
             'mosque_name',
-            'project_name'
+            'project_name',
+            'limit'
         ]);
 
         $courses = $this->courseService->getAllCourses($filters);
+        
+        $resource = CourseResource::collection($courses)->response()->getData(true);
 
         return response()->json([
             'code'    => 200,
             'message' => 'Courses retrieved successfully.',
-            'data'    => CourseResource::collection($courses)
+            'data'    => $resource['data'],
+            'meta'    => $resource['meta'] ?? null,
+            'links'   => $resource['links'] ?? null
         ], 200);
     }
 

@@ -9,10 +9,11 @@ class SubjectService implements ISubjectService
 {
     public function getAllSubjects(array $filters)
     {
-        return Subject::with(['course', 'sharedSubject'])
+        $query = Subject::with(['course', 'sharedSubject'])
             ->filter($filters)
-            ->latest()
-            ->get();
+            ->latest();
+            
+        return isset($filters['limit']) ? $query->paginate($filters['limit']) : $query->get();
     }
 
     public function getSubjectById(int $id): ?Subject

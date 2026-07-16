@@ -59,6 +59,8 @@ class StudentService implements IStudentService
     
     public function getAllStudents(array $filters = [])
     {
-        return Student::filter($filters)->get();
+        $query = Student::filter($filters);
+        
+        return isset($filters['limit']) ? $query->paginate($filters['limit']) : $query->get();
     }
 }

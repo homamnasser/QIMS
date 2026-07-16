@@ -73,13 +73,14 @@ class AuthController extends Controller
             }
         }
 
+        // Create secure HttpOnly cookie (Strict for CSRF protection)
         $cookie = cookie('qims_auth_token', $token, 60*24*7, '/', null, env('APP_ENV') === 'production', true, false, 'Strict');
-
         return response()->json([
             'code' => 200,
             'message' => 'تم تسجيل دخول المستخدم بنجاح',
             'data' => [
-                'user'  => $userData
+                'user'  => $userData,
+                'token' => $token
             ]
         ], 200)->cookie($cookie);
     }
@@ -207,13 +208,18 @@ class AuthController extends Controller
     public function getAllStaff(Request $request): JsonResponse
     {
         $searchTerm = $request->query('name');
+        $limit = $request->query('limit');
 
-        $staff = $this->staffService->getAllStaff($searchTerm);
+        $staff = $this->staffService->getAllStaff($searchTerm, $limit);
+        
+        $resource = UserResource::collection($staff)->response()->getData(true);
 
         return response()->json([
             'code'    => 200,
             'message' => 'تم جلب المستخدمين بنجاح',
-            'data'    => UserResource::collection($staff)
+            'data'    => $resource['data'],
+            'meta'    => $resource['meta'] ?? null,
+            'links'   => $resource['links'] ?? null
         ], 200);
     }
 }
