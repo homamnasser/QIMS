@@ -22,6 +22,7 @@ class ReportApiController extends Controller
             
             $data[] = [
                 'course_id' => $course->id,
+                'course_name' => $course->name,
                 'student_in_course' => $studentIds
             ];
         }
