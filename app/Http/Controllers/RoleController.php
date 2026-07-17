@@ -37,6 +37,14 @@ class RoleController extends Controller
     {
         $validated = $request->validated();
 
+        $systemRoles = ['super-admin', 'admin', 'supervisor', 'teacher', 'student'];
+        if (in_array(strtolower($validated['name']), $systemRoles)) {
+            return response()->json([
+                'code'    => 403,
+                'message' => 'لا يمكن إنشاء دور يحمل اسم أحد أدوار النظام الأساسية.'
+            ], 403);
+        }
+
         $role = $this->roleService->createRole(
             $validated['name'],
             $validated['permissions']
@@ -83,8 +91,15 @@ class RoleController extends Controller
                     'code' => 404,
                     'message' => 'Role not found',
                     'data'    => null
-
                 ], 404);
+            }
+
+            $systemRoles = ['super-admin', 'admin', 'supervisor', 'teacher', 'student'];
+            if (in_array($role->name, $systemRoles)) {
+                return response()->json([
+                    'code'    => 403,
+                    'message' => 'هذا الدور من أدوار النظام الأساسية ومحمي من التعديل.'
+                ], 403);
             }
 
             $roleRequest = app(UpdateRoleRequest::class);
@@ -130,6 +145,23 @@ class RoleController extends Controller
     public function deleteRole(int $id): JsonResponse
     {
         try {
+            $role = $this->roleService->getRoleById($id);
+            if (!$role) {
+                return response()->json([
+                    'code'    => 404,
+                    'message' => 'Role not found',
+                    'data'    => null
+                ], 404);
+            }
+
+            $systemRoles = ['super-admin', 'admin', 'supervisor', 'teacher', 'student'];
+            if (in_array($role->name, $systemRoles)) {
+                return response()->json([
+                    'code'    => 403,
+                    'message' => 'لا يمكن حذف أدوار النظام الأساسية.'
+                ], 403);
+            }
+
             $this->roleService->deleteRole($id);
 
             return response()->json([

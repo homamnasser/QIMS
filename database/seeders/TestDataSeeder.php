@@ -108,6 +108,7 @@ class TestDataSeeder extends Seeder
         $adminRole      = Role::create(['name' => 'admin',       'guard_name' => 'web']);
         $supervisorRole = Role::create(['name' => 'supervisor',  'guard_name' => 'web']);
         $teacherRole    = Role::create(['name' => 'teacher',     'guard_name' => 'web']);
+        $studentRole    = Role::create(['name' => 'student',     'guard_name' => 'web']);
 
         $allPerms = Permission::all();
         $superAdminRole->syncPermissions($allPerms);
@@ -138,6 +139,15 @@ class TestDataSeeder extends Seeder
             'إنشاء غياب','عرض تفاصيل الغياب',
         ])->get();
         $teacherRole->syncPermissions($teacherPerms);
+
+        $studentPerms = Permission::whereIn('name', [
+            'عرض سبري',
+            'عرض تسميعاتي',
+            'عرض إنذاراتي',
+            'امتحاناتي',
+            'عرض ملاحظاتي',
+        ])->get();
+        $studentRole->syncPermissions($studentPerms);
 
         // ══════════════════════════════════════════════
         //  3. USERS  (12 staff — Arabic names, English emails, Syrian phones)
