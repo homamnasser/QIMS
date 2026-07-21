@@ -12,30 +12,64 @@ class StudentCircleService implements IStudentCircleService
     {
         $uniqueStudentIds = array_unique($studentIds);
 
+        // جلب تفاصيل الحلقة المستهدفة مع الكورس والمسجد
+        $targetCircle = \App\Models\Circle::with('course.mosque')->find($circleId);
+        $targetMosqueId = $targetCircle?->course?->mosque_id;
+
         $newlyAddedStudentIds = [];
         $skippedCount = 0;
+        $conflicts = [];
 
         foreach ($uniqueStudentIds as $studentId) {
-            $exists = StudentCircle::where('student', $studentId)
+            $student = Student::find($studentId);
+            if (!$student) {
+                $skippedCount++;
+                continue;
+            }
+
+            // 1. الفحص الأولي: هل الطالب مضاف مسبقاً لهذه الحلقة نفسها؟
+            $existsInCircle = StudentCircle::where('student', $studentId)
                 ->where('circle', $circleId)
                 ->exists();
 
-            if (!$exists) {
-                StudentCircle::create([
-                    'student' => $studentId,
-                    'circle'  => $circleId
-                ]);
-                $newlyAddedStudentIds[] = $studentId;
-            } else {
+            if ($existsInCircle) {
                 $skippedCount++;
+                continue;
             }
+
+            // 2. الفحص الهندسي: هل ينتمي الطالب مسبقاً لأي حلقة في مسجد آخر مختلف؟
+            if ($targetMosqueId) {
+                $existingAssignment = StudentCircle::where('student', $studentId)
+                    ->whereHas('circleDetails.course', function ($q) use ($targetMosqueId) {
+                        $q->whereNotNull('mosque_id')
+                          ->where('mosque_id', '!=', $targetMosqueId);
+                    })
+                    ->with('circleDetails.course.mosque')
+                    ->first();
+
+                if ($existingAssignment) {
+                    $otherMosqueName = $existingAssignment->circleDetails?->course?->mosque?->name ?? 'مسجد آخر';
+                    $studentName = trim($student->first_name . ' ' . $student->last_name);
+                    $conflicts[] = "الطالب '{$studentName}' ينتمي مسبقاً إلى حلقة في ({$otherMosqueName})، ولا يمكن تسجيله في مساجد مختلفة.";
+                    $skippedCount++;
+                    continue;
+                }
+            }
+
+            // إنشاء السجل في حال نجاح الفحص
+            StudentCircle::create([
+                'student' => $studentId,
+                'circle'  => $circleId
+            ]);
+            $newlyAddedStudentIds[] = $studentId;
         }
 
         $addedStudents = Student::whereIn('id', $newlyAddedStudentIds)->get();
 
         return [
             'students'      => $addedStudents,
-            'skipped_count' => $skippedCount
+            'skipped_count' => $skippedCount,
+            'conflicts'     => $conflicts,
         ];
     }
 

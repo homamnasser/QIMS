@@ -46,14 +46,29 @@ class StudentCircleController extends Controller
 
         $result = $this->studentCircleService->addStudentsToCircle($circle->id, $request->student_ids);
 
+        // في حال تم رفض جميع الطلاب بسبب التعارض مع مساجد أخرى
+        if ($result['students']->isEmpty() && !empty($result['conflicts'])) {
+            return response()->json([
+                'code'    => 422,
+                'status'  => 'error',
+                'message' => implode(' ', $result['conflicts']),
+                'data'    => null
+            ], 422);
+        }
+
         $newRecords = StudentCircle::where('circle', $circle->id)
             ->whereIn('student', $result['students']->pluck('id'))
             ->with(['studentDetails', 'circleDetails'])
             ->get();
 
+        $message = "Students processed successfully. Skipped/Invalid records: {$result['skipped_count']}.";
+        if (!empty($result['conflicts'])) {
+            $message .= " " . implode(' ', $result['conflicts']);
+        }
+
         return response()->json([
             'code'    => 200,
-            'message' => "Students processed successfully. Skipped/Invalid records: {$result['skipped_count']}.",
+            'message' => $message,
             'data'    => StudentCircleResource::collection($newRecords)
         ], 200);
     }

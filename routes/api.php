@@ -246,4 +246,5 @@ Route::group([
 ], function ($router) {
     Route::get('/courses-students', [ReportApiController::class, 'getCoursesStudents']);
     Route::get('/student-info', [ReportApiController::class, 'getStudentInfo']);
+    Route::get('/courses-dates-lessons', [ReportApiController::class, 'getCoursesDatesLessons']);
 });

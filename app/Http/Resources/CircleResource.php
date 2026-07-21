@@ -27,6 +27,10 @@ class CircleResource extends JsonResource
                 'id'   => $this->course->id ?? null,
                 'name' => $this->course->name ?? 'N/A',
             ],
+            'mosque'     => [
+                'id'   => $this->course?->mosque?->id ?? null,
+                'name' => $this->course?->mosque?->name ?? 'غير معين',
+            ],
             'created_at' => $this->created_at->format('Y-m-d'),
         ];
     }
