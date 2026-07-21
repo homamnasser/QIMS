@@ -90,4 +90,8 @@ class Course extends Model
     {
         return $this->hasMany(StudentMark::class, 'course', 'id');
     }
+    public function courseDates(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(CourseDate::class, 'course_id', 'id');
+    }
 }

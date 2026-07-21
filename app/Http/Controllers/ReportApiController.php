@@ -20,10 +20,20 @@ class ReportApiController extends Controller
                 ->unique()
                 ->values()
                 ->toArray();
+
+            $courseDays = \App\Models\CourseDate::where('course_id', $course->id)
+                ->orderBy('session_date')
+                ->pluck('session_date')
+                ->toArray();
             
             $data[] = [
                 'course_id' => $course->id,
                 'course_name' => $course->name,
+                'course_date' => [
+                    'start_date'  => $course->start_date ? ($course->start_date instanceof \Carbon\Carbon ? $course->start_date->format('Y-m-d') : (string) $course->start_date) : null,
+                    'end_date'    => $course->end_date ? ($course->end_date instanceof \Carbon\Carbon ? $course->end_date->format('Y-m-d') : (string) $course->end_date) : null,
+                    'course_days' => $courseDays,
+                ],
                 'student_in_course' => $studentIds
             ];
         }
