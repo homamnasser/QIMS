@@ -409,7 +409,9 @@ class TestDataSeeder extends Seeder
         $students = [];
         foreach ($studentsRaw as $d) {
             $d['password'] = 'student123';
-            $students[] = Student::create($d);
+            $s = Student::create($d);
+            $s->assignRole($studentRole);
+            $students[] = $s;
         }
 
         // ══════════════════════════════════════════════
