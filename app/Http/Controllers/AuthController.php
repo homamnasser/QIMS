@@ -7,11 +7,12 @@ use App\Models\User;
 
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Resources\UserResource;
+use App\Http\Resources\StudentResource;
+use App\Models\Student;
 use App\Services\StaffService;
 use App\IService\IStaffService;
 
@@ -61,15 +62,9 @@ class AuthController extends Controller
         if ($user) {
             $userData = new UserResource($user);
         } else {
-            $student = \App\Models\Student::where('username', $credentials['email'])->first();
+            $student = Student::where('username', $credentials['email'])->first();
             if ($student) {
-                $userData = [
-                    'id'         => $student->id,
-                    'first_name' => $student->first_name ?? $student->name,
-                    'last_name'  => $student->last_name ?? '',
-                    'email'      => $student->username,
-                    'role'       => 'student'
-                ];
+                $userData = new StudentResource($student);
             }
         }
 
@@ -100,16 +95,8 @@ class AuthController extends Controller
         return response()->json(['code' => 401, 'message' => 'Unauthenticated.'], 401);
     }
     /* تحديث عضو هيئة تدريس (مع التأكد من وجوده أولاً) */
-    public function updateStaffMember(Request $request, int $id): JsonResponse
+    public function updateStaffMember(UpdateUserRequest $request, int $id): JsonResponse
     {
-        if ($id === 1) {
-            return response()->json([
-                'code'    => 403,
-                'message' => 'The Super Admin account cannot be modified.',
-                'data'    => null
-            ], 403);
-        }
-
         $user = $this->staffService->getStaffById($id);
 
         if (!$user) {
@@ -120,46 +107,26 @@ class AuthController extends Controller
             ], 404);
         }
 
-        $staffRequest = app(UpdateUserRequest::class);
-
-        $validator = Validator::make(
-            $request->all(),
-            $staffRequest->rules(),
-            $staffRequest->messages()
-        );
-
-        if ($validator->fails()) {
+        if ($user->isSuperAdmin()) {
             return response()->json([
-                'code'    => 422,
-                'message' => 'Validation error.',
-                'errors'  => $validator->errors()
-            ], 422);
+                'code'    => 403,
+                'message' => 'The Super Admin account cannot be modified.',
+                'data'    => null
+            ], 403);
         }
 
-        $validatedData = $validator->validated();
+        $validatedData = $request->validated();
         $updatedUser = $this->staffService->updateStaff($user, $validatedData);
-
-        if (isset($validatedData['role_id'])) {
-            $this->staffService->assignRoleToUser($user, (int)$validatedData['role_id']);
-        }
 
         return response()->json([
             'code'    => 200,
             'message' => 'تم تحديث المستخدم العضو بنجاح',
-            'data'    => new UserResource($user)
+            'data'    => new UserResource($updatedUser)
         ], 200);
     }
     /* حذف عضو هيئة تدريس (مع التأكد من عدم وجوده أولاً) */
     public function deleteStaffMember(int $id): JsonResponse
     {
-        if ($id === 1) {
-            return response()->json([
-                'code'    => 403,
-                'message' => 'Cannot delete the Super Admin account.',
-                'data'    => null
-            ], 403);
-        }
-
         $user = $this->staffService->getStaffById($id);
         if (!$user) {
             return response()->json([
@@ -167,6 +134,15 @@ class AuthController extends Controller
                 'message' => 'المستخدم غير موجود',
                 'data'    => null
             ], 404);
+        }
+
+
+        if ($user->isSuperAdmin()) {
+            return response()->json([
+                'code'    => 403,
+                'message' => 'Cannot delete the Super Admin account.',
+                'data'    => null
+            ], 403);
         }
 
         $isDeleted = $this->staffService->deleteStaff($id);

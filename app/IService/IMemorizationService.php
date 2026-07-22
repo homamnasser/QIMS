@@ -11,6 +11,6 @@ interface IMemorizationService
     public function createMemorization(array $data): Memorization;
     public function getMemorizationById(int $id): Memorization;
     public function deleteMemorization(Memorization $memorization): bool;
-    public function getMemorizationsByRole(int $authId, string $role): Collection;
+    public function getMemorizationsForAccount(int $authId, bool $isStudent): Collection;
     public function getAllMemorizations(array $filters = []): Collection;
 }

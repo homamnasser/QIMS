@@ -2,10 +2,10 @@
 
 namespace App\Exceptions;
 
-use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Auth\AuthenticationException;
-use Throwable;
+use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Spatie\Permission\Exceptions\UnauthorizedException;
+
 class Handler extends ExceptionHandler
 {
     /**
@@ -23,23 +23,37 @@ class Handler extends ExceptionHandler
      * Register the exception handling callbacks for the application.
      */
     public function register(): void
-{
-    $this->renderable(function (UnauthorizedException $e, $request) {
-        if ($request->is('api/*')) {
-            return response()->json([
-                'code'    => 403,
-                'message' => 'Forbidden: You do not have the required permissions.',
-                'data'    => null
-            ], 403);
-        }
-    });
-}
+    {
+        $this->renderable(function (UnauthorizedException $e, $request) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'code' => 403,
+                    'message' => 'Forbidden: You do not have the required permissions.',
+                    'data' => null,
+                ], 403);
+            }
+        });
+
+        $this->renderable(function (ProjectHasCoursesException $e, $request) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'code' => 409,
+                    'error_code' => 'PROJECT_HAS_COURSES',
+                    'message' => 'لا يمكن حذف المشروع لأنه مرتبط بكورس واحد أو أكثر. يمكنك أرشفة المشروع بدلًا من حذفه، أو نقل الكورسات المرتبطة أو حذفها أولًا.',
+                    'data' => [
+                        'courses_count' => $e->coursesCount,
+                    ],
+                ], 409);
+            }
+        });
+    }
+
     protected function unauthenticated($request, AuthenticationException $exception)
     {
         return response()->json([
-            'code'    => 401,
+            'code' => 401,
             'message' => 'Unauthenticated - You must login first',
-            'data'    => null
+            'data' => null,
         ], 401);
     }
 }

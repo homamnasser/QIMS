@@ -5,6 +5,8 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use App\Enums\RoleFamily;
+use Illuminate\Validation\Rule;
 
 class UpdateStudentRequest extends FormRequest
 {
@@ -44,6 +46,13 @@ class UpdateStudentRequest extends FormRequest
             'password'            => 'sometimes|required|min:8|confirmed',
             'username'            => 'nullable|string|unique:students,username,' . $this->route('id'), // استثناء اليوزر نيم للطالب الحالي
             'image'               => 'sometimes|nullable|file|image|mimes:jpg,jpeg,png|max:5120',
+            'role_id'             => [
+                'sometimes',
+                'nullable',
+                Rule::exists('roles', 'id')->where(
+                    fn ($query) => $query->where('role_family', RoleFamily::Student->value)
+                ),
+            ],
         ];
     }
 

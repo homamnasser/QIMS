@@ -8,7 +8,6 @@ use App\IService\IStudentService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Http\Requests\UpdateStudentRequest;
-use Illuminate\Support\Facades\Validator;
 
 class StudentController extends Controller
 {
@@ -38,7 +37,7 @@ class StudentController extends Controller
     /**
      * تحديث بيانات طالب موجود
      */
-    public function updateStudent(Request $request, int $id): JsonResponse
+    public function updateStudent(UpdateStudentRequest $request, int $id): JsonResponse
     {
         $student = $this->studentService->getStudentById((int)$id);
 
@@ -50,25 +49,7 @@ class StudentController extends Controller
             ], 404);
         }
 
-        $studentRequest = app(UpdateStudentRequest::class);
-
-        $studentRequest->merge($request->all());
-
-
-        $validator = Validator::make(
-            $studentRequest->all(),
-            $studentRequest->rules(),
-            $studentRequest->messages()
-        );
-
-        if ($validator->fails()) {
-            return response()->json([
-                'code'    => 422,
-                'message' => $validator->errors()
-            ], 422);
-        }
-
-        $validatedData = $validator->validated();
+        $validatedData = $request->validated();
         $updatedStudent = $this->studentService->updateStudent($student, $validatedData);
 
         return response()->json([

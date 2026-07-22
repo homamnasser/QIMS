@@ -5,6 +5,8 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use App\Enums\RoleFamily;
+use Illuminate\Validation\Rule;
 
 class CreateStudentRequest extends FormRequest
 {
@@ -45,6 +47,12 @@ class CreateStudentRequest extends FormRequest
             'password'            => 'required|min:8|confirmed',
             'username'            => 'nullable|string|unique:students,username',
             'image'               => 'sometimes|nullable|file|image|mimes:jpg,jpeg,png|max:5120',
+            'role_id'             => [
+                'nullable',
+                Rule::exists('roles', 'id')->where(
+                    fn ($query) => $query->where('role_family', RoleFamily::Student->value)
+                ),
+            ],
         ];
     }
 

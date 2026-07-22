@@ -107,6 +107,7 @@ class PermissionSeeder extends Seeder
             'عرض تفاصيل الغياب',
             'تعديل الغياب',
             'حذف غياب',
+            config('roles.capabilities.supervise'),
         ];
 
         foreach ($permissions as $permission) {

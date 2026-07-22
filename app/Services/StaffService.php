@@ -7,6 +7,7 @@ use App\IService\IStaffService;
 use App\Traits\FileTrait;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class StaffService implements IStaffService
 {
@@ -14,6 +15,9 @@ class StaffService implements IStaffService
 
     public function updateStaff(User $user, array $data): User
     {
+        $roleId = $data['role_id'] ?? null;
+        unset($data['role_id']);
+
         if (isset($data['image']) && $data['image'] instanceof \Illuminate\Http\UploadedFile) {
             if ($user->image) {
                 $this->deleteFile($user->image);
@@ -22,25 +26,29 @@ class StaffService implements IStaffService
         }
 
         $user->update($data);
-        if (isset($data['role_id'])) {
-            $user->assignRole((int)$data['role_id']);
+        if ($roleId) {
+            $user->syncRoles([(int) $roleId]);
         }
-        return $user;
+
+        return $user->load('roles.permissions');
     }
 
     public function createStaff(array $data): User
     {
+        $roleId = $data['role_id'] ?? null;
+        unset($data['role_id']);
+
         if (isset($data['image']) && $data['image'] instanceof \Illuminate\Http\UploadedFile) {
             $data['image'] = $this->saveFile($data['image'], 'users/images');
         }
 
         $user = User::create($data);
 
-        if (isset($data['role_id'])) {
-            $user->assignRole((int)$data['role_id']);
+        if ($roleId) {
+            $user->syncRoles([(int) $roleId]);
         }
 
-        return $user;
+        return $user->load('roles.permissions');
     }
 
 
@@ -66,20 +74,20 @@ class StaffService implements IStaffService
         return $student->createToken('API TOKEN')->plainTextToken;
     }
 
-    public function logout(User $user): bool
+    public function logout(Authenticatable $user): bool
     {
         $user->tokens()->delete();
         return true;
     }
 
-    public function assignRoleToUser(User $user, $roleId): void
+    public function assignRoleToUser(User $user, int $roleId): void
     {
-        $user->assignRole((int)$roleId);
+        $user->syncRoles([(int) $roleId]);
     }
 
     public function getStaffById(int $id): ?User
     {
-        return User::with('roles')->find($id);
+        return User::with('roles.permissions')->find($id);
     }
 
     public function deleteStaff(int $id): bool
@@ -100,7 +108,7 @@ class StaffService implements IStaffService
 
     public function getAllStaff(?string $name = null, $limit = null)
     {
-        $query = User::with('roles')
+        $query = User::with('roles.permissions')
             ->when($name, function ($query, $name) {
                 return $query->where(function ($q) use ($name) {
                     $q->where('first_name', 'LIKE', '%' . $name . '%')

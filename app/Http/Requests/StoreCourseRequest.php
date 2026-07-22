@@ -6,7 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Validation\Rule;
-use Illuminate\Support\Facades\DB;
+use App\Models\User;
 
 class StoreCourseRequest extends FormRequest
 {
@@ -39,18 +39,14 @@ class StoreCourseRequest extends FormRequest
             ],
             'supervisor_id' => [
                 'required',
-                Rule::exists('users', 'id')->where(function ($query) {
-                    $query->whereExists(function ($q) {
-                        $q->select(DB::raw(1))
-                            ->from('model_has_roles')
-                            ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
-                            ->whereRaw('model_has_roles.model_id = users.id')
-                            ->where(function ($roleQuery) {
-                                $roleQuery->where('roles.name', 'like', '%supervisor%')
-                                          ->orWhere('roles.name', 'like', '%admin%');
-                            });
-                    });
-                }),
+                Rule::exists('users', 'id'),
+                function ($attribute, $value, $fail) {
+                    $user = User::find($value);
+
+                    if ($user && !$user->canSupervise()) {
+                        $fail('The selected user must have the supervision capability.');
+                    }
+                },
             ],
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
@@ -78,7 +74,7 @@ class StoreCourseRequest extends FormRequest
             'project_id.exists' => 'The selected project does not exist.',
 
             'supervisor_id.required' => 'A supervisor must be assigned to the course.',
-            'supervisor_id.exists' => 'The selected supervisor does not exist or does not have a supervisor/admin role.',
+            'supervisor_id.exists' => 'The selected supervisor does not exist.',
 
             'start_date.required' => 'Start date is required.',
             'start_date.date' => 'Start date must be a valid date.',

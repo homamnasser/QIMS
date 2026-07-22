@@ -2,9 +2,10 @@
 
 namespace App\Services;
 
-use App\Models\Student;
-use Spatie\Permission\Models\Role;
+use App\Enums\RoleFamily;
 use App\IService\IStudentService;
+use App\Models\Role;
+use App\Models\Student;
 use App\Traits\FileTrait;
 use Illuminate\Support\Facades\Hash;
 
@@ -14,16 +15,28 @@ class StudentService implements IStudentService
 
     public function createStudent(array $data): Student
     {
+        $roleId = $data['role_id'] ?? null;
+        unset($data['role_id']);
+
         if (isset($data['image']) && $data['image'] instanceof \Illuminate\Http\UploadedFile) {
             $data['image'] = $this->saveFile($data['image'], 'students/images');
         }
 
         $student = Student::create($data);
 
-        $role = Role::firstOrCreate(['name' => 'student', 'guard_name' => 'web']);
-        $student->assignRole($role);
+        $role = $roleId
+            ? Role::where('role_family', RoleFamily::Student->value)->findOrFail($roleId)
+            : Role::firstOrCreate(
+                ['name' => 'student', 'guard_name' => 'web'],
+                [
+                    'role_family' => RoleFamily::Student->value,
+                    'is_system' => true,
+                    'role_family_reviewed_at' => now(),
+                ]
+            );
+        $student->syncRoles([$role]);
 
-        return $student;
+        return $student->load('roles.permissions');
     }
 
     public function getStudentById(int $id)
@@ -33,6 +46,9 @@ class StudentService implements IStudentService
 
     public function updateStudent(Student $student, array $data): Student
     {
+        $roleId = $data['role_id'] ?? null;
+        unset($data['role_id']);
+
         if (isset($data['image']) && $data['image'] instanceof \Illuminate\Http\UploadedFile) {
             if ($student->image) {
                 $this->deleteFile($student->image);
@@ -40,13 +56,18 @@ class StudentService implements IStudentService
             $data['image'] = $this->saveFile($data['image'], 'students/images');
         }
 
-        if (!empty($data['password'])) {
+        if (! empty($data['password'])) {
             $data['password'] = Hash::make($data['password']);
         }
 
         $student->update($data);
 
-        return $student->refresh();
+        if ($roleId) {
+            $role = Role::where('role_family', RoleFamily::Student->value)->findOrFail($roleId);
+            $student->syncRoles([$role]);
+        }
+
+        return $student->refresh()->load('roles.permissions');
     }
 
     public function deleteStudent(Student $student): bool
@@ -54,13 +75,14 @@ class StudentService implements IStudentService
         if ($student->image) {
             $this->deleteFile($student->image);
         }
+
         return $student->delete();
     }
-    
+
     public function getAllStudents(array $filters = [])
     {
         $query = Student::filter($filters);
-        
+
         return isset($filters['limit']) ? $query->paginate($filters['limit']) : $query->get();
     }
 }

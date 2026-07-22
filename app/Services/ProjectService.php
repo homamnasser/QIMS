@@ -2,13 +2,14 @@
 
 namespace App\Services;
 
+use App\Exceptions\ProjectHasCoursesException;
 use App\IService\IProjectService;
+use App\Models\Course;
 use App\Models\Project;
 use App\Traits\FileTrait;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Course;
-
 
 class ProjectService implements IProjectService
 {
@@ -23,7 +24,6 @@ class ProjectService implements IProjectService
 
         return Project::create($data);
     }
-
 
     public function updateProject(Project $project, array $data): Project
     {
@@ -45,8 +45,8 @@ class ProjectService implements IProjectService
     {
         $query = Project::query();
 
-        if (!is_null($status)) {
-            $query->where('is_active', (bool)$status);
+        if (! is_null($status)) {
+            $query->where('is_active', (bool) $status);
         }
 
         $query->orderBy('created_at', 'desc');
@@ -61,7 +61,7 @@ class ProjectService implements IProjectService
 
     public function editProjectStatus(Project $project): Project
     {
-        $project->is_active = !$project->is_active;
+        $project->is_active = ! $project->is_active;
         $project->save();
 
         return $project;
@@ -77,10 +77,9 @@ class ProjectService implements IProjectService
     {
         $project = $this->getCurrentSupervisorProject();
 
-        if (!$project) {
+        if (! $project) {
             return collect();
         }
-
 
         return Course::where('project_id', $project->id)->get();
     }
@@ -88,26 +87,56 @@ class ProjectService implements IProjectService
     public function authorizeProjectAccess(int $projectId): bool
     {
         $myProject = $this->getCurrentSupervisorProject();
+
         return $myProject && $myProject->id === $projectId;
     }
 
     public function getMyProjects(int $userId)
     {
-        $user = Auth::user();
-
-        if ($user->hasRole('supervisor')) {
-            return Project::where('supervisor', $userId)->get();
-        }
-
-        return collect();
+        // Assignment is the source of truth. Role names are presentation data;
+        // authorization remains enforced by route permissions and assignment.
+        return Project::where('supervisor', $userId)->get();
     }
 
     public function deleteProject(int $id): bool
     {
         $project = Project::findOrFail($id);
-        if ($project->logo) {
-            $this->deleteFile($project->logo);
+
+        $coursesCount = $project->courses()->count();
+        if ($coursesCount > 0) {
+            throw new ProjectHasCoursesException($coursesCount);
         }
-        return $project->delete();
+
+        $logo = $project->logo;
+
+        try {
+            $deleted = $project->delete();
+        } catch (QueryException $exception) {
+            if ($this->isForeignKeyConstraintViolation($exception)) {
+                throw new ProjectHasCoursesException(
+                    $project->courses()->count(),
+                    $exception,
+                );
+            }
+
+            throw $exception;
+        }
+
+        // Delete the file only after the database row is deleted successfully.
+        // Previously, a rejected database delete could leave the project
+        // without its logo even though the project itself still existed.
+        if ($deleted && $logo) {
+            $this->deleteFile($logo);
+        }
+
+        return $deleted;
+    }
+
+    private function isForeignKeyConstraintViolation(QueryException $exception): bool
+    {
+        $sqlState = (string) $exception->getCode();
+        $driverCode = (int) ($exception->errorInfo[1] ?? 0);
+
+        return $sqlState === '23000' && $driverCode === 1451;
     }
 }

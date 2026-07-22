@@ -71,7 +71,8 @@ Route::group([
     Route::post('/updateProject/{id}', [ProjectController::class, 'updateProject'])->middleware('permission:تعديل المشروع');
     Route::delete('/deleteProject/{id}', [ProjectController::class, 'deleteProject'])->middleware('permission:حذف المشروع');
     Route::post('/editProjectStatus/{id}', [ProjectController::class, 'editProjectStatus'])->middleware('permission:تعديل حالة المشروع');
-    Route::get('/getMyProjects', [ProjectController::class, 'getMyProjects']);
+    Route::get('/getMyProjects', [ProjectController::class, 'getMyProjects'])
+        ->middleware('permission:الإشراف على المشاريع والكورسات');
 });
 
 Route::group([
@@ -95,7 +96,8 @@ Route::group([
     Route::post('/updateCourse/{id}', [CourseController::class, 'updateCourse'])->middleware('permission:تعديل الكورس');
     Route::delete('/deleteCourse/{id}', [CourseController::class, 'deleteCourse'])->middleware('permission:حذف كورس');
     Route::post('/editCourseStatus/{id}', [CourseController::class, 'editCourseStatus'])->middleware('permission:تعديل حالة الكورس');
-    Route::get('/getMyCourses', [CourseController::class, 'getMyCourses']);
+    Route::get('/getMyCourses', [CourseController::class, 'getMyCourses'])
+        ->middleware('permission:الإشراف على المشاريع والكورسات');
 });
 
 Route::group([

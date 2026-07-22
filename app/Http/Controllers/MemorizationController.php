@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Student;
 use App\Http\Requests\StoreMemorizationRequest;
 use App\Http\Resources\MemorizationResource;
 use App\IService\IMemorizationService;
@@ -101,12 +102,7 @@ class MemorizationController extends Controller
         $user = auth()->user(); // جلب كائن المستخدم الحالي 🔒
         $authId = $user->id;
 
-        // 🌟 جلب اسم الرول باستخدام ميثود سباتي القياسية getRoleNames()
-        // الدالة ترجع كولكشن أو مصفوفة، نأخذ العنصر الأول منها (مثلاً 'student' أو 'giver')
-        $role = $user->getRoleNames()->first();
-
-        // احتياطاً في حال كان الحساب لا يملك أي رول مسجلة في جداول سباتي
-        if (!$role) {
+        if (!$user->primaryRole()) {
             return response()->json([
                 'code'    => 403,
                 'status'  => 'error',
@@ -114,8 +110,10 @@ class MemorizationController extends Controller
             ], 403);
         }
 
-        // استدعاء السيرفس الذكية لتحديد الحقل وجلب البيانات بناءً على الرول الصافية
-        $memorizations = $this->memorizationService->getMemorizationsByRole($authId, $role);
+        $memorizations = $this->memorizationService->getMemorizationsForAccount(
+            $authId,
+            $user instanceof Student
+        );
 
         if ($memorizations->isEmpty()) {
             return response()->json([

@@ -46,13 +46,14 @@ class StudentCircleController extends Controller
 
         $result = $this->studentCircleService->addStudentsToCircle($circle->id, $request->student_ids);
 
-        // في حال تم رفض جميع الطلاب بسبب التعارض مع مساجد أخرى
+        // في حال تم رفض جميع الطلاب بسبب تعارض المسجد أو تكرار الكورس
         if ($result['students']->isEmpty() && !empty($result['conflicts'])) {
             return response()->json([
-                'code'    => 422,
-                'status'  => 'error',
-                'message' => implode(' ', $result['conflicts']),
-                'data'    => null
+                'code'      => 422,
+                'status'    => 'error',
+                'message'   => implode(' ', $result['conflicts']),
+                'conflicts' => $result['conflicts'],
+                'data'      => null
             ], 422);
         }
 
@@ -61,15 +62,17 @@ class StudentCircleController extends Controller
             ->with(['studentDetails', 'circleDetails'])
             ->get();
 
-        $message = "Students processed successfully. Skipped/Invalid records: {$result['skipped_count']}.";
+        $addedCount = $result['students']->count();
+        $message = "تم إلحاق {$addedCount} من الطلاب المحددين بالحلقة بنجاح.";
         if (!empty($result['conflicts'])) {
-            $message .= " " . implode(' ', $result['conflicts']);
+            $message .= " تعذر إلحاق بعض الطلاب: " . implode(' ', $result['conflicts']);
         }
 
         return response()->json([
-            'code'    => 200,
-            'message' => $message,
-            'data'    => StudentCircleResource::collection($newRecords)
+            'code'     => 200,
+            'message'  => $message,
+            'warnings' => $result['conflicts'],
+            'data'     => StudentCircleResource::collection($newRecords)
         ], 200);
     }
 

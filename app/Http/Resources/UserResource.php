@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Enums\RoleFamily;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -14,6 +15,9 @@ class UserResource extends JsonResource
      */
     public function toArray($request)
     {
+        $role = $this->primaryRole();
+        $roleFamily = $role?->role_family;
+
         return [
             'id'          => $this->id,
             'first_name'  => $this->first_name,
@@ -21,7 +25,12 @@ class UserResource extends JsonResource
             'email'       => $this->email,
             'phone'       => $this->phone,
             'birth_date'  => $this->birth_date,
-            'role'        => $this->getRoleNames()->first(),
+            'role_id'     => $role?->id,
+            'role'        => $role?->name,
+            'role_family' => $roleFamily instanceof RoleFamily ? $roleFamily->value : $roleFamily,
+            'account_type' => 'staff',
+            'is_super_admin' => $this->isSuperAdmin(),
+            'can_supervise' => $this->canSupervise(),
             'permissions' => $this->getAllPermissions()->pluck('name'),
             'image_url'   => $this->image ? asset('storage/' . $this->image) : null,
         ];

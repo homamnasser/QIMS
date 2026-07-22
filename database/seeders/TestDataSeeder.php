@@ -22,7 +22,8 @@ use App\Models\Warning;
 use App\Models\Exam;
 use App\Models\StudentCourseAbsence;
 use App\Models\StudentMark;
-use Spatie\Permission\Models\Role;
+use App\Models\Role;
+use App\Enums\RoleFamily;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\PermissionRegistrar;
 
@@ -93,6 +94,7 @@ class TestDataSeeder extends Seeder
             'إنشاء إنذار','عرض تفاصيل الإنذار','حذف إنذار','عرض كافة الإنذارات','عرض إنذاراتي',
             'إنشاء امتحان','عرض تفاصيل الامتحان','حذف امتحان','عرض كافة الامتحانات','تعديل الامتحان','امتحاناتي',
             'عرض كافة الغيابات','إنشاء غياب','عرض تفاصيل الغياب','تعديل الغياب','حذف غياب',
+            config('roles.capabilities.supervise'),
         ];
 
         foreach ($permissions as $p) {
@@ -104,11 +106,12 @@ class TestDataSeeder extends Seeder
         // ══════════════════════════════════════════════
         $this->command->info('  ✅ إنشاء الأدوار...');
 
-        $superAdminRole = Role::create(['name' => 'super-admin', 'guard_name' => 'web']);
-        $adminRole      = Role::create(['name' => 'admin',       'guard_name' => 'web']);
-        $supervisorRole = Role::create(['name' => 'supervisor',  'guard_name' => 'web']);
-        $teacherRole    = Role::create(['name' => 'teacher',     'guard_name' => 'web']);
-        $studentRole    = Role::create(['name' => 'student',     'guard_name' => 'web']);
+        $reviewedAt = now();
+        $superAdminRole = Role::create(['name' => 'super-admin', 'guard_name' => 'web', 'role_family' => RoleFamily::SuperAdmin->value, 'is_system' => true, 'role_family_reviewed_at' => $reviewedAt]);
+        $adminRole      = Role::create(['name' => 'admin',       'guard_name' => 'web', 'role_family' => RoleFamily::Admin->value, 'is_system' => true, 'role_family_reviewed_at' => $reviewedAt]);
+        $supervisorRole = Role::create(['name' => 'supervisor',  'guard_name' => 'web', 'role_family' => RoleFamily::Supervisor->value, 'is_system' => true, 'role_family_reviewed_at' => $reviewedAt]);
+        $teacherRole    = Role::create(['name' => 'teacher',     'guard_name' => 'web', 'role_family' => RoleFamily::Teacher->value, 'is_system' => true, 'role_family_reviewed_at' => $reviewedAt]);
+        $studentRole    = Role::create(['name' => 'student',     'guard_name' => 'web', 'role_family' => RoleFamily::Student->value, 'is_system' => true, 'role_family_reviewed_at' => $reviewedAt]);
 
         $allPerms = Permission::all();
         $superAdminRole->syncPermissions($allPerms);

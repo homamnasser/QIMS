@@ -4,14 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreRoleRequest;
 use App\Http\Requests\UpdateRoleRequest;
-use App\Http\Resources\RoleResource;
 use App\Http\Resources\PermissionResource;
+use App\Http\Resources\RoleResource;
 use App\IService\IRoleService;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\JsonResponse;
 
 class RoleController extends Controller
 {
@@ -21,116 +18,106 @@ class RoleController extends Controller
     {
         $this->roleService = $roleService;
     }
+
     /* جلب كافة الأدوار مع صلاحياتها */
     public function getAllRoles(): JsonResponse
     {
         $roles = $this->roleService->getAllRoles();
 
         return response()->json([
-            'code'    => 200,
+            'code' => 200,
             'message' => 'Roles retrieved successfully',
-            'data'    => RoleResource::collection($roles)
+            'data' => RoleResource::collection($roles),
         ], 200);
     }
+
     /* إنشاء دور جديد */
     public function createRole(StoreRoleRequest $request): JsonResponse
     {
         $validated = $request->validated();
 
-        $systemRoles = ['super-admin', 'admin', 'supervisor', 'teacher', 'student'];
-        if (in_array(strtolower($validated['name']), $systemRoles)) {
+        if (in_array(strtolower($validated['name']), config('roles.protected_names'), true)) {
             return response()->json([
-                'code'    => 403,
-                'message' => 'لا يمكن إنشاء دور يحمل اسم أحد أدوار النظام الأساسية.'
+                'code' => 403,
+                'message' => 'لا يمكن إنشاء دور يحمل اسم أحد أدوار النظام الأساسية.',
             ], 403);
         }
 
         $role = $this->roleService->createRole(
             $validated['name'],
+            $validated['role_family'],
             $validated['permissions']
         );
+
         return response()->json([
-            'code'    => 201,
+            'code' => 201,
             'message' => 'Role created successfully',
-            'data'    => new RoleResource($role)
+            'data' => new RoleResource($role),
         ], 201);
     }
+
     /* جلب دور محدد بواسطة ID */
     public function getRole(int $id): JsonResponse
     {
         try {
             $role = $this->roleService->getRoleById($id);
-            if (!$role) {
-                return response()->json([
-                    'code'    => 404,
-                    'message' => 'Role not found',
-                    'data'    => null
-                ], 404);
-            }
-
-            return response()->json([
-                'code'    => 200,
-                'message' => 'Role retrieved successfully',
-                'data'    => new RoleResource($role)
-            ], 200);
-        } catch (ModelNotFoundException $e) {
-            return response()->json([
-                'code'    => 404,
-                'message' => 'Role not found',
-                'data'    => null
-            ], 404);
-        }
-    }
-    /* تحديث دور (مع التأكد من وجوده أولاً) */
-    public function updateRole(Request $request, int $id): JsonResponse
-    {
-        try {
-            $role = $this->roleService->getRoleById($id);
-            if (!$role) {
+            if (! $role) {
                 return response()->json([
                     'code' => 404,
                     'message' => 'Role not found',
-                    'data'    => null
+                    'data' => null,
                 ], 404);
             }
 
-            $systemRoles = ['super-admin', 'admin', 'supervisor', 'teacher', 'student'];
-            if (in_array($role->name, $systemRoles)) {
+            return response()->json([
+                'code' => 200,
+                'message' => 'Role retrieved successfully',
+                'data' => new RoleResource($role),
+            ], 200);
+        } catch (ModelNotFoundException $e) {
+            return response()->json([
+                'code' => 404,
+                'message' => 'Role not found',
+                'data' => null,
+            ], 404);
+        }
+    }
+
+    /* تحديث دور (مع التأكد من وجوده أولاً) */
+    public function updateRole(UpdateRoleRequest $request, int $id): JsonResponse
+    {
+        try {
+            $role = $this->roleService->getRoleById($id);
+            if (! $role) {
                 return response()->json([
-                    'code'    => 403,
-                    'message' => 'هذا الدور من أدوار النظام الأساسية ومحمي من التعديل.'
+                    'code' => 404,
+                    'message' => 'Role not found',
+                    'data' => null,
+                ], 404);
+            }
+
+            if ($role->is_system) {
+                return response()->json([
+                    'code' => 403,
+                    'message' => 'هذا الدور من أدوار النظام الأساسية ومحمي من التعديل.',
                 ], 403);
             }
 
-            $roleRequest = app(UpdateRoleRequest::class);
-
-            $validator = Validator::make(
-                $request->all(),
-                $roleRequest->rules(),
-                $roleRequest->messages()
-            );
-
-            if ($validator->fails()) {
-                return response()->json([
-                    'code' => 422,
-                    'message' => $validator->errors()
-                ], 422);
-            }
-
             // 3. جلب البيانات الموثقة
-            $data = $validator->validated();
+            $data = $request->validated();
 
             // 4. التحديث عبر السيرفس
             $updatedRole = $this->roleService->updateRole(
                 $id,
-                $data['name'],
-                $data['permissions']
+                $data['name'] ?? $role->name,
+                $data['role_family'] ?? null,
+                $data['permissions'] ?? $role->permissions->pluck('id')->all()
             );
 
             return response()->json([
                 'code' => 200,
                 'message' => 'Role updated successfully',
-                'data' => new RoleResource($updatedRole)
+                'data' => new RoleResource($updatedRole),
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
@@ -140,40 +127,38 @@ class RoleController extends Controller
         }
     }
 
-
     /* حذف دور */
     public function deleteRole(int $id): JsonResponse
     {
         try {
             $role = $this->roleService->getRoleById($id);
-            if (!$role) {
+            if (! $role) {
                 return response()->json([
-                    'code'    => 404,
+                    'code' => 404,
                     'message' => 'Role not found',
-                    'data'    => null
+                    'data' => null,
                 ], 404);
             }
 
-            $systemRoles = ['super-admin', 'admin', 'supervisor', 'teacher', 'student'];
-            if (in_array($role->name, $systemRoles)) {
+            if ($role->is_system) {
                 return response()->json([
-                    'code'    => 403,
-                    'message' => 'لا يمكن حذف أدوار النظام الأساسية.'
+                    'code' => 403,
+                    'message' => 'لا يمكن حذف أدوار النظام الأساسية.',
                 ], 403);
             }
 
             $this->roleService->deleteRole($id);
 
             return response()->json([
-                'code'    => 200,
+                'code' => 200,
                 'message' => 'Role deleted successfully',
-                'data'    => null
+                'data' => null,
             ], 200);
         } catch (ModelNotFoundException $e) {
             return response()->json([
-                'code'    => 404,
+                'code' => 404,
                 'message' => 'Role not found',
-                'data'    => null
+                'data' => null,
             ], 404);
         }
     }
@@ -184,9 +169,9 @@ class RoleController extends Controller
         $permissions = $this->roleService->getAllPermissions();
 
         return response()->json([
-            'code'    => 200,
+            'code' => 200,
             'message' => 'Permissions retrieved successfully.',
-            'data'    => PermissionResource::collection($permissions)
+            'data' => PermissionResource::collection($permissions),
         ], 200);
     }
 }

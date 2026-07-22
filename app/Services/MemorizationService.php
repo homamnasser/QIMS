@@ -22,9 +22,9 @@ class MemorizationService implements IMemorizationService
         return $memorization->delete();
     }
 
-    public function getMemorizationsByRole(int $authId, string $role): Collection
+    public function getMemorizationsForAccount(int $authId, bool $isStudent): Collection
     {
-        $column = ($role === 'student') ? 'student' : 'giver';
+        $column = $isStudent ? 'student' : 'giver';
 
         return Memorization::where($column, $authId)
             ->with(['studentDetails', 'giverDetails'])

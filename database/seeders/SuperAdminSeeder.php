@@ -2,11 +2,10 @@
 
 namespace Database\Seeders;
 
+use App\Enums\RoleFamily;
+use App\Models\Role;
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
-use Spatie\Permission\Models\Role;
 
 // استيراد موديل الدور
 
@@ -17,15 +16,29 @@ class SuperAdminSeeder extends Seeder
      */
     public function run(): void
     {
-        $role = Role::firstOrCreate(['name' => 'super-admin']);
+        $role = Role::firstOrCreate(
+            ['name' => 'super-admin', 'guard_name' => 'web'],
+            [
+                'role_family' => RoleFamily::SuperAdmin->value,
+                'is_system' => true,
+                'role_family_reviewed_at' => now(),
+            ]
+        );
+
+        $role->forceFill([
+            'role_family' => RoleFamily::SuperAdmin->value,
+            'is_system' => true,
+            'suggested_role_family' => null,
+            'role_family_reviewed_at' => now(),
+        ])->save();
 
         $user = User::firstOrCreate(
             ['email' => 'superadmin@gmail.com'],
             [
                 'first_name' => 'super',
-                'last_name'  => 'admin',
-                'password'   => '123456789',
-                'phone'      => '0938316303',
+                'last_name' => 'admin',
+                'password' => '123456789',
+                'phone' => '0938316303',
                 'birth_date' => '1990-01-01',
             ]
         );

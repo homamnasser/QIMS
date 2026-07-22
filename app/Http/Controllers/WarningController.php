@@ -7,6 +7,7 @@ use App\Http\Resources\WarningResource;
 use App\IService\IWarningService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use App\Models\Student;
 
 class WarningController extends Controller
 {
@@ -102,7 +103,7 @@ class WarningController extends Controller
     {
         $user = auth()->user();
 
-        $isStudent = $user->hasRole('student');
+        $isStudent = $user instanceof Student;
 
         $warnings = $this->warningService->getUserWarnings($user->id, $isStudent);
 

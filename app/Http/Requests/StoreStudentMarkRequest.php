@@ -7,6 +7,7 @@ use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use App\Enums\RoleFamily;
 
 class StoreStudentMarkRequest extends FormRequest
 {
@@ -34,7 +35,7 @@ class StoreStudentMarkRequest extends FormRequest
         $user = Auth::user();
 
         // 🎯 إذا كان المستخدم مشرفاً أو أدمن، نلزمه بإدخال حقوله الإدارية أيضاً ليصبح المجموع كاملاً
-        if ($user && !$user->hasRole('teacher')) {
+        if ($user && !$user->hasRoleFamily(RoleFamily::Teacher)) {
             $rules['behavior_admin_marks'] = 'required|numeric|min:0';
             $rules['sabr_bonus']           = 'required|numeric|min:0';
             $rules['attendance_marks']     = 'required|numeric|min:0';
@@ -79,7 +80,7 @@ class StoreStudentMarkRequest extends FormRequest
             }
 
             // 3️⃣ الشرط الثالث: إذا كان المسجل "أستاذ"، يجب أن يكون مسؤولاً عن الحلقة (المشرف يتجاوز هذا الفحص تلقائياً 🛡️)
-            if (Auth::user()->hasRole('teacher')) {
+            if (Auth::user()->hasRoleFamily(RoleFamily::Teacher)) {
                 $isActualTeacher = DB::table('circles')
                     ->where('id', $circleId)
                     ->where('teacher_id', $currentUserId)

@@ -8,6 +8,7 @@ use App\Http\Resources\SabrResource;
 use Illuminate\Http\JsonResponse;
 use App\Http\Requests\UpdateSabrResultRequest;
 use Illuminate\Http\Request;
+use App\Models\Student;
 class SabrController extends Controller
 {
     protected $sabrService;
@@ -125,7 +126,7 @@ class SabrController extends Controller
         $user = auth()->user();
         $filters = [];
 
-        if ($user->hasRole('student')) {
+        if ($user instanceof Student) {
             $filters['student'] = $user->id;
         } else {
             $filters['giver'] = $user->id;

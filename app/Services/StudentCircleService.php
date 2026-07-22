@@ -14,6 +14,7 @@ class StudentCircleService implements IStudentCircleService
 
         // جلب تفاصيل الحلقة المستهدفة مع الكورس والمسجد
         $targetCircle = \App\Models\Circle::with('course.mosque')->find($circleId);
+        $targetCourseId = $targetCircle?->course_id;
         $targetMosqueId = $targetCircle?->course?->mosque_id;
 
         $newlyAddedStudentIds = [];
@@ -37,7 +38,27 @@ class StudentCircleService implements IStudentCircleService
                 continue;
             }
 
-            // 2. الفحص الهندسي: هل ينتمي الطالب مسبقاً لأي حلقة في مسجد آخر مختلف؟
+            // 2. لا يجوز أن ينتمي الطالب إلى حلقتين مختلفتين ضمن الكورس نفسه.
+            if ($targetCourseId) {
+                $sameCourseAssignment = StudentCircle::where('student', $studentId)
+                    ->where('circle', '!=', $circleId)
+                    ->whereHas('circleDetails', function ($q) use ($targetCourseId) {
+                        $q->where('course_id', $targetCourseId);
+                    })
+                    ->with('circleDetails')
+                    ->first();
+
+                if ($sameCourseAssignment) {
+                    $studentName = trim($student->first_name . ' ' . $student->last_name);
+                    $otherCircleName = $sameCourseAssignment->circleDetails?->name ?? 'حلقة أخرى';
+                    $courseName = $targetCircle?->course?->name ?? 'الكورس نفسه';
+                    $conflicts[] = "الطالب '{$studentName}' مسجّل مسبقاً في حلقة '{$otherCircleName}' ضمن الكورس '{$courseName}'. لا يمكن تسجيل الطالب في أكثر من حلقة للكورس نفسه، ويمكن تسجيله في كورسات مختلفة ضمن المسجد نفسه فقط.";
+                    $skippedCount++;
+                    continue;
+                }
+            }
+
+            // 3. هل ينتمي الطالب مسبقاً لأي حلقة في مسجد آخر مختلف؟
             if ($targetMosqueId) {
                 $existingAssignment = StudentCircle::where('student', $studentId)
                     ->whereHas('circleDetails.course', function ($q) use ($targetMosqueId) {

@@ -13,10 +13,11 @@ use App\Models\Project;
 use Illuminate\Support\Facades\App;
 use App\Models\Circle;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use App\Traits\HasRoleFamilies;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, HasRoles;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles, HasRoleFamilies;
 
     /**
      * The attributes that are mass assignable.
@@ -86,5 +87,15 @@ class User extends Authenticatable
     public function issuedWarnings(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Warning::class, 'warner');
+    }
+
+    public function canSupervise(): bool
+    {
+        if ($this->isSuperAdmin()) {
+            return true;
+        }
+
+        return $this->getAllPermissions()
+            ->contains('name', config('roles.capabilities.supervise'));
     }
 }
