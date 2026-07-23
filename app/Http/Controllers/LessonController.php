@@ -32,7 +32,7 @@ class LessonController extends Controller
 
         return response()->json([
             'code'    => 200,
-            'message' => 'Lessons retrieved successfully.',
+            'message' => 'تم جلب قائمة الدروس بنجاح.',
             'data'    => $resource['data'],
             'meta'    => $resource['meta'] ?? null,
             'links'   => $resource['links'] ?? null
@@ -49,13 +49,13 @@ class LessonController extends Controller
         if (!$lesson) {
             return response()->json([
                 'code'    => 404,
-                'message' => 'Lesson not found',
+                'message' => 'الدرس غير موجود.',
             ], 404);
         }
 
         return response()->json([
             'code'    => 200,
-            'message' => 'Lesson retrieved successfully.',
+            'message' => 'تم جلب بيانات الدرس بنجاح.',
             'data'    => new LessonResource($lesson)
         ], 200);
     }
@@ -69,7 +69,7 @@ class LessonController extends Controller
 
         return response()->json([
             'code'    => 201,
-            'message' => 'Lesson created successfully.',
+            'message' => 'تم إنشاء الدرس بنجاح.',
             'data'    => new LessonResource($lesson)
         ], 201);
     }
@@ -85,7 +85,7 @@ class LessonController extends Controller
         if (!$lesson) {
             return response()->json([
                 'code'    => 404,
-                'message' => 'Lesson not found',
+                'message' => 'الدرس غير موجود.',
             ], 404);
         }
 
@@ -104,7 +104,7 @@ class LessonController extends Controller
 
         return response()->json([
             'code'    => 200,
-            'message' => 'Lesson updated successfully.',
+            'message' => 'تم تحديث بيانات الدرس بنجاح.',
             'data'    => new LessonResource($updatedLesson)
         ], 200);
     }
@@ -119,7 +119,7 @@ class LessonController extends Controller
         if (!$lesson) {
             return response()->json([
                 'code'    => 404,
-                'message' => 'Lesson not found',
+                'message' => 'الدرس غير موجود.',
             ], 404);
         }
 
@@ -127,7 +127,7 @@ class LessonController extends Controller
 
         return response()->json([
             'code'    => 200,
-            'message' => 'Lesson deleted successfully.',
+            'message' => 'تم حذف الدرس بنجاح.',
         ], 200);
     }
 }

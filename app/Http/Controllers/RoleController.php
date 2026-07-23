@@ -26,7 +26,7 @@ class RoleController extends Controller
 
         return response()->json([
             'code' => 200,
-            'message' => 'Roles retrieved successfully',
+            'message' => 'تم جلب الأدوار بنجاح',
             'data' => RoleResource::collection($roles),
         ], 200);
     }
@@ -51,7 +51,7 @@ class RoleController extends Controller
 
         return response()->json([
             'code' => 201,
-            'message' => 'Role created successfully',
+            'message' => 'تم إنشاء الدور بنجاح',
             'data' => new RoleResource($role),
         ], 201);
     }
@@ -64,20 +64,20 @@ class RoleController extends Controller
             if (! $role) {
                 return response()->json([
                     'code' => 404,
-                    'message' => 'Role not found',
+                    'message' => 'الدور غير موجود',
                     'data' => null,
                 ], 404);
             }
 
             return response()->json([
                 'code' => 200,
-                'message' => 'Role retrieved successfully',
+                'message' => 'تم جلب بيانات الدور بنجاح',
                 'data' => new RoleResource($role),
             ], 200);
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'code' => 404,
-                'message' => 'Role not found',
+                'message' => 'الدور غير موجود',
                 'data' => null,
             ], 404);
         }
@@ -91,7 +91,7 @@ class RoleController extends Controller
             if (! $role) {
                 return response()->json([
                     'code' => 404,
-                    'message' => 'Role not found',
+                    'message' => 'الدور غير موجود',
                     'data' => null,
                 ], 404);
             }
@@ -116,7 +116,7 @@ class RoleController extends Controller
 
             return response()->json([
                 'code' => 200,
-                'message' => 'Role updated successfully',
+                'message' => 'تم تحديث الدور بنجاح',
                 'data' => new RoleResource($updatedRole),
             ], 200);
         } catch (\Exception $e) {
@@ -135,7 +135,7 @@ class RoleController extends Controller
             if (! $role) {
                 return response()->json([
                     'code' => 404,
-                    'message' => 'Role not found',
+                    'message' => 'الدور غير موجود',
                     'data' => null,
                 ], 404);
             }
@@ -151,13 +151,13 @@ class RoleController extends Controller
 
             return response()->json([
                 'code' => 200,
-                'message' => 'Role deleted successfully',
+                'message' => 'تم حذف الدور بنجاح',
                 'data' => null,
             ], 200);
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'code' => 404,
-                'message' => 'Role not found',
+                'message' => 'الدور غير موجود',
                 'data' => null,
             ], 404);
         }
@@ -170,7 +170,7 @@ class RoleController extends Controller
 
         return response()->json([
             'code' => 200,
-            'message' => 'Permissions retrieved successfully.',
+            'message' => 'تم جلب الصلاحيات بنجاح.',
             'data' => PermissionResource::collection($permissions),
         ], 200);
     }

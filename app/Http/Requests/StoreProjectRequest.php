@@ -29,7 +29,7 @@ class StoreProjectRequest extends FormRequest
                 function ($attribute, $value, $fail) {
                     $user = User::find($value);
                     if ($user && !$user->canSupervise()) {
-                        $fail('The selected user must have the supervision capability.');
+                        $fail('المستخدم المحدد يجب أن يملك صلاحية الإشراف.');
                     }
                 },
             ],
@@ -42,18 +42,18 @@ class StoreProjectRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.required'     => 'The project name is required.',
-            'name.unique'       => 'This project name is already taken, please choose another.',
-            'name.max'          => 'The project name may not be greater than 255 characters.',
+            'name.required'     => 'اسم المشروع مطلوب.',
+            'name.unique'       => 'اسم المشروع مستخدم مسبقاً، يرجى اختيار اسم آخر.',
+            'name.max'          => 'اسم المشروع يجب ألا يتجاوز 255 حرفاً.',
 
-            'description.required' => 'Please provide a project description.',
-            'audience.required'    => 'Target audience is required.',
+            'description.required' => 'يرجى إدخال وصف المشروع.',
+            'audience.required'    => 'الفئة المستهدفة مطلوبة.',
 
-            'supervisor.required' => 'A project supervisor must be assigned.',
-            'supervisor.exists'   => 'The selected supervisor does not exist in our records.',
+            'supervisor.required' => 'يجب تعيين مشرف للمشروع.',
+            'supervisor.exists'   => 'المشرف المحدد غير موجود في سجلاتنا.',
 
-            'logo.mimes'         => 'The logo must be a file of type: jpg, png, jpeg.',
-            'logo.max'           => 'The logo size may not exceed 5MB.',
+            'logo.mimes'         => 'الملف يجب أن يكون من نوع: ...',
+            'logo.max'           => 'حجم الشعار يجب ألا يتجاوز 5 ميغابايت.',
 
         ];
     }

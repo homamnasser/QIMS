@@ -41,7 +41,9 @@ class StudentService implements IStudentService
 
     public function getStudentById(int $id)
     {
-        return Student::find($id);
+        return Student::with([
+            'studentCircles.circleDetails.course.mosque',
+        ])->find($id);
     }
 
     public function updateStudent(Student $student, array $data): Student

@@ -28,14 +28,14 @@ class CourseController extends Controller
             if ($exists) {
                 return response()->json([
                     'code'    => 400,
-                    'message' => 'The selected parent course already has a sub-course assigned to it.'
+                    'message' => 'الكورس الأب المحدد يحتوي مسبقاً على كورس فرعي مرتبط به.'
                 ], 400);
             }
         }
         $course = $this->courseService->createCourse($request->validated());
         return response()->json([
             'code'    => 201,
-            'message' => 'Course created successfully.',
+            'message' => 'تم إنشاء الكورس بنجاح.',
             'data'    => new CourseResource($course->fresh())
         ], 201);
     }
@@ -57,7 +57,7 @@ class CourseController extends Controller
 
         return response()->json([
             'code'    => 200,
-            'message' => 'Courses retrieved successfully.',
+            'message' => 'تم جلب قائمة الكورسات بنجاح.',
             'data'    => $resource['data'],
             'meta'    => $resource['meta'] ?? null,
             'links'   => $resource['links'] ?? null
@@ -72,13 +72,13 @@ class CourseController extends Controller
         if (!$course) {
             return response()->json([
                 'code'    => 404,
-                'message' => 'Course not found.',
+                'message' => 'الكورس غير موجود.',
             ], 404);
         }
 
         return response()->json([
             'code'    => 200,
-            'message' => 'Course retrieved successfully.',
+            'message' => 'تم جلب بيانات الكورس بنجاح.',
             'data'    => new CourseResource($course)
         ], 200);
     }
@@ -91,7 +91,7 @@ class CourseController extends Controller
         if (!$course) {
             return response()->json([
                 'code'    => 404,
-                'message' => 'Course not found',
+                'message' => 'الكورس غير موجود.',
                 'data'    => null
             ], 404);
         }
@@ -99,7 +99,7 @@ class CourseController extends Controller
         if (!$course->is_active) {
             return response()->json([
                 'code'    => 403,
-                'message' => 'This course is not active and cannot be modified.'
+                'message' => 'هذا الكورس غير فعّال ولا يمكن تعديله.'
             ], 403);
         }
 
@@ -124,7 +124,7 @@ class CourseController extends Controller
 
         return response()->json([
             'code'    => 200,
-            'message' => 'Course updated successfully.',
+            'message' => 'تم تحديث بيانات الكورس بنجاح.',
             'data'    => new CourseResource($updatedCourse)
         ], 200);
     }
@@ -137,7 +137,7 @@ class CourseController extends Controller
         if (!$course) {
             return response()->json([
                 'code'    => 404,
-                'message' => 'Course not found',
+                'message' => 'الكورس غير موجود.',
             ], 404);
         }
 
@@ -146,12 +146,12 @@ class CourseController extends Controller
         if ($isDeleted) {
             return response()->json([
                 'code'    => 200,
-                'message' => 'Course deleted successfully.',
+                'message' => 'تم حذف الكورس بنجاح.',
             ], 200);
         }
         return response()->json([
             'code'    => 500,
-            'message' => 'Something went wrong while deleting the course.',
+            'message' => 'حدث خطأ أثناء حذف الكورس.',
         ], 500);
     }
     /* تفعيل أو أرشفة دورة (مع التأكد من وجودها أولاً) */
@@ -162,7 +162,7 @@ class CourseController extends Controller
         if (!$course) {
             return response()->json([
                 'code'    => 404,
-                'message' => 'Course not found'
+                'message' => 'الكورس غير موجود.'
             ], 404);
         }
 
@@ -170,7 +170,7 @@ class CourseController extends Controller
 
         return response()->json([
             'code'    => 200,
-            'message' => $updatedCourse->is_active ? 'Course activated successfully' : 'Course archived successfully',
+            'message' => $updatedCourse->is_active ? 'تم تفعيل الكورس بنجاح' : 'تم أرشفة الكورس بنجاح',
             'data'    => new CourseResource($updatedCourse)
         ], 200);
     }
@@ -183,7 +183,7 @@ class CourseController extends Controller
 
         return response()->json([
             'code'    => 200,
-            'message' => 'My courses retrieved successfully',
+            'message' => 'تم جلب كورساتي بنجاح',
             'data'    => CourseResource::collection($courses)
         ], 200);
     }

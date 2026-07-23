@@ -28,7 +28,7 @@ class MosqueController extends Controller
 
         return response()->json([
             'code'    => 201,
-            'message' => 'Mosque has been created successfully.',
+            'message' => 'تم إنشاء المسجد بنجاح.',
             'data'    => new MosqueResource($mosque)
         ], 201);
     }
@@ -41,7 +41,7 @@ class MosqueController extends Controller
         if (!$mosque) {
             return response()->json([
                 'code'    => 404,
-                'message' => 'Mosque not found.',
+                'message' => 'المسجد غير موجود.',
                 'data'    => null
             ], 404);
         }
@@ -66,7 +66,7 @@ class MosqueController extends Controller
 
         return response()->json([
             'code'    => 200,
-            'message' => 'Mosque updated successfully.',
+            'message' => 'تم تحديث بيانات المسجد بنجاح.',
             'data'    => new MosqueResource($updatedMosque)
         ], 200);
     }
@@ -79,14 +79,14 @@ class MosqueController extends Controller
         if (!$mosque) {
             return response()->json([
                 'code'    => 404,
-                'message' => 'Mosque not found.',
+                'message' => 'المسجد غير موجود.',
                 'data'    => null
             ], 404);
         }
 
         return response()->json([
             'code'    => 200,
-            'message' => 'Mosque retrieved successfully.',
+            'message' => 'تم جلب بيانات المسجد بنجاح.',
             'data'    => new MosqueResource($mosque)
         ], 200);
     }
@@ -101,7 +101,7 @@ class MosqueController extends Controller
 
         return response()->json([
             'code'    => 200,
-            'message' => 'Data retrieved successfully.',
+            'message' => 'تم جلب البيانات بنجاح.',
             'data'    => $resource['data'],
             'meta'    => $resource['meta'] ?? null,
             'links'   => $resource['links'] ?? null
@@ -115,7 +115,7 @@ class MosqueController extends Controller
         if (!$mosque) {
             return response()->json([
                 'code'    => 404,
-                'message' => 'Mosque not found.',
+                'message' => 'المسجد غير موجود.',
                 'data'    => null
             ], 404);
         }
@@ -124,7 +124,7 @@ class MosqueController extends Controller
 
         return response()->json([
             'code'    => 200,
-            'message' => 'Mosque deleted successfully.',
+            'message' => 'تم حذف المسجد بنجاح.',
             'data'    => null
         ], 200);
     }

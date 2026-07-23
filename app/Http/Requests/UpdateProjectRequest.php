@@ -41,7 +41,7 @@ class UpdateProjectRequest extends FormRequest
                 function ($attribute, $value, $fail) {
                     $user = User::find($value);
                     if ($user && !$user->canSupervise()) {
-                        $fail('The selected user must have the supervision capability.');
+                        $fail('المستخدم المحدد يجب أن يملك صلاحية الإشراف.');
                     }
                 },
             ],
@@ -54,18 +54,18 @@ class UpdateProjectRequest extends FormRequest
     public function messages(): array
 {
     return [
-        'name.unique'         => 'This project name is already taken, please choose another.',
-        'name.max'            => 'The project name may not be greater than 255 characters.',
-        'name.string'         => 'The project name must be a valid text string.',
+        'name.unique'         => 'اسم المشروع مستخدم مسبقاً، يرجى اختيار اسم آخر.',
+        'name.max'            => 'اسم المشروع يجب ألا يتجاوز 255 حرفاً.',
+        'name.string'         => 'اسم المشروع يجب أن يكون نصاً صالحاً.',
 
-        'description.string'  => 'The description must be a valid text string.',
-        'audience.string'     => 'The audience field must be a valid text string.',
+        'description.string'  => 'الوصف يجب أن يكون نصاً صالحاً.',
+        'audience.string'     => 'حقل الفئة المستهدفة يجب أن يكون نصاً صالحاً.',
 
-        'supervisor.exists'   => 'The selected supervisor does not exist in our records.',
+        'supervisor.exists'   => 'المشرف المحدد غير موجود في سجلاتنا.',
 
-        'logo.mimes'          => 'The logo must be a file of type: jpg, jpeg, png, pdf.',
-        'logo.max'            => 'The logo size may not be greater than 5MB.',
-        'logo.file'           => 'The logo must be a valid uploaded file.',
+        'logo.mimes'          => 'الملف يجب أن يكون من نوع: ...',
+        'logo.max'            => 'حجم الشعار يجب ألا يتجاوز 5 ميغابايت.',
+        'logo.file'           => 'الشعار يجب أن يكون ملفاً مرفوعاً صالحاً.',
     ];
 }
 

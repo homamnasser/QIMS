@@ -31,14 +31,14 @@ class CreateCircleRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.required'       => 'Circle name is required.',
-            'name.string'         => 'Circle name must be a string.',
-            'name.max'            => 'Circle name cannot exceed 255 characters.',
-            'name.unique'         => 'A circle with this name already exists.',
-            'teacher_id.required' => 'Teacher ID is required.',
-            'teacher_id.exists'   => 'The specified teacher does not exist.',
-            'course_id.required'  => 'Course ID is required.',
-            'course_id.exists'    => 'The specified course does not exist.',
+            'name.required'       => 'اسم الحلقة الدراسية مطلوب.',
+            'name.string'         => 'اسم الحلقة الدراسية يجب أن يكون نصاً.',
+            'name.max'            => 'اسم الحلقة الدراسية يجب ألا يتجاوز 255 حرفاً.',
+            'name.unique'         => 'يوجد حلقة دراسية بهذا الاسم مسبقاً.',
+            'teacher_id.required' => 'معرّف المعلم مطلوب.',
+            'teacher_id.exists'   => 'المعلم المحدد غير موجود.',
+            'course_id.required'  => 'معرّف الكورس مطلوب.',
+            'course_id.exists'    => 'الكورس المحدد غير موجود.',
         ];
     }
     protected function failedValidation(Validator $validator): void

@@ -28,7 +28,7 @@ class Handler extends ExceptionHandler
             if ($request->is('api/*')) {
                 return response()->json([
                     'code' => 403,
-                    'message' => 'Forbidden: You do not have the required permissions.',
+                    'message' => 'ممنوع: لا تملك الصلاحيات المطلوبة للوصول.',
                     'data' => null,
                 ], 403);
             }
@@ -52,7 +52,7 @@ class Handler extends ExceptionHandler
     {
         return response()->json([
             'code' => 401,
-            'message' => 'Unauthenticated - You must login first',
+            'message' => 'غير مصادق — يجب تسجيل الدخول أولاً.',
             'data' => null,
         ], 401);
     }

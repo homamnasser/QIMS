@@ -34,19 +34,19 @@ class StoreMemorizationRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'student_id.required' => 'The student ID is required.',
-            'student_id.integer' => 'The student ID must be an integer.',
-            'student_id.exists' => 'The specified student does not exist.',
-            'name.string' => 'The name must be a string.',
-            'name.max' => 'The name may not be greater than 255 characters.',
-            'start_page.required' => 'The start page number is required.',
-            'start_page.integer' => 'The start page number must be an integer.',
-            'start_page.min' => 'The start page number must be at least 1.',
-            'start_page.max' => 'The start page number may not be greater than 604.',
-            'end_page.required' => 'The end page number is required.',
-            'end_page.integer' => 'The end page number must be an integer.',
-            'end_page.min' => 'The end page number must be at least 1.',
-            'end_page.max' => 'The end page number may not be greater than 604.',
+            'student_id.required' => 'معرّف الطالب مطلوب.',
+            'student_id.integer' => 'معرّف الطالب يجب أن يكون عدداً صحيحاً.',
+            'student_id.exists' => 'الطالب المحدد غير موجود.',
+            'name.string' => 'الاسم يجب أن يكون نصاً.',
+            'name.max' => 'الاسم يجب ألا يتجاوز 255 حرفاً.',
+            'start_page.required' => 'رقم صفحة البداية مطلوب.',
+            'start_page.integer' => 'رقم صفحة البداية يجب أن يكون عدداً صحيحاً.',
+            'start_page.min' => 'رقم صفحة البداية يجب أن يكون 1 على الأقل.',
+            'start_page.max' => 'رقم صفحة البداية يجب ألا يتجاوز 604.',
+            'end_page.required' => 'رقم صفحة النهاية مطلوب.',
+            'end_page.integer' => 'رقم صفحة النهاية يجب أن يكون عدداً صحيحاً.',
+            'end_page.min' => 'رقم صفحة النهاية يجب أن يكون 1 على الأقل.',
+            'end_page.max' => 'رقم صفحة النهاية يجب ألا يتجاوز 604.',
         ];
     }
 

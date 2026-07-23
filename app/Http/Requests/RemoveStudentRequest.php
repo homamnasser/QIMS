@@ -31,12 +31,12 @@ class RemoveStudentRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'circle_id.required' => 'The circle_id field is required.',
-            'circle_id.integer' => 'The circle_id must be an integer.',
-            'circle_id.exists' => 'The specified circle_id does not exist.',
-            'student_id.required' => 'The student_id field is required.',
-            'student_id.integer' => 'The student_id must be an integer.',
-            'student_id.exists' => 'The specified student_id does not exist.',
+            'circle_id.required' => 'حقل معرّف الحلقة مطلوب.',
+            'circle_id.integer' => 'معرّف الحلقة يجب أن يكون عدداً صحيحاً.',
+            'circle_id.exists' => 'معرّف الحلقة المحدد غير موجود.',
+            'student_id.required' => 'حقل معرّف الطالب مطلوب.',
+            'student_id.integer' => 'معرّف الطالب يجب أن يكون عدداً صحيحاً.',
+            'student_id.exists' => 'معرّف الطالب المحدد غير موجود.',
         ];
     }
     protected function failedValidation(Validator $validator): void

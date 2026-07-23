@@ -32,7 +32,25 @@ class UserResource extends JsonResource
             'is_super_admin' => $this->isSuperAdmin(),
             'can_supervise' => $this->canSupervise(),
             'permissions' => $this->getAllPermissions()->pluck('name'),
-            'image_url'   => $this->image ? asset('storage/' . $this->image) : null,
+            'image_url'   => $this->formatImageUrl($this->image),
         ];
+    }
+
+    private function formatImageUrl(?string $path): ?string
+    {
+        if (empty($path)) {
+            return null;
+        }
+
+        if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
+            return $path;
+        }
+
+        $cleanPath = ltrim($path, '/');
+        if (str_starts_with($cleanPath, 'storage/')) {
+            return asset($cleanPath);
+        }
+
+        return asset('storage/' . $cleanPath);
     }
 }

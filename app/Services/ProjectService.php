@@ -41,15 +41,9 @@ class ProjectService implements IProjectService
         return $project;
     }
 
-    public function getAllProjects($status = null, $limit = null)
+    public function getAllProjects(array $filters = [], $limit = null)
     {
-        $query = Project::query();
-
-        if (! is_null($status)) {
-            $query->where('is_active', (bool) $status);
-        }
-
-        $query->orderBy('created_at', 'desc');
+        $query = Project::filter($filters)->orderBy('created_at', 'desc');
 
         return $limit ? $query->paginate($limit) : $query->get();
     }

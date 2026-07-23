@@ -25,7 +25,7 @@ class WarningController extends Controller
 
         return response()->json([
             'code'    => 201,
-            'message' => 'Warning recorded successfully.',
+            'message' => 'تم تسجيل الإنذار بنجاح.',
             'data'    => new WarningResource($warning)
         ], 201);
     }
@@ -40,7 +40,7 @@ class WarningController extends Controller
         if (!$warning) {
             return response()->json([
                 'code'    => 404,
-                'message' => 'Warning record not found.'
+                'message' => 'سجل الإنذار غير موجود.'
             ], 404);
         }
 
@@ -48,7 +48,7 @@ class WarningController extends Controller
 
         return response()->json([
             'code'    => 200,
-            'message' => 'Warning retrieved successfully.',
+            'message' => 'تم جلب بيانات الإنذار بنجاح.',
             'data'    => new WarningResource($warning)
         ], 200);
     }
@@ -62,13 +62,13 @@ class WarningController extends Controller
         if ($warnings->isEmpty()) {
             return response()->json([
                 'code'    => 200,
-                'message' => 'No warning records found.',
+                'message' => 'لم يتم العثور على سجلات إنذارات.',
             ], 200);
         }
 
         return response()->json([
             'code'    => 200,
-            'message' => 'Warnings retrieved successfully.',
+            'message' => 'تم جلب قائمة الإنذارات بنجاح.',
             'data'    => WarningResource::collection($warnings)
         ], 200);
     }
@@ -80,14 +80,14 @@ class WarningController extends Controller
         if (!$warning) {
             return response()->json([
                 'code'    => 404,
-                'message' => 'Warning record not found.'
+                'message' => 'سجل الإنذار غير موجود.'
             ], 404);
         }
 
         if ((int)$warning->warner !== (int)auth()->id()) {
             return response()->json([
                 'code'    => 403,
-                'message' => 'Unauthorized! You can only delete warnings that you have created yourself.'
+                'message' => 'غير مصرّح! يمكنك فقط حذف الإنذارات التي أنشأتها بنفسك.'
             ], 403);
         }
 
@@ -95,7 +95,7 @@ class WarningController extends Controller
 
         return response()->json([
             'code'    => 200,
-            'message' => 'Warning record deleted successfully.'
+            'message' => 'تم حذف سجل الإنذار بنجاح.'
         ], 200);
     }
 
@@ -111,7 +111,7 @@ class WarningController extends Controller
             return response()->json([
                 'code'    => 200,
                 'status'  => 'success',
-                'message' => 'No warnings found for your account.',
+                'message' => 'لم يتم العثور على إنذارات لحسابك.',
                 'data'    => []
             ], 200);
         }

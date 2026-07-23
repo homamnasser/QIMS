@@ -38,12 +38,12 @@ class StoreManualCourseDateRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'course_id.required' => 'Course ID is required.',
-            'course_id.exists' => 'The selected course does not exist.',
+            'course_id.required' => 'معرّف الكورس مطلوب.',
+            'course_id.exists' => 'الكورس المحدد غير موجود.',
 
-            'session_date.required' => 'Session date is required.',
-            'session_date.date' => 'Session date must be a valid date.',
-            'session_date.unique' => 'The session date for this course already exists.',
+            'session_date.required' => 'تاريخ الجلسة مطلوب.',
+            'session_date.date' => 'تاريخ الجلسة يجب أن يكون تاريخاً صالحاً.',
+            'session_date.unique' => 'تاريخ الجلسة لهذا الكورس موجود مسبقاً.',
         ];
     }
     protected function failedValidation(Validator $validator): void

@@ -40,7 +40,7 @@ class ReportApiController extends Controller
 
         return response()->json([
             'status' => 200,
-            'message' => 'ok',
+            'message' => 'تم بنجاح',
             'data' => $data,
             'meta' => [
                 'current_page' => $courses->currentPage(),
@@ -149,7 +149,7 @@ class ReportApiController extends Controller
 
         return response()->json([
             'status'  => 200,
-            'message' => 'Course dates and lessons retrieved successfully.',
+            'message' => 'تم جلب تواريخ الكورس والدروس بنجاح.',
             'data'    => $data
         ], 200);
     }

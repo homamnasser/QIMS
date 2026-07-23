@@ -44,7 +44,7 @@ class StoreCourseDateRequest extends FormRequest
                 function ($attribute, $value, $fail) use ($course) {
                     if ($course) {
                         if ($value < $course->start_date || $value > $course->end_date) {
-                            $fail("The excluded date $value must be between course dates ({$course->start_date} and {$course->end_date}).");
+                            $fail("التاريخ المستبعد $value يجب أن يكون بين تواريخ الكورس ({$course->start_date} و {$course->end_date}).");
                         }
                     }
                 }
@@ -55,11 +55,11 @@ class StoreCourseDateRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'course_id.required' => 'Course ID is required.',
-            'course_id.exists' => 'The selected course does not exist.',
-            'days.required' => 'At least one day must be selected.',
-            'days.*.in' => 'Each day must be a valid day of the week.',
-            'excluded_dates.*.date_format' => 'Each excluded date must be in the format YYYY-MM-DD.',
+            'course_id.required' => 'معرّف الكورس مطلوب.',
+            'course_id.exists' => 'الكورس المحدد غير موجود.',
+            'days.required' => 'يجب اختيار يوم واحد على الأقل.',
+            'days.*.in' => 'كل يوم يجب أن يكون يوماً صالحاً من أيام الأسبوع.',
+            'excluded_dates.*.date_format' => 'كل تاريخ مستبعد يجب أن يكون بصيغة YYYY-MM-DD.',
         ];
     }
 

@@ -24,10 +24,10 @@ class MosqueRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.required' => 'The mosque name is required and cannot be empty.',
-            'name.string'   => 'The mosque name must be a valid text string.',
-            'name.max'      => 'The mosque name is too long; the maximum limit is 255 characters.',
-            'name.unique'   => 'This mosque name has already been registered in our system.',
+            'name.required' => 'اسم المسجد مطلوب ولا يمكن أن يكون فارغاً.',
+            'name.string'   => 'اسم المسجد يجب أن يكون نصاً صالحاً.',
+            'name.max'      => 'اسم المسجد طويل جداً؛ الحد الأقصى 255 حرفاً.',
+            'name.unique'   => 'اسم المسجد مسجّل مسبقاً في النظام.',
         ];
     }
 

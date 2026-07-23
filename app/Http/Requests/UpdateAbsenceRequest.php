@@ -25,14 +25,14 @@ class UpdateAbsenceRequest extends FormRequest
  public function messages(): array
     {
         return [
-            'type.required' => 'The type field is required.',
-            'type.in'       => 'The selected type is invalid. It must be one of: present,full, first_period, second_period.',
+            'type.required' => 'حقل النوع مطلوب.',
+            'type.in'       => 'القيمة المحددة لحقل ... غير صالحة.',
 
-            'note.string' => 'The note must be a string.',
-            'note.max'    => 'The note may not be greater than 255 characters.',
+            'note.string' => 'الملاحظة يجب أن تكون نصاً.',
+            'note.max'    => 'الملاحظة يجب ألا تتجاوز 255 حرفاً.',
 
-            'date.required' => 'The date field is required.',
-            'date.date'     => 'The date is not a valid date format.',
+            'date.required' => 'حقل التاريخ مطلوب.',
+            'date.date'     => 'التاريخ ليس بصيغة تاريخ صالحة.',
         ];
     }
     public function withValidator(Validator $validator)
@@ -54,7 +54,7 @@ class UpdateAbsenceRequest extends FormRequest
                     ->exists();
 
                 if (!$isValidDate) {
-                    $validator->errors()->add('date', 'The selected date is not a valid session date for this course.');
+                    $validator->errors()->add('date', 'التاريخ المحدد ليس تاريخ جلسة صالحاً لهذا الكورس.');
                 }
 
                 $absenceExists = DB::table('student_course_absences')
@@ -65,7 +65,7 @@ class UpdateAbsenceRequest extends FormRequest
                     ->exists();
 
                 if ($absenceExists) {
-                    $validator->errors()->add('date', 'An absence record already exists for this student on the selected date.');
+                    $validator->errors()->add('date', 'يوجد سجل غياب مسبق لهذا الطالب في التاريخ المحدد.');
                 }
             }
         });

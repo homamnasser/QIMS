@@ -43,7 +43,7 @@ class StudentCourseAbsenceController extends Controller
 
         return response()->json([
             'code'    => 201,
-            'message' => 'Absence record created successfully.',
+            'message' => 'تم تسجيل الغياب بنجاح.',
             'data'    => new AbsenceResource($absence)
         ], 201);
     }
@@ -59,7 +59,7 @@ class StudentCourseAbsenceController extends Controller
             return response()->json([
                 'code'    => 404,
                 'status'  => 'error',
-                'message' => 'Absence record not found.'
+                'message' => 'سجل الغياب غير موجود.'
             ], 404);
         }
 
@@ -67,7 +67,7 @@ class StudentCourseAbsenceController extends Controller
 
         return response()->json([
             'code'   => 200,
-            'message' => 'Absence record retrieved successfully.',
+            'message' => 'تم جلب سجل الغياب بنجاح.',
             'data'   => new AbsenceResource($absence)
         ], 200);
     }
@@ -82,7 +82,7 @@ class StudentCourseAbsenceController extends Controller
         if (!$absence) {
             return response()->json([
                 'code'    => 404,
-                'message' => 'Absence record not found.'
+                'message' => 'سجل الغياب غير موجود.'
             ], 404);
         }
 
@@ -91,7 +91,7 @@ class StudentCourseAbsenceController extends Controller
 
         return response()->json([
             'code'    => 200,
-            'message' => 'Absence record updated successfully.',
+            'message' => 'تم تحديث سجل الغياب بنجاح.',
             'data'    => new AbsenceResource($absence)
         ], 200);
     }
@@ -106,7 +106,7 @@ class StudentCourseAbsenceController extends Controller
         if (!$absence) {
             return response()->json([
                 'code'    => 404,
-                'message' => 'Absence record not found.'
+                'message' => 'سجل الغياب غير موجود.'
             ], 404);
         }
 
@@ -114,7 +114,7 @@ class StudentCourseAbsenceController extends Controller
 
         return response()->json([
             'code'    => 200,
-            'message' => 'Absence record deleted successfully.'
+            'message' => 'تم حذف سجل الغياب بنجاح.'
         ], 200);
     }
 }

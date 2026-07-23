@@ -28,7 +28,7 @@ class ProjectController extends Controller
 
         return response()->json([
             'code'    => 201,
-            'message' => 'Project created successfully.',
+            'message' => 'تم إنشاء المشروع بنجاح.',
             'data'    => new ProjectResource($project->fresh())
         ], 201);
     }
@@ -41,7 +41,7 @@ class ProjectController extends Controller
         if (!$project) {
             return response()->json([
                 'code'    => 404,
-                'message' => 'Project not found',
+                'message' => 'المشروع غير موجود.',
                 'data'    => null
             ], 404);
         }
@@ -49,7 +49,7 @@ class ProjectController extends Controller
         if (!$project->is_active) {
             return response()->json([
                 'code'    => 403,
-                'message' => 'This project is archived and cannot be modified.'
+                'message' => 'هذا المشروع مؤرشف ولا يمكن تعديله.'
             ], 403);
         }
 
@@ -73,25 +73,30 @@ class ProjectController extends Controller
 
         return response()->json([
             'code'    => 200,
-            'message' => 'Project updated successfully.',
+            'message' => 'تم تحديث بيانات المشروع بنجاح.',
             'data'    => new ProjectResource($updatedProject)
         ], 200);
     }
 
-    /* الحصول على مشروع معين (مع التأكد من وجوده أولاً) */
+    /* جلب قائمة المشاريع مع دعم الفلترة والبحث */
     public function getAllProjects(Request $request): JsonResponse
     {
-        $status = $request->has('active')
-            ? filter_var($request->query('active'), FILTER_VALIDATE_BOOLEAN)
-            : null;
+        $filters = [
+            'name'       => $request->query('name') ?? $request->query('search'),
+            'supervisor' => $request->query('supervisor'),
+            'audience'   => $request->query('audience'),
+            'active'     => $request->has('active')
+                ? filter_var($request->query('active'), FILTER_VALIDATE_BOOLEAN)
+                : null,
+        ];
         $limit = $request->query('limit');
 
-        $projects = $this->projectService->getAllProjects($status, $limit);
+        $projects = $this->projectService->getAllProjects($filters, $limit);
 
         if ($projects->isEmpty()) {
             return response()->json([
                 'code'    => 200,
-                'message' => 'No projects found.',
+                'message' => 'لم يتم العثور على مشاريع.',
                 'data'    => []
             ], 200);
         }
@@ -100,48 +105,69 @@ class ProjectController extends Controller
 
         return response()->json([
             'code'    => 200,
-            'message' => is_null($status) ? 'All projects retrieved.' : 'Projects filtered by status.',
+            'message' => 'تم جلب المشاريع بنجاح.',
             'data'    => $resource['data'],
             'meta'    => $resource['meta'] ?? null,
             'links'   => $resource['links'] ?? null
         ], 200);
     }
-    /* الحصول على مشروع معين (مع التأكد من وجوده أولاً) */
-    public function getProject(int $id): JsonResponse
+
+    /* جلب جميع الفئات المستهدفة المتاحة للمشاريع */
+    public function getAudiences(): JsonResponse
+    {
+        $audiences = Project::query()
+            ->whereNotNull('audience')
+            ->where('audience', '!=', '')
+            ->distinct()
+            ->pluck('audience')
+            ->values();
+
+        return response()->json([
+            'code'    => 200,
+            'message' => 'تم جلب الفئات المستهدفة بنجاح.',
+            'data'    => $audiences
+        ], 200);
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function getProject($id)
     {
         $project = $this->projectService->getProjectById($id);
 
         if (!$project) {
             return response()->json([
-                'code'    => 404,
-                'message' => 'Project not found',
-                'data'    => null
+                'code' => 404,
+                'message' => 'المشروع غير موجود.',
+                'data' => null
             ], 404);
         }
 
         return response()->json([
-            'code'    => 200,
-            'message' => 'Project retrieved successfully',
-            'data'    => new ProjectResource($project)
+            'code' => 200,
+            'message' => 'تم جلب بيانات المشروع بنجاح',
+            'data' => new ProjectResource($project)
         ], 200);
     }
-    /* حذف مشروع (مع التأكد من وجوده أولاً) */
-    public function editProjectStatus(int $id): JsonResponse
+
+    public function editProjectStatus(Request $request, $id)
     {
-        $project = Project::find($id);
+        $project = $this->projectService->getProjectById($id);
 
         if (!$project) {
             return response()->json([
-                'code'    => 404,
-                'message' => 'Project not found'
+                'code' => 404,
+                'message' => 'المشروع غير موجود.',
+                'data' => null
             ], 404);
         }
 
         $updatedProject = $this->projectService->editProjectStatus($project);
 
         return response()->json([
-            'code'    => 200,
-            'message' => $updatedProject->is_active ? 'Project activated' : 'Project archived',
+            'code' => 200,
+            'message' => $updatedProject->is_active ? 'تم تفعيل المشروع' : 'تم أرشفة المشروع',
             'data'    => new ProjectResource($updatedProject)
         ], 200);
     }
@@ -154,7 +180,7 @@ class ProjectController extends Controller
         if (!$project) {
             return response()->json([
                 'code'    => 404,
-                'message' => 'Project not found',
+                'message' => 'المشروع غير موجود.',
                 'data'    => null
             ], 404);
         }
@@ -163,7 +189,7 @@ class ProjectController extends Controller
 
         return response()->json([
             'code'    => 200,
-            'message' => 'Project deleted successfully.',
+            'message' => 'تم حذف المشروع بنجاح.',
             'data'    => null
         ], 200);
     }
@@ -177,7 +203,7 @@ class ProjectController extends Controller
         // حتى لو كانت فارغة، سيرجع مصفوفة JSON نظيفة []
         return response()->json([
             'code'    => 200,
-            'message' => 'Projects retrieved successfully.',
+            'message' => 'تم جلب المشاريع بنجاح.',
             'data'    => ProjectResource::collection($projects)
         ], 200);
     }

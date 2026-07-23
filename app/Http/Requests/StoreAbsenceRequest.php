@@ -28,22 +28,22 @@ class StoreAbsenceRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'student.required' => 'The student field is required.',
-            'student.integer'  => 'The student must be an integer.',
-            'student.exists'   => 'The selected student does not exist.',
+            'student.required' => 'حقل الطالب مطلوب.',
+            'student.integer'  => 'حقل الطالب يجب أن يكون عدداً صحيحاً.',
+            'student.exists'   => 'الطالب المحدد غير موجود.',
 
-            'course.required' => 'The course field is required.',
-            'course.integer'  => 'The course must be an integer.',
-            'course.exists'   => 'The selected course does not exist.',
+            'course.required' => 'حقل الكورس مطلوب.',
+            'course.integer'  => 'حقل الكورس يجب أن يكون عدداً صحيحاً.',
+            'course.exists'   => 'الكورس المحدد غير موجود.',
 
-            'note.string' => 'The note must be a string.',
-            'note.max'    => 'The note may not be greater than 255 characters.',
+            'note.string' => 'الملاحظة يجب أن تكون نصاً.',
+            'note.max'    => 'الملاحظة يجب ألا تتجاوز 255 حرفاً.',
 
-            'type.required' => 'The type field is required.',
-            'type.in'       => 'The selected type is invalid. It must be one of: present,full, first_period, second_period.',
+            'type.required' => 'حقل النوع مطلوب.',
+            'type.in'       => 'القيمة المحددة لحقل ... غير صالحة.',
 
-            'date.required' => 'The date field is required.',
-            'date.date'     => 'The date is not a valid date format.',
+            'date.required' => 'حقل التاريخ مطلوب.',
+            'date.date'     => 'التاريخ ليس بصيغة تاريخ صالحة.',
         ];
     }
 
@@ -65,7 +65,7 @@ class StoreAbsenceRequest extends FormRequest
                 ->exists();
 
             if (!$studentInCourse) {
-                $validator->errors()->add('student', 'The selected student is not registered in any circle belonging to this course.');
+                $validator->errors()->add('student', 'الطالب المحدد غير مسجّل في أي حلقة تابعة لهذا الكورس.');
             }
 
             $isValidDate = DB::table('course_dates')
@@ -74,7 +74,7 @@ class StoreAbsenceRequest extends FormRequest
                 ->exists();
 
             if (!$isValidDate) {
-                $validator->errors()->add('date', 'The selected date is not a valid session date for this course.');
+                $validator->errors()->add('date', 'التاريخ المحدد ليس تاريخ جلسة صالحاً لهذا الكورس.');
             }
 
             $absenceExists = DB::table('student_course_absences')
@@ -84,7 +84,7 @@ class StoreAbsenceRequest extends FormRequest
                 ->exists();
 
             if ($absenceExists) {
-                $validator->errors()->add('date', 'An absence record already exists for this student on the selected date.');
+                $validator->errors()->add('date', 'يوجد سجل غياب مسبق لهذا الطالب في التاريخ المحدد.');
             }
         });
     }

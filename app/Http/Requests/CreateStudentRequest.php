@@ -67,20 +67,20 @@ class CreateStudentRequest extends FormRequest
     public function messages()
     {
         return [
-            'first_name.required' => 'First name is required.',
-            'last_name.required' => 'Last name is required.',
-            'phone_number.regex' => 'Phone number must start with 09 and be followed by 8 digits.',
-            'phone_number.unique' => 'The phone number has already been taken.',
-            'birth_date.required' => 'Birth date is required.',
-            'academic_class.required' => 'Academic class is required.',
-            'reading_level.required' => 'Reading level is required.',
-            'father_name.required' => 'Father name is required.',
-            'parent_social_state.required' => 'Parent social state is required.',
-            'father_phone.required' => 'Father phone is required.',
-            'father_phone.regex' => 'Father phone number must start with 09 and be followed by 8 digits.',
-            'password.required' => 'Password is required.',
-            'password.min' => 'Password must be at least 8 characters.',
-            'password.confirmed' => 'Password confirmation does not match.',
+            'first_name.required' => 'الاسم الأول مطلوب.',
+            'last_name.required' => 'اسم العائلة مطلوب.',
+            'phone_number.regex' => 'رقم الهاتف يجب أن يبدأ بـ 09 متبوعاً بـ 8 أرقام.',
+            'phone_number.unique' => 'رقم الهاتف مستخدم مسبقاً.',
+            'birth_date.required' => 'تاريخ الميلاد مطلوب.',
+            'academic_class.required' => 'الصف الدراسي مطلوب.',
+            'reading_level.required' => 'مستوى القراءة مطلوب.',
+            'father_name.required' => 'اسم الأب مطلوب.',
+            'parent_social_state.required' => 'الحالة الاجتماعية لولي الأمر مطلوبة.',
+            'father_phone.required' => 'رقم هاتف الأب مطلوب.',
+            'father_phone.regex' => 'رقم هاتف الأب يجب أن يبدأ بـ 09 متبوعاً بـ 8 أرقام.',
+            'password.required' => 'كلمة المرور مطلوبة.',
+            'password.min' => 'كلمة المرور يجب أن تكون 8 أحرف على الأقل.',
+            'password.confirmed' => 'تأكيد كلمة المرور غير متطابق.',
         ];
     }
     public function failedValidation(Validator $validator)

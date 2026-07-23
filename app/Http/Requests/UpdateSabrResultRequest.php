@@ -24,11 +24,11 @@ class UpdateSabrResultRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'value.required' => 'The value field is required.',
-            'value.string'   => 'The value field must be a string.',
-            'value.max'      => 'The value may not be greater than 100 characters.',
-            'note.required'  => 'The note field is required.',
-            'note.string'    => 'The note field must be a string.',
+            'value.required' => 'حقل النتيجة مطلوب.',
+            'value.string'   => 'حقل النتيجة يجب أن يكون نصاً.',
+            'value.max'      => 'حقل النتيجة يجب ألا يتجاوز 100 حرف.',
+            'note.required'  => 'حقل الملاحظة مطلوب.',
+            'note.string'    => 'حقل الملاحظة يجب أن يكون نصاً.',
         ];
     }
 

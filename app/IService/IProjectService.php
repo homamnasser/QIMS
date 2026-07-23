@@ -9,7 +9,7 @@ interface IProjectService
 {
     public function createProject(array $data): Project;
     public function updateProject(Project $project, array $data): Project;
-    public function getAllProjects($status = null, $limit = null);
+    public function getAllProjects(array $filters = [], $limit = null);
     public function getProjectById(int $id): ?Project;
     public function editProjectStatus(Project $project): Project;
     public function authorizeProjectAccess(int $projectId): bool;

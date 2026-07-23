@@ -25,9 +25,9 @@ class UpdateExamRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'mark.required' => 'The exam mark field is required to update the score.',
-            'mark.numeric'  => 'The exam mark must be a valid integer or floating-point number.',
-            'mark.min'      => 'The exam mark cannot be less than zero.',
+            'mark.required' => 'حقل علامة الامتحان مطلوب لتحديث الدرجة.',
+            'mark.numeric'  => 'علامة الامتحان يجب أن تكون عدداً صحيحاً أو عشرياً صالحاً.',
+            'mark.min'      => 'علامة الامتحان لا يمكن أن تكون أقل من صفر.',
         ];
     }
 
@@ -49,7 +49,7 @@ class UpdateExamRequest extends FormRequest
 
                 if ($subject && isset($subject->max_marks)) {
                     if ((float)$mark > (float)$subject->max_marks) {
-                        $validator->errors()->add('mark', "The updated exam mark cannot be greater than the subject max mark limit ({$subject->max_marks}).");
+                        $validator->errors()->add('mark', "علامة الامتحان المحدّثة لا يمكن أن تتجاوز الحد الأقصى لعلامة المادة ({$subject->max_marks}).");
                     }
                 }
             }

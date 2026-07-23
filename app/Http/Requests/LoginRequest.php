@@ -24,8 +24,8 @@ class LoginRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'email.required'    => 'The email address is required.',
-            'password.required' => 'The password field cannot be empty.',
+            'email.required'    => 'حقل البريد الإلكتروني مطلوب.',
+            'password.required' => 'حقل كلمة المرور لا يمكن أن يكون فارغاً.',
         ];
     }
 

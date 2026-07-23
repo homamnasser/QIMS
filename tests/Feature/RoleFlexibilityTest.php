@@ -86,7 +86,7 @@ class RoleFlexibilityTest extends TestCase
 
         $response
             ->assertUnprocessable()
-            ->assertJsonPath('message.role_family.0', 'The role family is required.');
+            ->assertJsonPath('message.role_family.0', 'عائلة الدور مطلوبة.');
 
         $this->assertDatabaseMissing('roles', ['name' => 'مدير فرع دمشق']);
     }

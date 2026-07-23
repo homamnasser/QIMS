@@ -38,7 +38,7 @@ class UpdateCourseCurriculumRequest extends FormRequest
                         ->exists();
 
                     if ($exists) {
-                        $fail("The lesson (ID: {$value}) is already assigned to another date in this course.");
+                        $fail("الدرس (معرّف: {$value}) مُسنَد مسبقاً لتاريخ آخر في هذا الكورس.");
                     }
                 },
             ],
@@ -49,12 +49,12 @@ class UpdateCourseCurriculumRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'lesson_ids.required' => 'At least one lesson must be assigned to the course date.',
-            'lesson_ids.array'    => 'The lesson_ids field must be an array of lesson IDs.',
-            'lesson_ids.min'      => 'At least one lesson must be assigned to the course date.',
-            'lesson_ids.*.integer' => 'Each lesson ID must be an integer.',
-            'lesson_ids.*.distinct' => 'Duplicate lesson IDs are not allowed.',
-            'lesson_ids.*.exists' => 'One or more of the provided lesson IDs do not exist in the system.',
+            'lesson_ids.required' => 'يجب إسناد درس واحد على الأقل لتاريخ الكورس.',
+            'lesson_ids.array'    => 'حقل معرّفات الدروس يجب أن يكون مصفوفة.',
+            'lesson_ids.min'      => 'يجب إسناد درس واحد على الأقل لتاريخ الكورس.',
+            'lesson_ids.*.integer' => 'معرّف كل درس يجب أن يكون عدداً صحيحاً.',
+            'lesson_ids.*.distinct' => 'لا يُسمح بتكرار معرّفات الدروس.',
+            'lesson_ids.*.exists' => 'معرّف درس واحد أو أكثر غير موجود في النظام.',
         ];
     }
 

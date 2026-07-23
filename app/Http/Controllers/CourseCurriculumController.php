@@ -38,7 +38,7 @@ class CourseCurriculumController extends Controller
 
         return response()->json([
             'code'    => 200,
-            'message' => 'Lessons assigned successfully.',
+            'message' => 'تم إسناد الدروس بنجاح.',
             'data'    => new CourseDateScheduleResource($result)
         ], 200);
     }
@@ -53,7 +53,7 @@ class CourseCurriculumController extends Controller
         if (!$existsInPivot) {
             return response()->json([
                 'code'    => 404,
-                'message' => 'Cannot update. No lessons are currently assigned to this Course Date ID (' . $id . ').'
+                'message' => 'تعذّر التحديث. لا توجد دروس مُسندة حالياً لمعرّف تاريخ الكورس (' . $id . ').'
             ], 404);
         }
 
@@ -82,7 +82,7 @@ class CourseCurriculumController extends Controller
         return response()->json([
             'code'    => 200,
             'status'  => 'success',
-            'message' => 'Course curriculum updated successfully.',
+            'message' => 'تم تحديث المنهج الدراسي للكورس بنجاح.',
             'data'    => new CourseDateScheduleResource($result)
         ], 200);
     }
@@ -96,7 +96,7 @@ class CourseCurriculumController extends Controller
             return response()->json([
                 'code'    => 404,
                 'status'  => 'error',
-                'message' => 'No assigned lessons found for this ID.',
+                'message' => 'لم يتم العثور على دروس مُسندة لهذا المعرّف.',
             ], 404);
         }
 
@@ -106,14 +106,14 @@ class CourseCurriculumController extends Controller
             return response()->json([
                 'code'    => 200,
                 'status'  => 'success',
-                'message' => 'All lessons have been removed from this date successfully.',
+                'message' => 'تم إزالة جميع الدروس من هذا التاريخ بنجاح.',
             ], 200);
         }
 
         return response()->json([
             'code'    => 500,
             'status'  => 'error',
-            'message' => 'Something went wrong while deleting.',
+            'message' => 'حدث خطأ أثناء عملية الحذف.',
         ], 500);
     }
 
@@ -128,21 +128,21 @@ class CourseCurriculumController extends Controller
         if (!$courseDate) {
             return response()->json([
                 'code'    => 404,
-                'message' => 'Course Date not found.'
+                'message' => 'تاريخ الكورس غير موجود.'
             ], 404);
         }
 
         if ($courseDate->lessons->isEmpty()) {
             return response()->json([
                 'code'    => 200,
-                'message' => 'This date has no assigned lessons.',
+                'message' => 'لا توجد دروس مُسندة لهذا التاريخ.',
                 'data'    => new CourseDateScheduleResource($courseDate)
             ], 200);
         }
 
         return response()->json([
             'code'    => 200,
-            'message' => 'Daily curriculum retrieved successfully.',
+            'message' => 'تم جلب المنهج اليومي بنجاح.',
             'data'    => new CourseDateScheduleResource($courseDate)
         ], 200);
     }
@@ -159,7 +159,7 @@ public function getCurriculumByCourse(int $courseId): JsonResponse
         return response()->json([
             'code'    => 404,
             'status'  => 'error',
-            'message' => 'The course with ID (' . $courseId . ') does not exist.',
+            'message' => 'الكورس ذو المعرّف (' . $courseId . ') غير موجود.',
         ], 404);
     }
 
@@ -170,7 +170,7 @@ public function getCurriculumByCourse(int $courseId): JsonResponse
     return response()->json([
         'code'    => 200,
         'status'  => 'success',
-        'message' => 'Full course curriculum retrieved successfully.',
+        'message' => 'تم جلب المنهج الدراسي الكامل للكورس بنجاح.',
         'data'    => CourseDateScheduleResource::collection($curriculum)
     ], 200);
 }

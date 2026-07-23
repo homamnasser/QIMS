@@ -43,13 +43,13 @@ class UpdateUserRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'phone.unique'   => 'the phone already exist',
-            'phone.phone'    => 'please enter a valid phone number',
-            'email.email'    => 'Please enter a valid email address in the format name@gmail.com',
-            'password.min'   => 'Password must be at least 8 characters',
-            'password.confirmed' => 'Password confirmation does not match',
-            'email.unique'   => 'the email already exist',
-            'role_id.exists' => 'The selected role is invalid.',
+            'phone.unique'   => 'رقم الهاتف مستخدم مسبقاً.',
+            'phone.phone'    => 'يرجى إدخال رقم هاتف صالح.',
+            'email.email'    => 'يرجى إدخال بريد إلكتروني صالح.',
+            'password.min'   => 'كلمة المرور يجب أن تكون 8 أحرف على الأقل.',
+            'password.confirmed' => 'تأكيد كلمة المرور غير متطابق.',
+            'email.unique'   => 'البريد الإلكتروني مستخدم مسبقاً.',
+            'role_id.exists' => 'الدور المحدد غير صالح.',
 
         ];
     }

@@ -66,7 +66,7 @@ class StoreStudentMarkRequest extends FormRequest
                 ->exists();
 
             if (!$circleInCourse) {
-                $validator->errors()->add('circle', 'The selected circle does not belong to this specific course.');
+                $validator->errors()->add('circle', 'الحلقة المحددة لا تنتمي لهذا الكورس.');
             }
 
             // 2️⃣ الشرط الثاني: التأكد أن الطالب مسجل فعلياً في هذه الحلقة
@@ -76,7 +76,7 @@ class StoreStudentMarkRequest extends FormRequest
                 ->exists();
 
             if (!$studentInCircle) {
-                $validator->errors()->add('student', 'The selected student is not registered in this specific circle.');
+                $validator->errors()->add('student', 'الطالب المحدد غير مسجّل في هذه الحلقة.');
             }
 
             // 3️⃣ الشرط الثالث: إذا كان المسجل "أستاذ"، يجب أن يكون مسؤولاً عن الحلقة (المشرف يتجاوز هذا الفحص تلقائياً 🛡️)
@@ -87,7 +87,7 @@ class StoreStudentMarkRequest extends FormRequest
                     ->exists();
 
                 if (!$isActualTeacher) {
-                    $validator->errors()->add('circle', 'Unauthorized! You are not the assigned teacher for this circle.');
+                    $validator->errors()->add('circle', 'غير مصرّح! أنت لست المعلم المُسنَد لهذه الحلقة.');
                 }
             }
 
@@ -99,7 +99,7 @@ class StoreStudentMarkRequest extends FormRequest
                 ->exists();
 
             if ($marksRecordExists) {
-                $validator->errors()->add('student', 'A marks summary record already exists for this student in this circle and course.');
+                $validator->errors()->add('student', 'يوجد سجل ملخص درجات مسبق لهذا الطالب في هذه الحلقة والكورس.');
             }
         });
     }

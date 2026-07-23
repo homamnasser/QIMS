@@ -31,14 +31,14 @@ class CreateNoteRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'student_id.required' => "Student ID is required.",
-            'student_id.integer'  => "Student ID must be an integer.",
-            'student_id.exists'   => "Selected student does not exist.",
-            'title.required'      => "Note title is required.",
-            'title.string'        => "Note title must be a string.",
-            'title.max'           => "Note title cannot exceed 255 characters.",
-            'description.required' => "Note description is required.",
-            'description.string'   => "Note description must be a string.",
+            'student_id.required' => "معرّف الطالب مطلوب.",
+            'student_id.integer'  => "معرّف الطالب يجب أن يكون عدداً صحيحاً.",
+            'student_id.exists'   => "الطالب المحدد غير موجود.",
+            'title.required'      => "عنوان الملاحظة مطلوب.",
+            'title.string'        => "عنوان الملاحظة يجب أن يكون نصاً.",
+            'title.max'           => "عنوان الملاحظة يجب ألا يتجاوز 255 حرفاً.",
+            'description.required' => "وصف الملاحظة مطلوب.",
+            'description.string'   => "وصف الملاحظة يجب أن يكون نصاً.",
         ];
     }
     protected function failedValidation(Validator $validator): void

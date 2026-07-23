@@ -36,7 +36,7 @@ class UpdateCourseRequest extends FormRequest
                     $project = \App\Models\Project::find($value);
 
                     if ($project && !$project->is_active) {
-                        $fail('The selected project is not active.');
+                        $fail('المشروع المحدد غير فعّال.');
                     }
                 },
             ],
@@ -47,7 +47,7 @@ class UpdateCourseRequest extends FormRequest
                     $user = User::find($value);
 
                     if ($user && !$user->canSupervise()) {
-                        $fail('The selected user must have the supervision capability.');
+                        $fail('المستخدم المحدد يجب أن يملك صلاحية الإشراف.');
                     }
                 },
             ],
@@ -59,25 +59,25 @@ class UpdateCourseRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.string' => 'Course name must be a string.',
-            'name.max' => 'Course name may not be greater than 255 characters.',
+            'name.string' => 'اسم الكورس يجب أن يكون نصاً.',
+            'name.max' => 'اسم الكورس يجب ألا يتجاوز 255 حرفاً.',
 
-            'description.string' => 'Course description must be a string.',
-
-
-            'mosque_id.exists' => 'The selected mosque does not exist.',
-
-            'project_id.exists' => 'The selected project does not exist.',
-
-            'supervisor_id.exists' => 'The selected supervisor does not exist.',
-
-            'start_date.date' => 'Start date must be a valid date.',
-
-            'end_date.date' => 'End date must be a valid date.',
-            'end_date.after_or_equal' => 'End date must be after or equal to the start date.',
+            'description.string' => 'وصف الكورس يجب أن يكون نصاً.',
 
 
-            'parent_course_id.exists' => 'The selected parent course does not exist.',
+            'mosque_id.exists' => 'المسجد المحدد غير موجود.',
+
+            'project_id.exists' => 'المشروع المحدد غير موجود.',
+
+            'supervisor_id.exists' => 'المشرف المحدد غير موجود.',
+
+            'start_date.date' => 'تاريخ البدء يجب أن يكون تاريخاً صالحاً.',
+
+            'end_date.date' => 'تاريخ الانتهاء يجب أن يكون تاريخاً صالحاً.',
+            'end_date.after_or_equal' => 'تاريخ الانتهاء يجب أن يكون بعد أو مساوياً لتاريخ البدء.',
+
+
+            'parent_course_id.exists' => 'الكورس الأب المحدد غير موجود.',
         ];
     }
     protected function failedValidation(Validator $validator): void

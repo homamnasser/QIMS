@@ -52,7 +52,7 @@ class MemorizationController extends Controller
         return response()->json([
             'code'    => 201,
             'status'  => 'success',
-            'message' => 'Memorization pages recorded successfully without duplication.',
+            'message' => 'تم تسجيل صفحات الحفظ بنجاح بدون تكرار.',
             'data'    => MemorizationResource::collection($insertedMemorizations)
         ], 201);
     }
@@ -65,7 +65,7 @@ class MemorizationController extends Controller
             return response()->json([
                 'code'    => 404,
                 'status'  => 'error',
-                'message' => 'Memorization record not found.'
+                'message' => 'سجل الحفظ غير موجود.'
             ], 404);
         }
 
@@ -85,7 +85,7 @@ class MemorizationController extends Controller
         if (!$memorization) {
             return response()->json([
                 'code'    => 404,
-                'message' => 'Memorization record not found.'
+                'message' => 'سجل الحفظ غير موجود.'
             ], 404);
         }
 
@@ -93,7 +93,7 @@ class MemorizationController extends Controller
 
         return response()->json([
             'code'    => 200,
-            'message' => 'Memorization record deleted successfully.'
+            'message' => 'تم حذف سجل الحفظ بنجاح.'
         ], 200);
     }
 
@@ -106,7 +106,7 @@ class MemorizationController extends Controller
             return response()->json([
                 'code'    => 403,
                 'status'  => 'error',
-                'message' => 'This account does not have any role assigned.'
+                'message' => 'هذا الحساب لا يملك أي دور مُسنَد.'
             ], 403);
         }
 
@@ -119,7 +119,7 @@ class MemorizationController extends Controller
             return response()->json([
                 'code'    => 200,
                 'status'  => 'success',
-                'message' => 'No memorization records found for your account.',
+                'message' => 'لم يتم العثور على سجلات حفظ لحسابك.',
                 'data'    => []
             ], 200);
         }
@@ -140,7 +140,7 @@ class MemorizationController extends Controller
             return response()->json([
                 'code'    => 200,
                 'status'  => 'success',
-                'message' => 'No memorization records found.',
+                'message' => 'لم يتم العثور على سجلات حفظ.',
                 'data'    => []
             ], 200);
         }

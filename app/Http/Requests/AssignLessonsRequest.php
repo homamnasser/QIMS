@@ -46,7 +46,7 @@ class AssignLessonsRequest extends FormRequest
                         ->exists();
 
                     if ($exists) {
-                        $fail("The lesson (ID: {$value}) has already been assigned to another date in this course curriculum.");
+                        $fail("الدرس (معرّف: {$value}) مُسنَد مسبقاً لتاريخ آخر في هذا الكورس.");
                     }
                 },
             ],
@@ -59,14 +59,14 @@ class AssignLessonsRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'course_date_id.required' => 'The course date ID is required.',
-            'course_date_id.exists'   => 'The selected course date does not exist.',
-            'lesson_ids.required'     => 'At least one lesson must be selected.',
-            'lesson_ids.array'        => 'The lessons must be provided as an array.',
-            'lesson_ids.min'          => 'You must select at least one lesson.',
-            'lesson_ids.*.integer'    => 'Each lesson ID must be a valid number.',
-            'lesson_ids.*.distinct'   => 'Each lesson must be selected only once in this request.',
-            'lesson_ids.*.exists'     => 'One or more selected lessons do not exist in our records.',
+            'course_date_id.required' => 'معرّف تاريخ الكورس مطلوب.',
+            'course_date_id.exists'   => 'تاريخ الكورس المحدد غير موجود.',
+            'lesson_ids.required'     => 'يجب اختيار درس واحد على الأقل.',
+            'lesson_ids.array'        => 'يجب تقديم الدروس كمصفوفة.',
+            'lesson_ids.min'          => 'يجب اختيار درس واحد على الأقل.',
+            'lesson_ids.*.integer'    => 'معرّف كل درس يجب أن يكون رقماً صالحاً.',
+            'lesson_ids.*.distinct'   => 'يجب اختيار كل درس مرة واحدة فقط في هذا الطلب.',
+            'lesson_ids.*.exists'     => 'درس واحد أو أكثر من الدروس المحددة غير موجود في سجلاتنا.',
         ];
     }
 

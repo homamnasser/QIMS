@@ -68,13 +68,13 @@ class UpdateRoleRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.unique' => 'This role name already exists, please choose another.',
-            'name.max' => 'The name may not be greater than 255 characters.',
-            'role_family.in' => 'The selected role family is invalid.',
+            'name.unique' => 'اسم الدور موجود مسبقاً، يرجى اختيار اسم آخر.',
+            'name.max' => 'الاسم يجب ألا يتجاوز 255 حرفاً.',
+            'role_family.in' => 'عائلة الدور المحددة غير صالحة.',
             'confirm_privileged_family.required' => 'يجب تأكيد منح الأهلية الإدارية أو الإشرافية لهذا الدور.',
             'confirm_privileged_family.accepted' => 'يجب تأكيد منح الأهلية الإدارية أو الإشرافية لهذا الدور.',
-            'permissions.*.integer' => 'Each permission ID must be a number.',
-            'permissions.*.exists' => 'One or more selected permissions are invalid.',
+            'permissions.*.integer' => 'معرّف كل صلاحية يجب أن يكون رقماً.',
+            'permissions.*.exists' => 'صلاحية واحدة أو أكثر من المحددة غير صالحة.',
 
         ];
     }

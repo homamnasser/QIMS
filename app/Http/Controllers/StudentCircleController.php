@@ -39,7 +39,7 @@ class StudentCircleController extends Controller
         if (!$circle) {
             return response()->json([
                 'code'    => 404,
-                'message' => 'Circle not found.',
+                'message' => 'الحلقة الدراسية غير موجودة.',
                 'data'    => null
             ], 404);
         }
@@ -86,7 +86,7 @@ class StudentCircleController extends Controller
         if (!$circle) {
             return response()->json([
                 'code'    => 404,
-                'message' => 'Circle not found.',
+                'message' => 'الحلقة الدراسية غير موجودة.',
                 'data'    => null
             ], 404);
         }
@@ -95,7 +95,7 @@ class StudentCircleController extends Controller
         if (!$student) {
             return response()->json([
                 'code'    => 404,
-                'message' => 'Student not found.',
+                'message' => 'الطالب غير موجود.',
                 'data'    => null
             ], 404);
         }
@@ -105,14 +105,14 @@ class StudentCircleController extends Controller
         if (!$deleted) {
             return response()->json([
                 'code'    => 404,
-                'message' => 'Student is not assigned to this circle.',
+                'message' => 'الطالب غير مسجّل في هذه الحلقة الدراسية.',
                 'data'    => null
             ], 404);
         }
 
         return response()->json([
             'code'    => 200,
-            'message' => 'Student removed from circle successfully.',
+            'message' => 'تم إزالة الطالب من الحلقة الدراسية بنجاح.',
         ], 200);
     }
 
@@ -126,7 +126,7 @@ class StudentCircleController extends Controller
         if (!$circle) {
             return response()->json([
                 'code'    => 404,
-                'message' => 'Circle not found.',
+                'message' => 'الحلقة الدراسية غير موجودة.',
                 'data'    => null
             ], 404);
         }
@@ -137,7 +137,7 @@ class StudentCircleController extends Controller
 
         return response()->json([
             'code'    => 200,
-            'message' => 'Circle students retrieved successfully.',
+            'message' => 'تم جلب قائمة طلاب الحلقة الدراسية بنجاح.',
             'data'    => StudentCircleResource::collection($records)
         ], 200);
     }

@@ -30,13 +30,13 @@ class CourseDateController extends Controller
         if (!$result) {
             return response()->json([
                 'code' => 400,
-                'message' => 'No new dates matches your selection or all dates already exist.'
+                'message' => 'لا توجد تواريخ جديدة تطابق اختيارك أو أن جميع التواريخ موجودة مسبقاً.'
             ], 400);
         }
 
         return response()->json([
             'code'    => 201,
-            'message' => 'Course dates generated successfully.',
+            'message' => 'تم توليد تواريخ الكورس بنجاح.',
             'data'    => CourseDateResource::collection($result)
         ], 201);
     }
@@ -48,7 +48,7 @@ class CourseDateController extends Controller
         if (!$course) {
             return response()->json([
                 'code'    => 404,
-                'message' => 'Course not found.'
+                'message' => 'الكورس غير موجود.'
             ], 404);
         }
 
@@ -56,7 +56,7 @@ class CourseDateController extends Controller
 
         return response()->json([
             'code' => 200,
-            'message' => 'Dates retrieved successfully.',
+            'message' => 'تم جلب التواريخ بنجاح.',
             'data' => CourseDateResource::collection($dates)
         ], 200);
     }
@@ -67,7 +67,7 @@ class CourseDateController extends Controller
         if (!$courseDate) {
             return response()->json([
                 'code'    => 404,
-                'message' => 'Course date not found.'
+                'message' => 'تاريخ الكورس غير موجود.'
             ], 404);
         }
 
@@ -75,7 +75,7 @@ class CourseDateController extends Controller
 
         return response()->json([
             'code'    => 200,
-            'message' => 'Date deleted successfully.'
+            'message' => 'تم حذف التاريخ بنجاح.'
         ], 200);
     }
 
@@ -86,7 +86,7 @@ class CourseDateController extends Controller
 
         return response()->json([
             'code'    => 201,
-            'message' => 'Course date added manually successfully.',
+            'message' => 'تمت إضافة تاريخ الكورس يدوياً بنجاح.',
             'data'    => new CourseDateResource($date)
         ], 201);
     }

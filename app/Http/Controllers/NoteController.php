@@ -39,7 +39,7 @@ class NoteController extends Controller
         return response()->json([
             'code'    => 201,
             'status'  => 'success',
-            'message' => 'Student note created successfully.',
+            'message' => 'تم إنشاء ملاحظة الطالب بنجاح.',
             'data'    => new NoteResource($note)
         ], 201);
     }
@@ -55,7 +55,7 @@ class NoteController extends Controller
         if (!$student) {
             return response()->json([
                 'code'    => 404,
-                'message' => 'Student not found.',
+                'message' => 'الطالب غير موجود.',
                 'data'    => null
             ], 404);
         }
@@ -66,7 +66,7 @@ class NoteController extends Controller
         return response()->json([
             'code'    => 200,
             'status'  => 'success',
-            'message' => 'Student notes retrieved successfully.',
+            'message' => 'تم جلب ملاحظات الطالب بنجاح.',
             'data'    => NoteResource::collection($notes)
         ], 200);
     }
@@ -86,14 +86,14 @@ class NoteController extends Controller
         if (!$deleted) {
             return response()->json([
                 'code'    => 403,
-                'message' => 'Unauthorized or note not found.',
+                'message' => 'غير مصرّح أو الملاحظة غير موجودة.',
                 'data'    => null
             ], 403);
         }
 
         return response()->json([
             'code'    => 200,
-            'message' => 'Note deleted successfully.',
+            'message' => 'تم حذف الملاحظة بنجاح.',
         ], 200);
     }
 
@@ -113,7 +113,7 @@ class NoteController extends Controller
                 return response()->json([
                     'code'    => 404,
                     'status'  => 'error',
-                    'message' => 'Student not found.',
+                    'message' => 'الطالب غير موجود.',
                     'data'    => null
                 ], 404);
             }

@@ -46,13 +46,13 @@ class StoreWarningRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'student.required'  => 'student_id is required.',
-            'student.integer'   => 'student_id must be an integer.',
-            'student.exists'    => 'The specified student does not exist.',
-            'title.required'       => 'title is required.',
-            'title.string'         => 'title must be a string.',
-            'title.max'            => 'title may not be greater than 255 characters.',
-            'description.string'   => 'description must be a string.',
+            'student.required'  => 'معرّف الطالب مطلوب.',
+            'student.integer'   => 'معرّف الطالب يجب أن يكون عدداً صحيحاً.',
+            'student.exists'    => 'الطالب المحدد غير موجود.',
+            'title.required'       => 'العنوان مطلوب.',
+            'title.string'         => 'العنوان يجب أن يكون نصاً.',
+            'title.max'            => 'العنوان يجب ألا يتجاوز 255 حرفاً.',
+            'description.string'   => 'الوصف يجب أن يكون نصاً.',
         ];
     }
 

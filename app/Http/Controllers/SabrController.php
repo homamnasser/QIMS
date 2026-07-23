@@ -27,7 +27,7 @@ class SabrController extends Controller
 
         return response()->json([
             'code'    => 201,
-            'message' => 'Sabr record created successfully.',
+            'message' => 'تم إنشاء سجل السبر بنجاح.',
             'data'    => new SabrResource($sabr)
         ], 201);
     }
@@ -39,7 +39,7 @@ class SabrController extends Controller
         if (!$sabr) {
             return response()->json([
                 'code'    => 404,
-                'message' => 'The requested Sabr record was not found.'
+                'message' => 'سجل السبر المطلوب غير موجود.'
             ], 404);
         }
 
@@ -47,7 +47,7 @@ class SabrController extends Controller
         if ($sabr->giver !== auth()->id()) {
             return response()->json([
                 'code'    => 403,
-                'message' => 'You are not authorized to update this record as it belongs to another teacher.'
+                'message' => 'غير مصرّح لك بتحديث هذا السجل لأنه يعود لمعلم آخر.'
             ], 403);
         }
 
@@ -58,7 +58,7 @@ class SabrController extends Controller
 
         return response()->json([
             'code'    => 200,
-            'message' => 'Sabr value and note updated successfully.',
+            'message' => 'تم تحديث نتيجة وملاحظة السبر بنجاح.',
             'data'    => new SabrResource($sabr)
         ], 200);
     }
@@ -70,13 +70,13 @@ class SabrController extends Controller
         if (!$sabr) {
             return response()->json([
                 'code'    => 404,
-                'message' => 'Sabr not found.'
+                'message' => 'السبر غير موجود.'
             ], 404);
         }
 
         return response()->json([
             'code'    => 200,
-            'message' => 'Sabr retrieved successfully.',
+            'message' => 'تم جلب بيانات السبر بنجاح.',
             'data'    => new SabrResource($sabr)
         ], 200);
     }
@@ -89,7 +89,7 @@ class SabrController extends Controller
 
         return response()->json([
             'code'    => 200,
-            'message' => 'Sabrs retrieved successfully.',
+            'message' => 'تم جلب قائمة السبور بنجاح.',
             'data'    => SabrResource::collection($sabrs)
         ], 200);
     }
@@ -101,7 +101,7 @@ class SabrController extends Controller
         if (!$sabr) {
             return response()->json([
                 'code'    => 404,
-                'message' => 'The requested Sabr record was not found.'
+                'message' => 'سجل السبر المطلوب غير موجود.'
             ], 404);
         }
 
@@ -109,7 +109,7 @@ class SabrController extends Controller
         if (!is_null($sabr->value)) {
             return response()->json([
                 'code'    => 400,
-                'message' => 'This record cannot be deleted because a grade/value has already been assigned.'
+                'message' => 'لا يمكن حذف هذا السجل لأنه تم إسناد درجة/نتيجة إليه مسبقاً.'
             ], 400);
         }
 
@@ -117,7 +117,7 @@ class SabrController extends Controller
 
         return response()->json([
             'code'    => 200,
-            'message' => 'Sabr record deleted successfully.'
+            'message' => 'تم حذف سجل السبر بنجاح.'
         ], 200);
     }
 
@@ -136,7 +136,7 @@ class SabrController extends Controller
 
         return response()->json([
             'code'    => 200,
-            'message' => 'Sabrs retrieved successfully.',
+            'message' => 'تم جلب قائمة السبور بنجاح.',
             'data'    => SabrResource::collection($sabrs)
         ], 200);
     }

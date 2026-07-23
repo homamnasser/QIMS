@@ -26,7 +26,7 @@ class CircleController extends Controller
 
         return response()->json([
             'code'    => 201,
-            'message' => 'Circle created successfully.',
+            'message' => 'تم إنشاء الحلقة الدراسية بنجاح.',
             'data'    => new CircleResource($circle->load(['teacher', 'course']))
         ], 201);
     }
@@ -42,13 +42,13 @@ class CircleController extends Controller
         if (!$curriculum) {
             return response()->json([
                 'code'    => 404,
-                'message' => 'No circle or curriculum found for this teacher.',
+                'message' => 'لم يتم العثور على حلقة أو منهج لهذا المعلم.',
             ], 404);
         }
 
         return response()->json([
             'code'    => 200,
-            'message' => 'Your circle curriculum retrieved successfully.',
+            'message' => 'تم جلب منهج حلقتك الدراسية بنجاح.',
             'data'    => CourseDateScheduleResource::collection($curriculum)
         ], 200);
     }
@@ -62,13 +62,13 @@ class CircleController extends Controller
         if (!$circle) {
             return response()->json([
                 'code'    => 404,
-                'message' => 'Circle not found.',
+                'message' => 'الحلقة الدراسية غير موجودة.',
             ], 404);
         }
 
         return response()->json([
             'code'    => 200,
-            'message' => 'Circle retrieved successfully.',
+            'message' => 'تم جلب بيانات الحلقة الدراسية بنجاح.',
             'data'    => new CircleResource($circle->load(['teacher', 'course']))
         ], 200);
     }
@@ -83,7 +83,7 @@ class CircleController extends Controller
 
         return response()->json([
             'code'    => 200,
-            'message' => 'Circles retrieved successfully.',
+            'message' => 'تم جلب قائمة الحلقات الدراسية بنجاح.',
             'data'    => $resource['data'],
             'meta'    => $resource['meta'] ?? null,
             'links'   => $resource['links'] ?? null
@@ -100,7 +100,7 @@ class CircleController extends Controller
         if (!$circle) {
             return response()->json([
                 'code'    => 404,
-                'message' => 'Circle not found',
+                'message' => 'الحلقة الدراسية غير موجودة.',
             ], 404);
         }
 
@@ -108,7 +108,7 @@ class CircleController extends Controller
 
         return response()->json([
             'code'    => 200,
-            'message' => 'Circle deleted successfully.',
+            'message' => 'تم حذف الحلقة الدراسية بنجاح.',
         ], 200);
     }
     /* تحديث حلقة (مع التأكد من وجودها أولاً) */
@@ -119,7 +119,7 @@ class CircleController extends Controller
         if (!$circle) {
             return response()->json([
                 'code'    => 404,
-                'message' => 'Circle not found',
+                'message' => 'الحلقة الدراسية غير موجودة.',
             ], 404);
         }
 
@@ -145,7 +145,7 @@ class CircleController extends Controller
 
         return response()->json([
             'code'    => 200,
-            'message' => 'Circle updated successfully.',
+            'message' => 'تم تحديث بيانات الحلقة الدراسية بنجاح.',
             'data'    => new CircleResource($updatedCircle->load(['teacher', 'course']))
         ], 200);
     }

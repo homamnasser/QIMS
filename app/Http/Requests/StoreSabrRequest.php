@@ -51,7 +51,7 @@ class StoreSabrRequest extends FormRequest
                     ->exists();
 
                 if (!$isEnrolled) {
-                    $validator->errors()->add('student', 'The selected student is not registered in any circle belonging to this course.');
+                    $validator->errors()->add('student', 'الطالب المحدد غير مسجّل في أي حلقة تابعة لهذا الكورس.');
                 }
             }
         });
@@ -63,32 +63,32 @@ class StoreSabrRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'student.required' => 'The student field is required.',
-            'student.integer'  => 'The student field must be an integer.',
-            'student.exists'   => 'The selected student does not exist.',
+            'student.required' => 'حقل الطالب مطلوب.',
+            'student.integer'  => 'حقل الطالب يجب أن يكون عدداً صحيحاً.',
+            'student.exists'   => 'الطالب المحدد غير موجود.',
 
-            'giver.required' => 'The giver field is required.',
-            'giver.integer'  => 'The giver field must be an integer.',
-            'giver.exists'   => 'The selected giver does not exist.',
+            'giver.required' => 'حقل المُسبِّر مطلوب.',
+            'giver.integer'  => 'حقل المُسبِّر يجب أن يكون عدداً صحيحاً.',
+            'giver.exists'   => 'المُسبِّر المحدد غير موجود.',
 
-            'course.required' => 'The course field is required.',
-            'course.integer'  => 'The course field must be an integer.',
-            'course.exists'   => 'The selected course does not exist.',
+            'course.required' => 'حقل الكورس مطلوب.',
+            'course.integer'  => 'حقل الكورس يجب أن يكون عدداً صحيحاً.',
+            'course.exists'   => 'الكورس المحدد غير موجود.',
 
-            'date.required'   => 'The date field is required.',
-            'date.date'       => 'The date field must be a valid date.',
-            'date.format'     => 'The date must be in the format YYYY-MM-DD.',
-            'date.after' => "The date must be a future date (greater than today).",
-            'type.required'   => 'The type field is required.',
-            'type.string'     => 'The type field must be a string.',
-            'type.max'        => 'The type may not be greater than 255 characters.',
-            'type.in'         => 'The type must be either "أوقاف" or "داخلي".',
-            'parts.required'  => 'The parts field is required.',
-            'parts.array'     => 'The parts field must be an array.',
-            'parts.min'       => 'The parts field must have at least one part.',
-            'parts.*.required' => 'Each part is required.',
-            'parts.*.integer'  => 'Each part must be an integer.',
-            'parts.*.between'  => 'Each part must be between 1 and 30.',
+            'date.required'   => 'حقل التاريخ مطلوب.',
+            'date.date'       => 'حقل التاريخ يجب أن يكون تاريخاً صالحاً.',
+            'date.format'     => 'التاريخ يجب أن يكون بصيغة YYYY-MM-DD.',
+            'date.after' => "التاريخ يجب أن يكون تاريخاً مستقبلياً (بعد اليوم).",
+            'type.required'   => 'حقل النوع مطلوب.',
+            'type.string'     => 'حقل النوع يجب أن يكون نصاً.',
+            'type.max'        => 'حقل النوع يجب ألا يتجاوز 255 حرفاً.',
+            'type.in'         => 'النوع يجب أن يكون إما "أوقاف" أو "داخلي".',
+            'parts.required'  => 'حقل الأجزاء مطلوب.',
+            'parts.array'     => 'حقل الأجزاء يجب أن يكون مصفوفة.',
+            'parts.min'       => 'حقل الأجزاء يجب أن يحتوي على جزء واحد على الأقل.',
+            'parts.*.required' => 'كل جزء مطلوب.',
+            'parts.*.integer'  => 'كل جزء يجب أن يكون عدداً صحيحاً.',
+            'parts.*.between'  => 'كل جزء يجب أن يكون بين 1 و 30.',
         ];
     }
 

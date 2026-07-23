@@ -28,10 +28,10 @@ class UpdateCircleRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.string' => 'The name must be a string.',
-            'name.max'    => 'The name may not be greater than 255 characters.',
-            'teacher_id.exists' => 'The selected teacher does not exist.',
-            'course_id.exists'  => 'The selected course does not exist.',
+            'name.string' => 'الاسم يجب أن يكون نصاً.',
+            'name.max'    => 'الاسم يجب ألا يتجاوز 255 حرفاً.',
+            'teacher_id.exists' => 'المعلم المحدد غير موجود.',
+            'course_id.exists'  => 'الكورس المحدد غير موجود.',
         ];
     }
 

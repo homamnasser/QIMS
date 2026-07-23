@@ -25,8 +25,8 @@ class UpdateSubjectRequest extends FormRequest
         return [
             'name' => 'sometimes|string|max:255',
             'description' => 'sometimes|nullable|string',
-            'min_marks' => 'sometimes|integer|min:0',
-            'max_marks' => 'sometimes|integer|gt:min_marks',
+            'min_marks' => 'sometimes|integer|min:0|max:100',
+            'max_marks' => 'sometimes|integer|min:0|max:100|gt:min_marks',
             'course_id' => 'sometimes|exists:courses,id',
             'shared_with_subject_id' => 'sometimes|nullable|exists:subjects,id',
             'pdf' => 'sometimes|file|mimes:pdf',
@@ -36,12 +36,18 @@ class UpdateSubjectRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.string' => 'Subject name must be a string.',
-            'max_marks.gt' => 'The maximum marks must be greater than the minimum marks.',
-            'course_id.exists' => 'The selected course does not exist.',
-            'pdf.mimes' => 'The file must be a PDF document.',
-            'pdf.max' => 'The PDF size should not exceed 10MB.',
-            'shared_with_subject_id.exists' => 'The selected shared subject does not exist.',
+            'name.string' => 'اسم المادة الدراسية يجب أن يكون نصاً.',
+            'min_marks.integer' => 'الدرجة الصغرى يجب أن تكون عدداً صحيحاً.',
+            'min_marks.min' => 'الدرجة الصغرى يجب أن تكون 0 على الأقل.',
+            'min_marks.max' => 'الدرجة الصغرى لا يمكن أن تتجاوز 100.',
+            'max_marks.integer' => 'الدرجة العظمى يجب أن تكون عدداً صحيحاً.',
+            'max_marks.min' => 'الدرجة العظمى يجب أن تكون 0 على الأقل.',
+            'max_marks.max' => 'الدرجة العظمى لا يمكن أن تتجاوز 100.',
+            'max_marks.gt' => 'الدرجة العظمى يجب أن تكون أكبر من الدرجة الصغرى.',
+            'course_id.exists' => 'الكورس المحدد غير موجود.',
+            'pdf.mimes' => 'الملف يجب أن يكون مستند PDF.',
+            'pdf.max' => 'حجم ملف PDF يجب ألا يتجاوز 10 ميغابايت.',
+            'shared_with_subject_id.exists' => 'المادة المشتركة المحددة غير موجودة.',
         ];
     }
 

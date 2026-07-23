@@ -33,7 +33,7 @@ class StoreCourseRequest extends FormRequest
                 function ($attribute, $value, $fail) {
                     $project = \App\Models\Project::find($value);
                     if ($project && !$project->is_active) {
-                        $fail('The selected project is not active.');
+                        $fail('المشروع المحدد غير فعّال.');
                     }
                 },
             ],
@@ -44,7 +44,7 @@ class StoreCourseRequest extends FormRequest
                     $user = User::find($value);
 
                     if ($user && !$user->canSupervise()) {
-                        $fail('The selected user must have the supervision capability.');
+                        $fail('المستخدم المحدد يجب أن يملك صلاحية الإشراف.');
                     }
                 },
             ],
@@ -60,30 +60,30 @@ class StoreCourseRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.required' => 'Course name is required.',
-            'name.string' => 'Course name must be a string.',
-            'name.max' => 'Course name may not be greater than 255 characters.',
+            'name.required' => 'اسم الكورس مطلوب.',
+            'name.string' => 'اسم الكورس يجب أن يكون نصاً.',
+            'name.max' => 'اسم الكورس يجب ألا يتجاوز 255 حرفاً.',
 
-            'description.required' => 'Course description is required.',
-            'description.string' => 'Course description must be a string.',
+            'description.required' => 'وصف الكورس مطلوب.',
+            'description.string' => 'وصف الكورس يجب أن يكون نصاً.',
 
-            'mosque_id.required' => 'A mosque must be selected for the course.',
-            'mosque_id.exists' => 'The selected mosque does not exist.',
+            'mosque_id.required' => 'يجب اختيار مسجد للكورس.',
+            'mosque_id.exists' => 'المسجد المحدد غير موجود.',
 
-            'project_id.required' => 'A project must be selected for the course.',
-            'project_id.exists' => 'The selected project does not exist.',
+            'project_id.required' => 'يجب اختيار مشروع للكورس.',
+            'project_id.exists' => 'المشروع المحدد غير موجود.',
 
-            'supervisor_id.required' => 'A supervisor must be assigned to the course.',
-            'supervisor_id.exists' => 'The selected supervisor does not exist.',
+            'supervisor_id.required' => 'يجب تعيين مشرف للكورس.',
+            'supervisor_id.exists' => 'المشرف المحدد غير موجود.',
 
-            'start_date.required' => 'Start date is required.',
-            'start_date.date' => 'Start date must be a valid date.',
+            'start_date.required' => 'تاريخ البدء مطلوب.',
+            'start_date.date' => 'تاريخ البدء يجب أن يكون تاريخاً صالحاً.',
 
-            'end_date.required' => 'End date is required.',
-            'end_date.date' => 'End date must be a valid date.',
-            'end_date.after_or_equal' => 'End date must be after or equal to the start date.',
+            'end_date.required' => 'تاريخ الانتهاء مطلوب.',
+            'end_date.date' => 'تاريخ الانتهاء يجب أن يكون تاريخاً صالحاً.',
+            'end_date.after_or_equal' => 'تاريخ الانتهاء يجب أن يكون بعد أو مساوياً لتاريخ البدء.',
 
-            'parent_course_id.exists' => 'The selected parent course does not exist.',
+            'parent_course_id.exists' => 'الكورس الأب المحدد غير موجود.',
         ];
     }
 

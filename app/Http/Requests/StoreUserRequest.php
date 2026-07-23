@@ -43,13 +43,13 @@ class StoreUserRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'phone.unique'   => 'the phone already exist',
-            'phone.phone'    => 'please enter a valid phone number',
-            'email.email'    => 'Please enter a valid email address in the format name@gmail.com',
-            'password.min'   => 'Password must be at least 8 characters',
-            'password.confirmed' => 'Password confirmation does not match',
-            'role_id.required' => 'The role field is required.',
-            'role_id.exists'   => 'The selected role is invalid.',
+            'phone.unique'   => 'رقم الهاتف مستخدم مسبقاً.',
+            'phone.phone'    => 'يرجى إدخال رقم هاتف صالح.',
+            'email.email'    => 'يرجى إدخال بريد إلكتروني صالح.',
+            'password.min'   => 'كلمة المرور يجب أن تكون 8 أحرف على الأقل.',
+            'password.confirmed' => 'تأكيد كلمة المرور غير متطابق.',
+            'role_id.required' => 'حقل الدور مطلوب.',
+            'role_id.exists'   => 'الدور المحدد غير صالح.',
 
         ];
     }

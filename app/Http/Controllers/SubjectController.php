@@ -34,7 +34,7 @@ class SubjectController extends Controller
 
         return response()->json([
             'code'    => 201,
-            'message' => 'Subject created successfully.',
+            'message' => 'تم إنشاء المادة الدراسية بنجاح.',
             'data'    => new SubjectResource($subject->fresh())
         ], 201);
     }
@@ -46,7 +46,7 @@ class SubjectController extends Controller
         if (!$subject) {
             return response()->json([
                 'code'    => 404,
-                'message' => 'Subject not found',
+                'message' => 'المادة الدراسية غير موجودة.',
                 'data'    => null
             ], 404);
         }
@@ -79,7 +79,7 @@ class SubjectController extends Controller
 
         return response()->json([
             'code'    => 200,
-            'message' => 'Subject updated successfully.',
+            'message' => 'تم تحديث المادة الدراسية بنجاح.',
             'data'    => new SubjectResource($updatedSubject->fresh())
         ], 200);
     }
@@ -91,7 +91,7 @@ class SubjectController extends Controller
         if (!$subject) {
             return response()->json([
                 'code'    => 404,
-                'message' => 'Subject not found',
+                'message' => 'المادة الدراسية غير موجودة.',
             ], 404);
         }
 
@@ -103,7 +103,7 @@ class SubjectController extends Controller
 
         return response()->json([
             'code'    => 200,
-            'message' => 'Subject deleted successfully.',
+            'message' => 'تم حذف المادة الدراسية بنجاح.',
         ], 200);
     }
 
@@ -115,13 +115,13 @@ class SubjectController extends Controller
         if (!$subject) {
             return response()->json([
                 'code'    => 404,
-                'message' => 'Subject not found',
+                'message' => 'المادة الدراسية غير موجودة.',
             ], 404);
         }
 
         return response()->json([
             'code'    => 200,
-            'message' => 'Subject retrieved successfully.',
+            'message' => 'تم جلب بيانات المادة الدراسية بنجاح.',
             'data'    => new SubjectResource($subject)
         ], 200);
     }
@@ -141,7 +141,7 @@ class SubjectController extends Controller
 
         return response()->json([
             'code'    => 200,
-            'message' => 'Subjects retrieved successfully.',
+            'message' => 'تم جلب قائمة المواد الدراسية بنجاح.',
             'data'    => $resource['data'],
             'meta'    => $resource['meta'] ?? null,
             'links'   => $resource['links'] ?? null

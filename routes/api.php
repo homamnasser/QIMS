@@ -67,6 +67,7 @@ Route::group([
 ], function ($router) {
     Route::post('/createProject', [ProjectController::class, 'createProject'])->middleware('permission:إنشاء مشروع');
     Route::get('/getAllProjects', [ProjectController::class, 'getAllProjects'])->middleware('permission:عرض كافة المشاريع');
+    Route::get('/getAudiences', [ProjectController::class, 'getAudiences'])->middleware('permission:عرض كافة المشاريع');
     Route::get('/getProject/{id}', [ProjectController::class, 'getProject'])->middleware('permission:عرض تفاصيل المشروع');
     Route::post('/updateProject/{id}', [ProjectController::class, 'updateProject'])->middleware('permission:تعديل المشروع');
     Route::delete('/deleteProject/{id}', [ProjectController::class, 'deleteProject'])->middleware('permission:حذف المشروع');

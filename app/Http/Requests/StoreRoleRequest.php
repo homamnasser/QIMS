@@ -62,18 +62,18 @@ class StoreRoleRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.required' => 'The role name is required.',
-            'name.string' => 'The role name must be a valid text.',
-            'name.unique' => 'This role name is already taken.',
-            'name.max' => 'The name cannot exceed 255 characters.',
-            'role_family.required' => 'The role family is required.',
-            'role_family.in' => 'The selected role family is invalid.',
+            'name.required' => 'اسم الدور مطلوب.',
+            'name.string' => 'اسم الدور يجب أن يكون نصاً صالحاً.',
+            'name.unique' => 'اسم الدور مستخدم مسبقاً.',
+            'name.max' => 'الاسم يجب ألا يتجاوز 255 حرفاً.',
+            'role_family.required' => 'عائلة الدور مطلوبة.',
+            'role_family.in' => 'عائلة الدور المحددة غير صالحة.',
             'confirm_privileged_family.required' => 'يجب تأكيد منح الأهلية الإدارية أو الإشرافية لهذا الدور.',
             'confirm_privileged_family.accepted' => 'يجب تأكيد منح الأهلية الإدارية أو الإشرافية لهذا الدور.',
-            'permissions.required' => 'At least one permission must be assigned.',
-            'permissions.min' => 'Please select at least one permission.',
-            'permissions.*.integer' => 'Each permission ID must be a number.',
-            'permissions.*.exists' => 'One or more of the selected permissions do not exist.',
+            'permissions.required' => 'يجب إسناد صلاحية واحدة على الأقل.',
+            'permissions.min' => 'يرجى اختيار صلاحية واحدة على الأقل.',
+            'permissions.*.integer' => 'معرّف كل صلاحية يجب أن يكون رقماً.',
+            'permissions.*.exists' => 'صلاحية واحدة أو أكثر من المحددة غير موجودة.',
         ];
     }
 

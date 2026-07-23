@@ -27,7 +27,7 @@ class ExamController extends Controller
 
         return response()->json([
             'code'    => 201,
-            'message' => 'Exam mark recorded successfully.',
+            'message' => 'تم تسجيل علامة الامتحان بنجاح.',
             'data'    => new ExamResource($exam)
         ], 201);
     }
@@ -38,7 +38,7 @@ class ExamController extends Controller
         if (!$exam) {
             return response()->json([
                 'code'    => 404,
-                'message' => 'Exam record not found.'
+                'message' => 'سجل الامتحان غير موجود.'
             ], 404);
         }
 
@@ -46,7 +46,7 @@ class ExamController extends Controller
 
         return response()->json([
             'code'    => 200,
-            'message' => 'Exam record retrieved successfully.',
+            'message' => 'تم جلب سجل الامتحان بنجاح.',
             'data'    => new ExamResource($exam)
         ], 200);
     }
@@ -61,7 +61,7 @@ class ExamController extends Controller
         if (!$exam) {
             return response()->json([
                 'code'    => 404,
-                'message' => 'Exam record not found.'
+                'message' => 'سجل الامتحان غير موجود.'
             ], 404);
         }
 
@@ -71,7 +71,7 @@ class ExamController extends Controller
 
         return response()->json([
             'code'    => 200,
-            'message' => 'Exam mark updated successfully.',
+            'message' => 'تم تحديث علامة الامتحان بنجاح.',
             'data'    => new ExamResource($exam)
         ], 200);
     }
@@ -86,7 +86,7 @@ class ExamController extends Controller
         if (!$exam) {
             return response()->json([
                 'code'    => 404,
-                'message' => 'Exam record not found.'
+                'message' => 'سجل الامتحان غير موجود.'
             ], 404);
         }
 
@@ -95,7 +95,7 @@ class ExamController extends Controller
 
         return response()->json([
             'code'    => 200,
-            'message' => 'Exam record deleted successfully.'
+            'message' => 'تم حذف سجل الامتحان بنجاح.'
         ], 200);
     }
 
@@ -107,7 +107,7 @@ class ExamController extends Controller
 
         return response()->json([
             'code'   => 200,
-            'message' => 'Exam records retrieved successfully.',
+            'message' => 'تم جلب سجلات الامتحانات بنجاح.',
             'data'   => ExamResource::collection($exams)
         ], 200);
     }
@@ -120,7 +120,7 @@ class ExamController extends Controller
             return response()->json([
                 'code'    => 401,
                 'status'  => 'error',
-                'message' => 'Unauthorized. Student is not logged in.'
+                'message' => 'غير مصرّح. الطالب غير مسجّل الدخول.'
             ], 401);
         }
 

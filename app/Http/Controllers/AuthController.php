@@ -92,7 +92,7 @@ class AuthController extends Controller
             ], 200)->withCookie($cookie);
         }
 
-        return response()->json(['code' => 401, 'message' => 'Unauthenticated.'], 401);
+        return response()->json(['code' => 401, 'message' => 'غير مصادق.'], 401);
     }
     /* تحديث عضو هيئة تدريس (مع التأكد من وجوده أولاً) */
     public function updateStaffMember(UpdateUserRequest $request, int $id): JsonResponse
@@ -110,7 +110,7 @@ class AuthController extends Controller
         if ($user->isSuperAdmin()) {
             return response()->json([
                 'code'    => 403,
-                'message' => 'The Super Admin account cannot be modified.',
+                'message' => 'لا يمكن تعديل حساب المدير الأعلى.',
                 'data'    => null
             ], 403);
         }
@@ -140,7 +140,7 @@ class AuthController extends Controller
         if ($user->isSuperAdmin()) {
             return response()->json([
                 'code'    => 403,
-                'message' => 'Cannot delete the Super Admin account.',
+                'message' => 'لا يمكن حذف حساب المدير الأعلى.',
                 'data'    => null
             ], 403);
         }

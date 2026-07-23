@@ -23,6 +23,22 @@ class Project extends Model
         'is_active' => 'boolean',
     ];
 
+    public function scopeFilter($query, array $filters)
+    {
+        $query->when($filters['name'] ?? null, function ($q, $name) {
+            $q->where('name', 'like', '%' . $name . '%');
+        })
+        ->when($filters['supervisor'] ?? null, function ($q, $supervisor) {
+            $q->where('supervisor', $supervisor);
+        })
+        ->when($filters['audience'] ?? null, function ($q, $audience) {
+            $q->where('audience', 'like', '%' . $audience . '%');
+        })
+        ->when(isset($filters['active']) && !is_null($filters['active']), function ($q) use ($filters) {
+            $q->where('is_active', (bool) $filters['active']);
+        });
+    }
+
     public function supervisorUser(): BelongsTo
     {
         return $this->belongsTo(User::class, 'supervisor', 'id');

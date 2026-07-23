@@ -34,18 +34,18 @@ class UpdateLessonRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.string' => 'The lesson name must be a string.',
-            'name.max' => 'The lesson name may not be greater than 255 characters.',
+            'name.string' => 'اسم الدرس يجب أن يكون نصاً.',
+            'name.max' => 'اسم الدرس يجب ألا يتجاوز 255 حرفاً.',
 
-            'description.string' => 'The description must be a string.',
+            'description.string' => 'الوصف يجب أن يكون نصاً.',
 
-            'start_page.integer' => 'The start page must be an integer.',
-            'start_page.min' => 'The start page must be at least 1.',
+            'start_page.integer' => 'صفحة البداية يجب أن تكون عدداً صحيحاً.',
+            'start_page.min' => 'صفحة البداية يجب أن تكون 1 على الأقل.',
 
-            'end_page.integer' => 'The end page must be an integer.',
-            'end_page.gte' => 'The end page must be greater than or equal to the start page.',
+            'end_page.integer' => 'صفحة النهاية يجب أن تكون عدداً صحيحاً.',
+            'end_page.gte' => 'صفحة النهاية يجب أن تكون أكبر من أو تساوي صفحة البداية.',
 
-            'subject_id.exists' => 'The selected subject does not exist.',
+            'subject_id.exists' => 'المادة الدراسية المحددة غير موجودة.',
 
         ];
     }

@@ -27,8 +27,8 @@ class StoreSubjectRequest extends FormRequest
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'course_id' => 'required|exists:courses,id',
-            'min_marks' => 'required|integer|min:0',
-            'max_marks' => 'required|integer|gt:min_marks',
+            'min_marks' => 'required|integer|min:0|max:100',
+            'max_marks' => 'required|integer|min:0|max:100|gt:min_marks',
             'shared_with_subject_id' => 'nullable|exists:subjects,id',
             'pdf' => 'nullable|file|mimes:pdf'
         ];
@@ -37,25 +37,28 @@ class StoreSubjectRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.required' => 'Subject name is required.',
-            'name.string' => 'Subject name must be a string.',
-            'name.max' => 'Subject name may not be greater than 255 characters.',
+            'name.required' => 'اسم المادة الدراسية مطلوب.',
+            'name.string' => 'اسم المادة الدراسية يجب أن يكون نصاً.',
+            'name.max' => 'اسم المادة الدراسية يجب ألا يتجاوز 255 حرفاً.',
 
-            'course_id.required' => 'Course ID is required.',
-            'course_id.exists' => 'The selected course does not exist.',
+            'course_id.required' => 'معرّف الكورس مطلوب.',
+            'course_id.exists' => 'الكورس المحدد غير موجود.',
 
-            'min_marks.required' => 'Minimum marks are required.',
-            'min_marks.integer' => 'Minimum marks must be an integer.',
-            'min_marks.min' => 'Minimum marks must be at least 0.',
+            'min_marks.required' => 'الدرجة الصغرى مطلوبة.',
+            'min_marks.integer' => 'الدرجة الصغرى يجب أن تكون عدداً صحيحاً.',
+            'min_marks.min' => 'الدرجة الصغرى يجب أن تكون 0 على الأقل.',
+            'min_marks.max' => 'الدرجة الصغرى لا يمكن أن تتجاوز 100.',
 
-            'max_marks.required' => 'Maximum marks are required.',
-            'max_marks.integer' => 'Maximum marks must be an integer.',
-            'max_marks.gt' => 'Maximum marks must be greater than minimum marks.',
+            'max_marks.required' => 'الدرجة العظمى مطلوبة.',
+            'max_marks.integer' => 'الدرجة العظمى يجب أن تكون عدداً صحيحاً.',
+            'max_marks.min' => 'الدرجة العظمى يجب أن تكون 0 على الأقل.',
+            'max_marks.max' => 'الدرجة العظمى لا يمكن أن تتجاوز 100.',
+            'max_marks.gt' => 'الدرجة العظمى يجب أن تكون أكبر من الدرجة الصغرى.',
 
-            'shared_with_subject_id.exists' => 'The selected shared subject does not exist.',
+            'shared_with_subject_id.exists' => 'المادة المشتركة المحددة غير موجودة.',
 
-            'pdf.file' => 'The uploaded file must be a valid file.',
-            'pdf.mimes' => 'The uploaded file must be a PDF.',
+            'pdf.file' => 'الملف المرفوع يجب أن يكون ملفاً صالحاً.',
+            'pdf.mimes' => 'الملف يجب أن يكون من نوع: ...',
 
         ];
     }

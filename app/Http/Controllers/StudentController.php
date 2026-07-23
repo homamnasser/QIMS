@@ -29,7 +29,7 @@ class StudentController extends Controller
 
         return response()->json([
             'code'    => 201,
-            'message' => 'Student created successfully and assigned to student role.',
+            'message' => 'تم إنشاء حساب الطالب وإسناده إلى دور الطالب بنجاح.',
             'data'    => new StudentResource($student)
         ], 201);
     }
@@ -44,7 +44,7 @@ class StudentController extends Controller
         if (!$student) {
             return response()->json([
                 'code'    => 404,
-                'message' => 'Student not found',
+                'message' => 'الطالب غير موجود.',
                 'data'    => null
             ], 404);
         }
@@ -54,7 +54,7 @@ class StudentController extends Controller
 
         return response()->json([
             'code'    => 200,
-            'message' => 'Student updated successfully.',
+            'message' => 'تم تحديث بيانات الطالب بنجاح.',
             'data'    => new StudentResource($updatedStudent)
         ], 200);
     }
@@ -66,7 +66,7 @@ class StudentController extends Controller
         if (!$student) {
             return response()->json([
                 'code'    => 404,
-                'message' => 'Student not found',
+                'message' => 'الطالب غير موجود.',
             ], 404);
         }
 
@@ -74,7 +74,7 @@ class StudentController extends Controller
 
         return response()->json([
             'code'    => 200,
-            'message' => 'Student deleted successfully.',
+            'message' => 'تم حذف حساب الطالب بنجاح.',
         ], 200);
     }
     /* جلب بيانات طالب معين */
@@ -85,14 +85,14 @@ class StudentController extends Controller
         if (!$student) {
             return response()->json([
                 'code'    => 404,
-                'message' => 'Student not found',
+                'message' => 'الطالب غير موجود.',
                 'data'    => null
             ], 404);
         }
 
         return response()->json([
             'code'    => 200,
-            'message' => 'Student retrieved successfully.',
+            'message' => 'تم جلب بيانات الطالب بنجاح.',
             'data'    => new StudentResource($student)
         ], 200);
     }
@@ -114,7 +114,7 @@ class StudentController extends Controller
 
         return response()->json([
             'code'    => 200,
-            'message' => 'Students retrieved successfully.',
+            'message' => 'تم جلب قائمة الطلاب بنجاح.',
             'data'    => $resource['data'],
             'meta'    => $resource['meta'] ?? null,
             'links'   => $resource['links'] ?? null
