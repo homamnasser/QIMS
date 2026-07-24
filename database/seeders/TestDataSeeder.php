@@ -15,6 +15,7 @@ use App\Models\CourseDate;
 use App\Models\Circle;
 use App\Models\Student;
 use App\Models\StudentCircle;
+use App\Models\StudentSelfNumberReservation;
 use App\Models\Note;
 use App\Models\Sabr;
 use App\Models\Memorization;
@@ -24,6 +25,7 @@ use App\Models\StudentCourseAbsence;
 use App\Models\StudentMark;
 use App\Models\Role;
 use App\Enums\RoleFamily;
+use App\Services\StudentCircleService;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\PermissionRegistrar;
 
@@ -46,6 +48,7 @@ class TestDataSeeder extends Seeder
         Sabr::truncate();
         Note::truncate();
         StudentCircle::truncate();
+        StudentSelfNumberReservation::truncate();
         Student::truncate();
         Circle::truncate();
         DB::table('course_date_lesson')->truncate();
@@ -68,41 +71,14 @@ class TestDataSeeder extends Seeder
         app(PermissionRegistrar::class)->forgetCachedPermissions();
 
         // ══════════════════════════════════════════════
-        //  1. PERMISSIONS  (94 Arabic permissions)
+        //  1. PERMISSIONS
         // ══════════════════════════════════════════════
         $this->command->info('  ✅ إنشاء الصلاحيات...');
 
-        $permissions = [
-            'تسجيل الدخول','تسجيل الخروج','إنشاء موظف','تعديل موظف',
-            'عرض كافة الأدوار','إنشاء دور','عرض تفاصيل الدور','تعديل الدور','حذف الدور',
-            'عرض كافة المشاريع','إنشاء مشروع','عرض تفاصيل المشروع','تعديل المشروع','حذف المشروع',
-            'عرض كافة الصلاحيات','تعديل حالة المشروع',
-            'عرض كافة المساجد','إنشاء مسجد','تعديل مسجد','حذف مسجد','عرض تفاصيل المسجد',
-            'عرض كافة الموظفين','عرض تفاصيل الموظف','حذف موظف',
-            'عرض كافة الكورسات','إنشاء كورس','عرض تفاصيل الكورس','تعديل الكورس','حذف الكورس','تعديل حالة الكورس',
-            'إنشاء مادة','عرض كافة المواد','عرض تفاصيل المادة','تعديل المادة','حذف مادة',
-            'إنشاء درس','عرض كافة الدروس','عرض تفاصيل الدرس','تعديل الدرس','حذف درس',
-            'إنشاء تاريخ الكورس','عرض تواريخ الكورس','حذف تاريخ','إضافة تاريخ يدوياً',
-            'إسناد الدروس للتاريخ','تعديل إسناد دروس التاريخ','حذف دروس التاريخ','عرض دروس التاريخ',
-            'عرض المنهج الدراسي للكورس',
-            'إنشاء حلقة','عرض منهج حلقتي','عرض تفاصيل الحلقة','عرض كافة الحلقات','تعديل الحلقة','حذف الحلقة',
-            'عرض كافة الطلاب','عرض تفاصيل الطالب','إنشاء طالب','تعديل الطالب','حذف الطالب',
-            'إضافة طلاب للحلقة','إلغاء التحاق طالب بالحلقة','عرض طلاب الحلقة',
-            'إنشاء ملاحظة','عرض ملاحظات الطالب','عرض ملاحظاتي','حذف ملاحظة',
-            'إنشاء سبر','عرض سبر الطالب','عرض سبري','حذف سبر','تعديل نتيجة السبر','عرض كافة السبور',
-            'إنشاء تسميع','عرض تسميع الطالب','عرض تسميعاتي','حذف تسميع','عرض كافة التسميعات',
-            'إنشاء إنذار','عرض تفاصيل الإنذار','حذف إنذار','عرض كافة الإنذارات','عرض إنذاراتي',
-            'إنشاء امتحان','عرض تفاصيل الامتحان','حذف امتحان','عرض كافة الامتحانات','تعديل الامتحان','امتحاناتي',
-            'عرض كافة الغيابات','إنشاء غياب','عرض تفاصيل الغياب','تعديل الغياب','حذف غياب',
-            config('roles.capabilities.supervise'),
-        ];
-
-        foreach ($permissions as $p) {
-            Permission::create(['name' => $p, 'guard_name' => 'web']);
-        }
+        $this->call(PermissionSeeder::class);
 
         // ══════════════════════════════════════════════
-        //  2. ROLES  (4 roles with graduated permissions)
+        //  2. ROLES  (5 roles with graduated permissions)
         // ══════════════════════════════════════════════
         $this->command->info('  ✅ إنشاء الأدوار...');
 
@@ -195,8 +171,11 @@ class TestDataSeeder extends Seeder
         ];
 
         $mosques = [];
-        foreach ($mosqueNames as $n) {
-            $mosques[] = Mosque::create(['name' => $n]);
+        foreach ($mosqueNames as $index => $name) {
+            $mosques[] = Mosque::create([
+                'name' => $name,
+                'mosque_code' => 'TEST'.str_pad((string) ($index + 1), 2, '0', STR_PAD_LEFT),
+            ]);
         }
 
         // ══════════════════════════════════════════════
@@ -441,8 +420,9 @@ class TestDataSeeder extends Seeder
             [$students[13]->id, $circles[11]->id],  // circle 11 (course 9)
         ];
 
-        foreach ($enrolments as [$sId, $cId]) {
-            StudentCircle::create(['student' => $sId, 'circle' => $cId]);
+        $studentCircleService = app(StudentCircleService::class);
+        foreach ($enrolments as [$studentId, $circleId]) {
+            $studentCircleService->addStudentsToCircle($circleId, [$studentId]);
         }
 
         // ══════════════════════════════════════════════
@@ -636,8 +616,8 @@ class TestDataSeeder extends Seeder
         // ══════════════════════════════════════════════
         $this->command->info('');
         $this->command->info('🎉 تم زرع جميع البيانات التجريبية بنجاح!');
-        $this->command->info('   ├── 94 صلاحية');
-        $this->command->info('   ├── 4 أدوار (super-admin, admin, supervisor, teacher)');
+        $this->command->info('   ├── '.Permission::count().' صلاحية');
+        $this->command->info('   ├── '.Role::count().' أدوار (super-admin, admin, supervisor, teacher, student)');
         $this->command->info('   ├── 12 موظف');
         $this->command->info('   ├── 11 مسجد');
         $this->command->info('   ├── 11 مشروع');

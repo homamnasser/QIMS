@@ -13,39 +13,39 @@ class ExamResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'   => $this->id,
-            'mark' => $this->mark !== null ? (float)$this->mark : null,
-
+            'id' => $this->id,
+            'mark' => $this->mark !== null ? (float) $this->mark : null,
 
             'student' => [
-                'id'        => $this->studentDetails ? $this->studentDetails->id : null,
+                'id' => $this->studentDetails ? $this->studentDetails->id : null,
+                'selfnumber' => $this->studentDetails?->selfnumber,
                 'full_name' => $this->studentDetails
-                    ? trim($this->studentDetails->first_name . ' ' . $this->studentDetails->last_name)
+                    ? trim($this->studentDetails->first_name.' '.$this->studentDetails->last_name)
                     : null,
             ],
 
             'subject' => [
-                'id'       => $this->subjectDetails ? $this->subjectDetails->id : null,
-                'name'     => $this->subjectDetails ? $this->subjectDetails->name : null,
-                'max_marks' => $this->subjectDetails ? (float)$this->subjectDetails->max_marks : null,
-                'min_marks' => $this->subjectDetails ? (float)$this->subjectDetails->min_marks : null,
+                'id' => $this->subjectDetails ? $this->subjectDetails->id : null,
+                'name' => $this->subjectDetails ? $this->subjectDetails->name : null,
+                'max_marks' => $this->subjectDetails ? (float) $this->subjectDetails->max_marks : null,
+                'min_marks' => $this->subjectDetails ? (float) $this->subjectDetails->min_marks : null,
 
             ],
 
             'subject_details' => [
-                'id'       => $this->subjectDetails ? $this->subjectDetails->id : null,
-                'name'     => $this->subjectDetails ? $this->subjectDetails->name : null,
-                'max_marks' => $this->subjectDetails ? (float)$this->subjectDetails->max_marks : null,
-                'min_marks' => $this->subjectDetails ? (float)$this->subjectDetails->min_marks : null,
+                'id' => $this->subjectDetails ? $this->subjectDetails->id : null,
+                'name' => $this->subjectDetails ? $this->subjectDetails->name : null,
+                'max_marks' => $this->subjectDetails ? (float) $this->subjectDetails->max_marks : null,
+                'min_marks' => $this->subjectDetails ? (float) $this->subjectDetails->min_marks : null,
             ],
 
             'course' => [
-                'id'   => $this->courseDetails ? $this->courseDetails->id : null,
+                'id' => $this->courseDetails ? $this->courseDetails->id : null,
                 'name' => $this->courseDetails ? $this->courseDetails->name : null,
             ],
 
             'course_details' => [
-                'id'   => $this->courseDetails ? $this->courseDetails->id : null,
+                'id' => $this->courseDetails ? $this->courseDetails->id : null,
                 'name' => $this->courseDetails ? $this->courseDetails->name : null,
             ],
 

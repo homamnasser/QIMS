@@ -35,8 +35,8 @@ class StudentCircleServiceTest extends TestCase
             'supervisor' => $supervisor->id,
         ]);
 
-        $firstMosque = Mosque::create(['name' => 'المسجد الأول']);
-        $secondMosque = Mosque::create(['name' => 'المسجد الثاني']);
+        $firstMosque = Mosque::create(['name' => 'المسجد الأول', 'mosque_code' => 'A']);
+        $secondMosque = Mosque::create(['name' => 'المسجد الثاني', 'mosque_code' => 'B']);
 
         $firstCourse = $this->createCourse('الكورس الأول', $firstMosque->id, $project->id, $supervisor->id);
         $secondCourse = $this->createCourse('الكورس الثاني', $firstMosque->id, $project->id, $supervisor->id);
@@ -96,6 +96,8 @@ class StudentCircleServiceTest extends TestCase
 
         $this->assertCount(1, $differentCourseResult['students']);
         $this->assertEmpty($differentCourseResult['conflicts']);
+        $this->assertSame('A-000001', $student->fresh()->selfnumber);
+        $this->assertSame($firstMosque->id, $student->fresh()->mosque_id);
         $this->assertDatabaseHas('student_circles', [
             'student' => $student->id,
             'circle' => $differentCourseCircle->id,

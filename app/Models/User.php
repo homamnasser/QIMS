@@ -3,21 +3,18 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Traits\HasRoleFamilies;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use App\Models\Project;
-use Illuminate\Support\Facades\App;
-use App\Models\Circle;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use App\Traits\HasRoleFamilies;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, HasRoles, HasRoleFamilies;
+    use HasApiTokens, HasFactory, HasRoleFamilies, HasRoles, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -54,11 +51,11 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-
     public function projects(): HasMany
     {
         return $this->hasMany(Project::class, 'supervisor', 'id');
     }
+
     public function supervisedProject(): HasOne
     {
         return $this->hasOne(Project::class, 'supervisor', 'id');
@@ -68,25 +65,35 @@ class User extends Authenticatable
     {
         return $this->hasMany(Circle::class, 'teacher_id');
     }
+
     public function supervisedCourses(): HasMany
     {
         return $this->hasMany(Course::class, 'supervisor_id');
     }
+
     public function writtenNotes()
     {
         return $this->hasMany(Note::class, 'user_id');
     }
+
     public function givenSabrs(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Sabr::class, 'giver');
     }
+
     public function givenMemorizations()
     {
         return $this->hasMany(Memorization::class, 'giver');
     }
+
     public function issuedWarnings(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(Warning::class, 'warner');
+    }
+
+    public function surveys(): HasMany
+    {
+        return $this->hasMany(Survey::class, 'created_by');
     }
 
     public function canSupervise(): bool

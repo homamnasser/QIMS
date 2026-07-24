@@ -1,26 +1,27 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\RoleController;
-use App\Http\Controllers\ProjectController;
-use App\Http\Controllers\MosqueController;
-use App\Http\Controllers\CourseController;
-use App\Http\Controllers\SubjectController;
-use App\Http\Controllers\LessonController;
-use App\Http\Controllers\CourseDateController;
-use App\Http\Controllers\CourseCurriculumController;
 use App\Http\Controllers\CircleController;
-use App\Http\Controllers\StudentController;
-use App\Http\Controllers\StudentCircleController;
-use App\Http\Controllers\NoteController;
-use App\Http\Controllers\SabrController;
-use App\Http\Controllers\MemorizationController;
-use App\Http\Controllers\WarningController;
+use App\Http\Controllers\CourseController;
+use App\Http\Controllers\CourseCurriculumController;
+use App\Http\Controllers\CourseDateController;
 use App\Http\Controllers\ExamController;
-use App\Http\Controllers\StudentCourseAbsenceController;
+use App\Http\Controllers\LessonController;
+use App\Http\Controllers\MemorizationController;
+use App\Http\Controllers\MosqueController;
+use App\Http\Controllers\NoteController;
+use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\PublicSurveyController;
 use App\Http\Controllers\ReportApiController;
-
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\SabrController;
+use App\Http\Controllers\StudentCircleController;
+use App\Http\Controllers\StudentController;
+use App\Http\Controllers\StudentCourseAbsenceController;
+use App\Http\Controllers\SubjectController;
+use App\Http\Controllers\SurveyController;
+use App\Http\Controllers\WarningController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,10 +34,39 @@ use App\Http\Controllers\ReportApiController;
 |
 */
 
-
-
 Route::post('/loginUser', [AuthController::class, 'loginUser']);
 Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
+
+Route::prefix('public/surveys')->group(function (): void {
+    Route::get('/{publicToken}', [PublicSurveyController::class, 'show']);
+    Route::post('/{publicToken}/identify', [PublicSurveyController::class, 'identify']);
+    Route::post('/{publicToken}/responses', [PublicSurveyController::class, 'submit']);
+});
+
+Route::middleware(['api', 'auth:sanctum'])->prefix('surveys')->group(function (): void {
+    Route::get('/student-fields', [SurveyController::class, 'studentFields'])
+        ->middleware('permission:إنشاء استبيان|تعديل استبيان');
+    Route::get('/files/{accessToken}', [SurveyController::class, 'downloadFile'])
+        ->middleware('permission:عرض وتصدير ردود الاستبيان');
+    Route::get('/', [SurveyController::class, 'index'])
+        ->middleware('permission:عرض كافة الاستبيانات');
+    Route::post('/', [SurveyController::class, 'store'])
+        ->middleware('permission:إنشاء استبيان');
+    Route::get('/{survey}', [SurveyController::class, 'show'])
+        ->middleware('permission:عرض تفاصيل الاستبيان');
+    Route::put('/{survey}', [SurveyController::class, 'update'])
+        ->middleware('permission:تعديل استبيان');
+    Route::delete('/{survey}', [SurveyController::class, 'destroy'])
+        ->middleware('permission:حذف استبيان');
+    Route::put('/{survey}/definition', [SurveyController::class, 'saveDefinition'])
+        ->middleware('permission:تعديل استبيان');
+    Route::post('/{survey}/publication', [SurveyController::class, 'publication'])
+        ->middleware('permission:نشر وإلغاء نشر الاستبيان');
+    Route::get('/{survey}/responses', [SurveyController::class, 'responses'])
+        ->middleware('permission:عرض وتصدير ردود الاستبيان');
+    Route::get('/{survey}/responses/{response}', [SurveyController::class, 'response'])
+        ->middleware('permission:عرض وتصدير ردود الاستبيان');
+});
 
 Route::group([
     'middleware' => ['api', 'auth:sanctum'],
@@ -50,7 +80,7 @@ Route::group([
 
 Route::group([
     'middleware' => ['api', 'auth:sanctum'],
-    'prefix' => 'role'
+    'prefix' => 'role',
 ], function ($router) {
     Route::post('/createRole', [RoleController::class, 'createRole'])->middleware('permission:إنشاء دور');
     Route::get('/getAllRoles', [RoleController::class, 'getAllRoles'])->middleware('permission:عرض كافة الأدوار');
@@ -60,10 +90,9 @@ Route::group([
     Route::get('/getAllPermissions', [RoleController::class, 'getAllPermissions'])->middleware('permission:عرض كافة الصلاحيات');
 });
 
-
 Route::group([
     'middleware' => ['api', 'auth:sanctum'],
-    'prefix' => 'project'
+    'prefix' => 'project',
 ], function ($router) {
     Route::post('/createProject', [ProjectController::class, 'createProject'])->middleware('permission:إنشاء مشروع');
     Route::get('/getAllProjects', [ProjectController::class, 'getAllProjects'])->middleware('permission:عرض كافة المشاريع');
@@ -78,7 +107,7 @@ Route::group([
 
 Route::group([
     'middleware' => ['api', 'auth:sanctum'],
-    'prefix' => 'mosque'
+    'prefix' => 'mosque',
 ], function ($router) {
     Route::post('/createMosque', [MosqueController::class, 'createMosque'])->middleware('permission:إنشاء مسجد');
     Route::get('/getAllMosques', [MosqueController::class, 'getAllMosques'])->middleware('permission:عرض كافة المساجد');
@@ -89,7 +118,7 @@ Route::group([
 
 Route::group([
     'middleware' => ['api', 'auth:sanctum'],
-    'prefix' => 'course'
+    'prefix' => 'course',
 ], function ($router) {
     Route::post('/createCourse', [CourseController::class, 'createCourse'])->middleware('permission:إنشاء كورس');
     Route::get('/getAllCourses', [CourseController::class, 'getAllCourses'])->middleware('permission:عرض كافة الكورسات');
@@ -103,7 +132,7 @@ Route::group([
 
 Route::group([
     'middleware' => ['api', 'auth:sanctum'],
-    'prefix' => 'subject'
+    'prefix' => 'subject',
 ], function ($router) {
     Route::post('/createSubject', [SubjectController::class, 'createSubject'])->middleware('permission:إنشاء مادة');
     Route::get('/getAllSubjects', [SubjectController::class, 'getAllSubjects'])->middleware('permission:عرض كافة المواد');
@@ -114,7 +143,7 @@ Route::group([
 
 Route::group([
     'middleware' => ['api', 'auth:sanctum'],
-    'prefix' => 'lesson'
+    'prefix' => 'lesson',
 ], function ($router) {
     Route::post('/createLesson', [LessonController::class, 'createLesson'])->middleware('permission:إنشاء درس');
     Route::get('/getAllLessons', [LessonController::class, 'getAllLessons'])->middleware('permission:عرض كافة الدروس');
@@ -124,7 +153,7 @@ Route::group([
 });
 Route::group([
     'middleware' => ['api', 'auth:sanctum'],
-    'prefix' => 'courseDate'
+    'prefix' => 'courseDate',
 ], function ($router) {
     Route::post('/createCourseDate', [CourseDateController::class, 'createCourseDate'])->middleware('permission:إنشاء تاريخ الكورس');
     Route::get('/getDatesByCourse/{courseId}', [CourseDateController::class, 'getDateByCourse'])->middleware('permission:عرض تواريخ الكورس');
@@ -132,10 +161,9 @@ Route::group([
     Route::post('/createDateManual', [CourseDateController::class, 'createDateManual'])->middleware('permission:إضافة تاريخ يدوياً');
 });
 
-
 Route::group([
     'middleware' => ['api', 'auth:sanctum'],
-    'prefix' => 'dateLesson'
+    'prefix' => 'dateLesson',
 ], function ($router) {
     Route::post('/assignLessonsToDate', [CourseCurriculumController::class, 'assignLessonsToDate'])->middleware('permission:إسناد الدروس للتاريخ');
     Route::post('/updateAssignLessonsToDate/{courseDate}', [CourseCurriculumController::class, 'updateAssignLessonsToDate'])->middleware('permission:تعديل إسناد دروس التاريخ');
@@ -146,7 +174,7 @@ Route::group([
 
 Route::group([
     'middleware' => ['api', 'auth:sanctum'],
-    'prefix' => 'circle'
+    'prefix' => 'circle',
 ], function ($router) {
     Route::post('/createCircle', [CircleController::class, 'createCircle'])->middleware('permission:إنشاء حلقة');
     Route::get('/getMyCircleCurriculum', [CircleController::class, 'getMyCircleCurriculum'])->middleware('permission:عرض منهج حلقتي');
@@ -158,7 +186,7 @@ Route::group([
 
 Route::group([
     'middleware' => ['api', 'auth:sanctum'],
-    'prefix' => 'student'
+    'prefix' => 'student',
 ], function ($router) {
     Route::post('/createStudent', [StudentController::class, 'createStudent'])->middleware('permission:إنشاء طالب');
     Route::get('/getStudentById/{id}', [StudentController::class, 'getStudentById'])->middleware('permission:عرض تفاصيل الطالب');
@@ -169,7 +197,7 @@ Route::group([
 
 Route::group([
     'middleware' => ['api', 'auth:sanctum'],
-    'prefix' => 'studentCircle'
+    'prefix' => 'studentCircle',
 ], function ($router) {
     Route::post('/addStudentsToCircle', [StudentCircleController::class, 'addStudents'])->middleware('permission:إضافة طلاب للحلقة');
     Route::post('/removeStudentFromCircle', [StudentCircleController::class, 'removeStudent'])->middleware('permission:إلغاء التحاق طالب بالحلقة');
@@ -178,7 +206,7 @@ Route::group([
 
 Route::group([
     'middleware' => ['api', 'auth:sanctum'],
-    'prefix' => 'note'
+    'prefix' => 'note',
 ], function ($router) {
     Route::post('/createNote', [NoteController::class, 'createNote'])->middleware('permission:إنشاء ملاحظة');
     Route::get('/getNotesByStudentId/{studentId}', [NoteController::class, 'getNotesByStudentId'])->middleware('permission:عرض ملاحظات الطالب');
@@ -188,7 +216,7 @@ Route::group([
 
 Route::group([
     'middleware' => ['api', 'auth:sanctum'],
-    'prefix' => 'sabr'
+    'prefix' => 'sabr',
 ], function ($router) {
     Route::post('/createSabr', [SabrController::class, 'createSabr'])->middleware('permission:إنشاء سبر');
     Route::get('/getSabrById/{id}', [SabrController::class, 'getSabrById'])->middleware('permission:عرض سبر الطالب');
@@ -200,7 +228,7 @@ Route::group([
 
 Route::group([
     'middleware' => ['api', 'auth:sanctum'],
-    'prefix' => 'memorization'
+    'prefix' => 'memorization',
 ], function ($router) {
     Route::post('/createMemorization', [MemorizationController::class, 'createMemorization'])->middleware('permission:إنشاء تسميع');
     Route::get('/getMemorizationById/{id}', [MemorizationController::class, 'getMemorizationById'])->middleware('permission:عرض تسميع الطالب');
@@ -211,7 +239,7 @@ Route::group([
 
 Route::group([
     'middleware' => ['api', 'auth:sanctum'],
-    'prefix' => 'warning'
+    'prefix' => 'warning',
 ], function ($router) {
     Route::post('/createWarning', [WarningController::class, 'createWarning'])->middleware('permission:إنشاء إنذار');
     Route::get('/getWarningById/{id}', [WarningController::class, 'getWarningById'])->middleware('permission:عرض تفاصيل الإنذار');
@@ -222,7 +250,7 @@ Route::group([
 });
 Route::group([
     'middleware' => ['api', 'auth:sanctum'],
-    'prefix' => 'exam'
+    'prefix' => 'exam',
 ], function ($router) {
     Route::post('/createExam', [ExamController::class, 'createExam'])->middleware('permission:إنشاء امتحان');
     Route::get('/getExamById/{id}', [ExamController::class, 'getExamById'])->middleware('permission:عرض تفاصيل الامتحان');
@@ -234,7 +262,7 @@ Route::group([
 
 Route::group([
     'middleware' => ['api', 'auth:sanctum'],
-    'prefix' => 'absence'
+    'prefix' => 'absence',
 ], function ($router) {
     Route::post('/createAbsence', [StudentCourseAbsenceController::class, 'createAbsence']);
     Route::get('/getAbsenceById/{id}', [StudentCourseAbsenceController::class, 'getAbsenceById']);
