@@ -12,4 +12,9 @@ class Mosque extends Model
     [
         'name'
     ];
+
+    public function courses(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Course::class);
+    }
 }

@@ -46,6 +46,19 @@ class Handler extends ExceptionHandler
                 ], 409);
             }
         });
+
+        $this->renderable(function (MosqueHasCoursesException $e, $request) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'code' => 409,
+                    'error_code' => 'MOSQUE_HAS_COURSES',
+                    'message' => 'لا يمكن حذف المسجد لأنه مرتبط بكورس واحد أو أكثر. يرجى نقل الكورسات المرتبطة بالمسجد أو حذفها أولاً.',
+                    'data' => [
+                        'courses_count' => $e->coursesCount,
+                    ],
+                ], 409);
+            }
+        });
     }
 
     protected function unauthenticated($request, AuthenticationException $exception)

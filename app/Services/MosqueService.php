@@ -39,6 +39,36 @@ class MosqueService implements IMosqueService
 
     public function deleteMosque(int $id): bool
     {
-        return Mosque::where('id', $id)->delete();
+        $mosque = Mosque::find($id);
+
+        if (!$mosque) {
+            return false;
+        }
+
+        $coursesCount = $mosque->courses()->count();
+        if ($coursesCount > 0) {
+            throw new \App\Exceptions\MosqueHasCoursesException($coursesCount);
+        }
+
+        try {
+            return (bool) $mosque->delete();
+        } catch (\Illuminate\Database\QueryException $exception) {
+            if ($this->isForeignKeyConstraintViolation($exception)) {
+                throw new \App\Exceptions\MosqueHasCoursesException(
+                    $mosque->courses()->count(),
+                    $exception,
+                );
+            }
+
+            throw $exception;
+        }
+    }
+
+    private function isForeignKeyConstraintViolation(\Illuminate\Database\QueryException $exception): bool
+    {
+        $sqlState = (string) $exception->getCode();
+        $driverCode = (int) ($exception->errorInfo[1] ?? 0);
+
+        return $sqlState === '23000' && $driverCode === 1451;
     }
 }
