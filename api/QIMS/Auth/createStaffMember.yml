@@ -14,16 +14,16 @@ http:
     data:
       - name: first_name
         type: text
-        value: ؤؤؤؤ
+        value: saؤؤؤؤ
       - name: last_name
         type: text
         value: sa
       - name: phone
         type: text
-        value: "0935452177"
+        value: "0935452178"
       - name: email
         type: text
-        value: 0935452177@gmail.com
+        value: 0935452177as@gmail.com
       - name: password
         type: text
         value: "123456789"
@@ -38,7 +38,7 @@ http:
         value: "3"
   auth:
     type: bearer
-    token: 1|R1XB8zU5ocvnm9vTPXBtLo382pBlPJkIfaLMYNzd59b1d8f7
+    token: 46|1jpVgCGjpZQfEeqHT0N3KG9v8jDvanpSqmOeRlIwd69d4530
 
 settings:
   encodeUrl: true

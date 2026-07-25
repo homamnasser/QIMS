@@ -5,7 +5,7 @@ info:
 
 http:
   method: POST
-  url: http://127.0.0.1:8000/api/role/updateRole/2
+  url: http://127.0.0.1:8000/api/role/updateRole/4
   headers:
     - name: ""
       value: ""
@@ -14,16 +14,18 @@ http:
     data:
       - name: name
         type: text
-        value: supervisor
+        value: student
       - name: permissions[]
         type: text
         value: "1"
+        disabled: true
       - name: permissions[]
         type: text
-        value: "2"
+        value: "3"
       - name: permissions[]
         type: text
         value: "12"
+        disabled: true
   auth:
     type: bearer
     token: 1|R1XB8zU5ocvnm9vTPXBtLo382pBlPJkIfaLMYNzd59b1d8f7
