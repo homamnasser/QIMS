@@ -115,6 +115,7 @@ class PermissionSeeder extends Seeder
             'نشر وإلغاء نشر الاستبيان',
             'عرض وتصدير ردود الاستبيان',
             config('roles.capabilities.supervise'),
+            ...array_values(config('roles.student_capabilities')),
         ];
 
         foreach ($permissions as $permission) {

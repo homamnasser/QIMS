@@ -25,7 +25,9 @@ use App\Services\CourseCurriculumService;
 use App\Services\CircleService;
 use App\IService\ICircleService;
 use App\IService\IStudentService;
+use App\IService\IStudentLearningService;
 use App\Services\StudentService;
+use App\Services\StudentLearningService;
 use App\IService\IStudentCircleService;
 use App\Services\StudentCircleService;
 use App\IService\INoteService;
@@ -60,6 +62,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(ICourseCurriculumService::class, CourseCurriculumService::class);
         $this->app->bind(ICircleService::class, CircleService::class);
         $this->app->bind(IStudentService::class, StudentService::class);
+        $this->app->bind(IStudentLearningService::class, StudentLearningService::class);
         $this->app->bind(IStudentCircleService::class, StudentCircleService::class);
         $this->app->bind(INoteService::class, NoteService::class);
         $this->app->bind(ISabrService::class, SabrService::class);

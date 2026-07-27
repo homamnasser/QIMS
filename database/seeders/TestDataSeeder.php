@@ -89,7 +89,8 @@ class TestDataSeeder extends Seeder
         $teacherRole    = Role::create(['name' => 'teacher',     'guard_name' => 'web', 'role_family' => RoleFamily::Teacher->value, 'is_system' => true, 'role_family_reviewed_at' => $reviewedAt]);
         $studentRole    = Role::create(['name' => 'student',     'guard_name' => 'web', 'role_family' => RoleFamily::Student->value, 'is_system' => true, 'role_family_reviewed_at' => $reviewedAt]);
 
-        $allPerms = Permission::all();
+        $studentSelfServicePermissions = array_values(config('roles.student_capabilities'));
+        $allPerms = Permission::whereNotIn('name', $studentSelfServicePermissions)->get();
         $superAdminRole->syncPermissions($allPerms);
         $adminRole->syncPermissions($allPerms);
 
@@ -99,6 +100,7 @@ class TestDataSeeder extends Seeder
             'عرض كافة الصلاحيات',
             'إنشاء مشروع','تعديل المشروع','حذف المشروع','تعديل حالة المشروع',
             'إنشاء مسجد','تعديل مسجد','حذف مسجد',
+            ...$studentSelfServicePermissions,
         ])->get();
         $supervisorRole->syncPermissions($supervisorPerms);
 
@@ -119,13 +121,7 @@ class TestDataSeeder extends Seeder
         ])->get();
         $teacherRole->syncPermissions($teacherPerms);
 
-        $studentPerms = Permission::whereIn('name', [
-            'عرض سبري',
-            'عرض تسميعاتي',
-            'عرض إنذاراتي',
-            'امتحاناتي',
-            'عرض ملاحظاتي',
-        ])->get();
+        $studentPerms = Permission::whereIn('name', $studentSelfServicePermissions)->get();
         $studentRole->syncPermissions($studentPerms);
 
         // ══════════════════════════════════════════════

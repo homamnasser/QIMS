@@ -1,0 +1,33 @@
+info:
+  name: 07 Get My Sabrs
+  type: http
+  seq: 7
+
+http:
+  method: GET
+  url: "{{baseUrl}}/api/student/me/sabrs"
+  headers:
+    - name: Accept
+      value: application/json
+  auth:
+    type: bearer
+    token: "{{studentToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("returns only the authenticated student's sabr records", function() {
+          expect(res.status).to.equal(200);
+          expect(res.body.data).to.be.an("array");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  Returns only evaluation (sabr) records whose student foreign key matches the
+  authenticated Student account.

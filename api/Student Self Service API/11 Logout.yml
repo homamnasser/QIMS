@@ -1,0 +1,37 @@
+info:
+  name: 11 Logout
+  type: http
+  seq: 11
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/logout"
+  headers:
+    - name: Accept
+      value: application/json
+  auth:
+    type: bearer
+    token: "{{studentToken}}"
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        if (res.status === 200) {
+          bru.setEnvVar("studentToken", "");
+        }
+    - type: tests
+      code: |-
+        test("student logout succeeds", function() {
+          expect(res.status).to.equal(200);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  Revokes all Sanctum tokens for the authenticated student and clears the token
+  stored in the selected Local environment.

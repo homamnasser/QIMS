@@ -1,0 +1,12 @@
+name: Local
+variables:
+  - name: baseUrl
+    value: http://localhost:8000
+  - name: studentUsername
+    value: hammam-nasser
+  - name: studentPassword
+    value: student123
+  - name: studentToken
+    value: ""
+  - name: courseId
+    value: "1"

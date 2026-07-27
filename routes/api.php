@@ -18,6 +18,7 @@ use App\Http\Controllers\SabrController;
 use App\Http\Controllers\StudentCircleController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\StudentCourseAbsenceController;
+use App\Http\Controllers\StudentLearningController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\SurveyController;
 use App\Http\Controllers\WarningController;
@@ -193,6 +194,31 @@ Route::group([
     Route::get('/getAllStudents', [StudentController::class, 'getAllStudents'])->middleware('permission:عرض كافة الطلاب');
     Route::post('/updateStudent/{id}', [StudentController::class, 'updateStudent'])->middleware('permission:تعديل الطالب');
     Route::delete('/deleteStudent/{id}', [StudentController::class, 'deleteStudent'])->middleware('permission:حذف الطالب');
+});
+
+Route::group([
+    'middleware' => ['api', 'auth:sanctum'],
+    'prefix' => 'student/me',
+], function (): void {
+    Route::get('/mosque', [StudentLearningController::class, 'mosque'])
+        ->middleware('permission:'.config('roles.student_capabilities.mosque'));
+    Route::get('/circles', [StudentLearningController::class, 'circles'])
+        ->middleware('permission:'.config('roles.student_capabilities.circles'));
+    Route::get('/courses', [StudentLearningController::class, 'courses'])
+        ->middleware('permission:'.config('roles.student_capabilities.courses'));
+    Route::get('/courses/{courseId}/schedule', [StudentLearningController::class, 'courseSchedule'])
+        ->whereNumber('courseId')
+        ->middleware('permission:'.config('roles.student_capabilities.course_schedules'));
+    Route::get('/notes', [StudentLearningController::class, 'notes'])
+        ->middleware('permission:'.config('roles.student_capabilities.notes'));
+    Route::get('/sabrs', [StudentLearningController::class, 'sabrs'])
+        ->middleware('permission:'.config('roles.student_capabilities.sabrs'));
+    Route::get('/memorizations', [StudentLearningController::class, 'memorizations'])
+        ->middleware('permission:'.config('roles.student_capabilities.memorizations'));
+    Route::get('/warnings', [StudentLearningController::class, 'warnings'])
+        ->middleware('permission:'.config('roles.student_capabilities.warnings'));
+    Route::get('/exams', [StudentLearningController::class, 'exams'])
+        ->middleware('permission:'.config('roles.student_capabilities.exams'));
 });
 
 Route::group([
