@@ -69,7 +69,7 @@ class AuthController extends Controller
         }
 
         // Create secure HttpOnly cookie (Strict for CSRF protection)
-        $cookie = cookie('qims_auth_token', $token, 60*24*7, '/', null, env('APP_ENV') === 'production', true, false, 'Strict');
+        $cookie = cookie('qims_auth_token', $token, 60 * 24 * 7, '/', null, app()->environment('production'), true, false, 'Strict');
         return response()->json([
             'code' => 200,
             'message' => 'تم تسجيل دخول المستخدم بنجاح',
