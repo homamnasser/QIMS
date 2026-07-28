@@ -1,0 +1,42 @@
+info:
+  name: Initialize CSRF Cookies
+  type: http
+  seq: 1
+  tags:
+    - public
+    - read
+
+http:
+  method: GET
+  url: http://127.0.0.1:8000/sanctum/csrf-cookie
+  headers:
+    - name: Accept
+      value: application/json
+    - name: Origin
+      value: http://127.0.0.1:5173
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        const token = bru.cookies.get("XSRF-TOKEN");
+        if (token) {
+          bru.setEnvVar("xsrfToken", decodeURIComponent(token));
+        }
+    - type: tests
+      code: |-
+        test("initializes the CSRF cookie", function() {
+          expect(res.status).to.equal(204);
+          expect(bru.cookies.has("XSRF-TOKEN")).to.equal(true);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  يختبر `GET /sanctum/csrf-cookie` ضمن مجموعة Authentication.
+
+  المسار عام ولا يعتمد على جلسة الموظف، لكنه يبقى خاضعًا للتحقق من المدخلات وتحديد المعدل.

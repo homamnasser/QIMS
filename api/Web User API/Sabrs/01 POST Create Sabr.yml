@@ -1,0 +1,65 @@
+info:
+  name: POST Create Sabr
+  type: http
+  seq: 1
+  tags:
+    - web-session
+    - write
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/sabr/createSabr"
+  headers:
+    - name: Accept
+      value: "application/json"
+    - name: Origin
+      value: "{{webOrigin}}"
+    - name: X-XSRF-TOKEN
+      value: "{{xsrfToken}}"
+  body:
+    type: multipart-form
+    data:
+      - name: student
+        type: text
+        value: "5"
+      - name: giver
+        type: text
+        value: "1"
+      - name: course
+        type: text
+        value: "5"
+      - name: date
+        type: text
+        value: 2026-06-20
+      - name: type
+        type: text
+        value: داخلي
+      - name: parts[]
+        type: text
+        value: "30"
+
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("passes web authentication, channel and CSRF checks", function() {
+          expect(res.status).to.not.equal(401);
+          expect(res.status).to.not.equal(403);
+          expect(res.status).to.not.equal(419);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  يختبر `POST /api/sabr/createSabr` ضمن مجموعة Sabrs.
+
+  المسار يستخدم جلسة الويب HttpOnly الخاصة بـSanctum، ولا يقبل Bearer Token للموبايل.
+
+  الصلاحية المطلوبة: `إنشاء سبر`.
+
+  تنبيه: هذا الطلب قد يغيّر البيانات. راجع القيم قبل الإرسال.

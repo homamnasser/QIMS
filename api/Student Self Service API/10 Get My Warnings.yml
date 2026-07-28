@@ -1,0 +1,33 @@
+info:
+  name: 10 Get My Warnings
+  type: http
+  seq: 10
+
+http:
+  method: GET
+  url: "{{baseUrl}}/api/mobile/student/me/warnings"
+  headers:
+    - name: Accept
+      value: application/json
+  auth:
+    type: bearer
+    token: "{{studentToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("returns only the authenticated student's warnings", function() {
+          expect(res.status).to.equal(200);
+          expect(res.body.data).to.be.an("array");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  Returns warnings directed to the authenticated student only. A staff account
+  cannot use this endpoint even if it is accidentally granted the permission.

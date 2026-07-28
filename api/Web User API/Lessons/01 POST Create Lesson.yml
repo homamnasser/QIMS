@@ -1,0 +1,62 @@
+info:
+  name: POST Create Lesson
+  type: http
+  seq: 1
+  tags:
+    - web-session
+    - write
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/lesson/createLesson"
+  headers:
+    - name: Accept
+      value: "application/json"
+    - name: Origin
+      value: "{{webOrigin}}"
+    - name: X-XSRF-TOKEN
+      value: "{{xsrfToken}}"
+  body:
+    type: multipart-form
+    data:
+      - name: name
+        type: text
+        value: LOg132
+      - name: description
+        type: text
+        value: LOg1
+      - name: start_page
+        type: text
+        value: "20"
+      - name: end_page
+        type: text
+        value: "40"
+      - name: subject_id
+        type: text
+        value: "6"
+
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("passes web authentication, channel and CSRF checks", function() {
+          expect(res.status).to.not.equal(401);
+          expect(res.status).to.not.equal(403);
+          expect(res.status).to.not.equal(419);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  يختبر `POST /api/lesson/createLesson` ضمن مجموعة Lessons.
+
+  المسار يستخدم جلسة الويب HttpOnly الخاصة بـSanctum، ولا يقبل Bearer Token للموبايل.
+
+  الصلاحية المطلوبة: `إنشاء درس`.
+
+  تنبيه: هذا الطلب قد يغيّر البيانات. راجع القيم قبل الإرسال.

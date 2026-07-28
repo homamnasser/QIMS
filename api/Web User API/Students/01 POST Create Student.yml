@@ -1,0 +1,80 @@
+info:
+  name: POST Create Student
+  type: http
+  seq: 1
+  tags:
+    - web-session
+    - write
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/student/createStudent"
+  headers:
+    - name: Accept
+      value: "application/json"
+    - name: Origin
+      value: "{{webOrigin}}"
+    - name: X-XSRF-TOKEN
+      value: "{{xsrfToken}}"
+  body:
+    type: multipart-form
+    data:
+      - name: first_name
+        type: text
+        value: adnan
+      - name: last_name
+        type: text
+        value: naser
+      - name: phone_number
+        type: text
+        value: "0938316317"
+      - name: birth_date
+        type: text
+        value: 2011-05-05
+      - name: academic_class
+        type: text
+        value: الصف العاشر
+      - name: reading_level
+        type: text
+        value: level_3
+      - name: father_name
+        type: text
+        value: Muhamad
+      - name: parent_social_state
+        type: text
+        value: divorced
+      - name: father_phone
+        type: text
+        value: "0935452177"
+      - name: password
+        type: text
+        value: "123456789"
+      - name: password_confirmation
+        type: text
+        value: "123456789"
+
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("passes web authentication, channel and CSRF checks", function() {
+          expect(res.status).to.not.equal(401);
+          expect(res.status).to.not.equal(403);
+          expect(res.status).to.not.equal(419);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  يختبر `POST /api/student/createStudent` ضمن مجموعة Students.
+
+  المسار يستخدم جلسة الويب HttpOnly الخاصة بـSanctum، ولا يقبل Bearer Token للموبايل.
+
+  الصلاحية المطلوبة: `إنشاء طالب`.
+
+  تنبيه: هذا الطلب قد يغيّر البيانات. راجع القيم قبل الإرسال.

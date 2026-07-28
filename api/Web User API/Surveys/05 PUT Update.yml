@@ -1,0 +1,58 @@
+info:
+  name: PUT Update
+  type: http
+  seq: 5
+  tags:
+    - web-session
+    - write
+
+http:
+  method: PUT
+  url: "{{baseUrl}}/api/surveys/:survey"
+  params:
+    - name: survey
+      value: "{{surveyId}}"
+      type: path
+  headers:
+    - name: Accept
+      value: "application/json"
+    - name: Origin
+      value: "{{webOrigin}}"
+    - name: X-XSRF-TOKEN
+      value: "{{xsrfToken}}"
+  body:
+    type: json
+    data: |-
+      {
+        "name": "استبيان تجريبي محدث",
+        "description": "تحديث محلي من مجموعة Bruno.",
+        "starts_at": null,
+        "ends_at": null,
+        "allow_multiple_responses": false
+      }
+
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("passes web authentication, channel and CSRF checks", function() {
+          expect(res.status).to.not.equal(401);
+          expect(res.status).to.not.equal(403);
+          expect(res.status).to.not.equal(419);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  يختبر `PUT /api/surveys/{survey}` ضمن مجموعة Surveys.
+
+  المسار يستخدم جلسة الويب HttpOnly الخاصة بـSanctum، ولا يقبل Bearer Token للموبايل.
+
+  الصلاحية المطلوبة: `تعديل استبيان`.
+
+  تنبيه: هذا الطلب قد يغيّر البيانات. راجع القيم قبل الإرسال.

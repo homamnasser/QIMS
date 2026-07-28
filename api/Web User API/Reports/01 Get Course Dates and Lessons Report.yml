@@ -1,0 +1,37 @@
+info:
+  name: Get Course Dates and Lessons Report
+  type: http
+  seq: 1
+  tags:
+    - web-session
+    - read
+
+http:
+  method: GET
+  url: "{{baseUrl}}/api/courses-dates-lessons"
+  headers:
+    - name: Accept
+      value: "application/json"
+    - name: Origin
+      value: "{{webOrigin}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("passes web authentication, channel and CSRF checks", function() {
+          expect(res.status).to.not.equal(401);
+          expect(res.status).to.not.equal(403);
+          expect(res.status).to.not.equal(419);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  يختبر `GET /api/courses-dates-lessons` ضمن مجموعة Reports.
+
+  المسار يستخدم جلسة الويب HttpOnly الخاصة بـSanctum، ولا يقبل Bearer Token للموبايل.

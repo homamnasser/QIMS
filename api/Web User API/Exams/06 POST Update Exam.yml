@@ -1,0 +1,54 @@
+info:
+  name: POST Update Exam
+  type: http
+  seq: 6
+  tags:
+    - web-session
+    - write
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/exam/updateExam/:id"
+  params:
+    - name: id
+      value: "{{examId}}"
+      type: path
+  headers:
+    - name: Accept
+      value: "application/json"
+    - name: Origin
+      value: "{{webOrigin}}"
+    - name: X-XSRF-TOKEN
+      value: "{{xsrfToken}}"
+  body:
+    type: multipart-form
+    data:
+      - name: mark
+        type: text
+        value: "100"
+
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("passes web authentication, channel and CSRF checks", function() {
+          expect(res.status).to.not.equal(401);
+          expect(res.status).to.not.equal(403);
+          expect(res.status).to.not.equal(419);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  يختبر `POST /api/exam/updateExam/{id}` ضمن مجموعة Exams.
+
+  المسار يستخدم جلسة الويب HttpOnly الخاصة بـSanctum، ولا يقبل Bearer Token للموبايل.
+
+  الصلاحية المطلوبة: `تعديل الامتحان`.
+
+  تنبيه: هذا الطلب قد يغيّر البيانات. راجع القيم قبل الإرسال.

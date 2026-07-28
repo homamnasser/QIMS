@@ -1,0 +1,39 @@
+info:
+  name: GET Show
+  type: http
+  seq: 1
+  tags:
+    - public
+    - read
+
+http:
+  method: GET
+  url: "{{baseUrl}}/api/public/surveys/:publicToken"
+  params:
+    - name: publicToken
+      value: "{{publicSurveyToken}}"
+      type: path
+  headers:
+    - name: Accept
+      value: "application/json"
+    - name: Origin
+      value: "{{webOrigin}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("returns a controlled public API response", function() {
+          expect([200, 201, 404, 409, 422]).to.include(res.status);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  يختبر `GET /api/public/surveys/{publicToken}` ضمن مجموعة Public Surveys.
+
+  المسار عام ولا يعتمد على جلسة الموظف، لكنه يبقى خاضعًا للتحقق من المدخلات وتحديد المعدل.

@@ -1,0 +1,42 @@
+info:
+  name: Get Courses and Students Report
+  type: http
+  seq: 2
+  tags:
+    - web-session
+    - read
+
+http:
+  method: GET
+  url: "{{baseUrl}}/api/courses-students"
+  params:
+    - name: limit
+      value: "9"
+      type: query
+      description: Number of courses per page
+  headers:
+    - name: Accept
+      value: "application/json"
+    - name: Origin
+      value: "{{webOrigin}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("passes web authentication, channel and CSRF checks", function() {
+          expect(res.status).to.not.equal(401);
+          expect(res.status).to.not.equal(403);
+          expect(res.status).to.not.equal(419);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  يختبر `GET /api/courses-students` ضمن مجموعة Reports.
+
+  المسار يستخدم جلسة الويب HttpOnly الخاصة بـSanctum، ولا يقبل Bearer Token للموبايل.

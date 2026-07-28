@@ -1,0 +1,51 @@
+info:
+  name: Logout Web User
+  type: http
+  seq: 4
+  tags:
+    - web-session
+    - write
+
+http:
+  method: POST
+  url: http://127.0.0.1:8000/api/web/auth/logout
+  headers:
+    - name: Accept
+      value: application/json
+    - name: Origin
+      value: http://127.0.0.1:5173
+
+runtime:
+  scripts:
+    - type: before-request
+      code: |-
+        const token = bru.cookies.get("XSRF-TOKEN");
+
+        if (!token) {
+          throw new Error("Run Initialize CSRF Cookies first.");
+        }
+
+        req.setHeader("X-XSRF-TOKEN", decodeURIComponent(token));
+    - type: after-response
+      code: |-
+        if (res.status === 200) {
+          bru.setEnvVar("xsrfToken", "");
+        }
+    - type: tests
+      code: |-
+        test("invalidates the web session", function() {
+          expect(res.status).to.equal(200);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  يختبر `POST /api/web/auth/logout` ضمن مجموعة Authentication.
+
+  المسار يستخدم جلسة الويب HttpOnly الخاصة بـSanctum، ولا يقبل Bearer Token للموبايل.
+
+  تنبيه: هذا الطلب قد يغيّر البيانات. راجع القيم قبل الإرسال.

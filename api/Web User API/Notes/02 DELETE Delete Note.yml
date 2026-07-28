@@ -1,0 +1,48 @@
+info:
+  name: DELETE Delete Note
+  type: http
+  seq: 2
+  tags:
+    - web-session
+    - write
+    - destructive
+
+http:
+  method: DELETE
+  url: "{{baseUrl}}/api/note/deleteNote/:noteId"
+  params:
+    - name: noteId
+      value: "{{noteId}}"
+      type: path
+  headers:
+    - name: Accept
+      value: "application/json"
+    - name: Origin
+      value: "{{webOrigin}}"
+    - name: X-XSRF-TOKEN
+      value: "{{xsrfToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("passes web authentication, channel and CSRF checks", function() {
+          expect(res.status).to.not.equal(401);
+          expect(res.status).to.not.equal(403);
+          expect(res.status).to.not.equal(419);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  يختبر `DELETE /api/note/deleteNote/{noteId}` ضمن مجموعة Notes.
+
+  المسار يستخدم جلسة الويب HttpOnly الخاصة بـSanctum، ولا يقبل Bearer Token للموبايل.
+
+  الصلاحية المطلوبة: `حذف ملاحظة`.
+
+  تنبيه: هذا الطلب قد يغيّر البيانات. راجع القيم قبل الإرسال.

@@ -1,0 +1,58 @@
+info:
+  name: POST Identify
+  type: http
+  seq: 2
+  tags:
+    - public
+    - write
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/public/surveys/:publicToken/identify"
+  params:
+    - name: publicToken
+      value: "{{publicSurveyToken}}"
+      type: path
+  headers:
+    - name: Accept
+      value: "application/json"
+    - name: Origin
+      value: "{{webOrigin}}"
+    - name: X-XSRF-TOKEN
+      value: "{{xsrfToken}}"
+  body:
+    type: json
+    data: |-
+      {
+        "selfnumber": "{{studentSelfnumber}}"
+      }
+
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        if (res.status === 200 && res.body?.data?.access_token) {
+          bru.setEnvVar(
+            "surveyParticipantAccessToken",
+            String(res.body.data.access_token)
+          );
+        }
+    - type: tests
+      code: |-
+        test("returns a controlled public-survey response", function() {
+          expect([200, 404, 422]).to.include(res.status);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  يختبر `POST /api/public/surveys/{publicToken}/identify` ضمن مجموعة Public Surveys.
+
+  المسار عام ولا يعتمد على جلسة الموظف، لكنه يبقى خاضعًا للتحقق من المدخلات وتحديد المعدل.
+
+  تنبيه: هذا الطلب قد يغيّر البيانات. راجع القيم قبل الإرسال.

@@ -1,0 +1,56 @@
+name: Local
+variables:
+  - name: baseUrl
+    value: "http://localhost:8000"
+  - name: webOrigin
+    value: "http://localhost:5173"
+  - name: webEmail
+    value: "superadmin@gmail.com"
+  - name: webPassword
+    value: "password123"
+  - name: xsrfToken
+    value: ""
+  - name: staffId
+    value: "2"
+  - name: roleId
+    value: "2"
+  - name: projectId
+    value: "1"
+  - name: mosqueId
+    value: "1"
+  - name: courseId
+    value: "1"
+  - name: subjectId
+    value: "1"
+  - name: lessonId
+    value: "1"
+  - name: courseDateId
+    value: "1"
+  - name: circleId
+    value: "1"
+  - name: studentId
+    value: "1"
+  - name: noteId
+    value: "1"
+  - name: sabrId
+    value: "1"
+  - name: memorizationId
+    value: "1"
+  - name: warningId
+    value: "1"
+  - name: examId
+    value: "1"
+  - name: absenceId
+    value: "1"
+  - name: surveyId
+    value: "1"
+  - name: surveyResponseId
+    value: "1"
+  - name: surveyFileAccessToken
+    value: "replace-with-survey-file-access-token"
+  - name: publicSurveyToken
+    value: "replace-with-public-survey-token"
+  - name: surveyParticipantAccessToken
+    value: "replace-after-identify-request"
+  - name: studentSelfnumber
+    value: "TEST01-000001"

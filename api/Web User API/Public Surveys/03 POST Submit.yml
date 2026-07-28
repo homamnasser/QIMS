@@ -1,0 +1,54 @@
+info:
+  name: POST Submit
+  type: http
+  seq: 3
+  tags:
+    - public
+    - write
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/public/surveys/:publicToken/responses"
+  params:
+    - name: publicToken
+      value: "{{publicSurveyToken}}"
+      type: path
+  headers:
+    - name: Accept
+      value: "application/json"
+    - name: Origin
+      value: "{{webOrigin}}"
+    - name: X-XSRF-TOKEN
+      value: "{{xsrfToken}}"
+  body:
+    type: json
+    data: |-
+      {
+        "access_token": "{{surveyParticipantAccessToken}}",
+        "answers": {
+          "1": "yes"
+        },
+        "student_fields": {}
+      }
+
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("returns a controlled public API response", function() {
+          expect([200, 201, 404, 409, 422]).to.include(res.status);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  يختبر `POST /api/public/surveys/{publicToken}/responses` ضمن مجموعة Public Surveys.
+
+  المسار عام ولا يعتمد على جلسة الموظف، لكنه يبقى خاضعًا للتحقق من المدخلات وتحديد المعدل.
+
+  تنبيه: هذا الطلب قد يغيّر البيانات. راجع القيم قبل الإرسال.

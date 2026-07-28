@@ -1,0 +1,51 @@
+info:
+  name: GET Get All Sabrs
+  type: http
+  seq: 3
+  tags:
+    - web-session
+    - read
+
+http:
+  method: GET
+  url: "{{baseUrl}}/api/sabr/getAllSabrs"
+  params:
+    - name: student
+      value: ""
+      type: query
+      disabled: true
+    - name: giver
+      value: "2"
+      type: query
+      disabled: true
+    - name: course
+      value: "5"
+      type: query
+  headers:
+    - name: Accept
+      value: "application/json"
+    - name: Origin
+      value: "{{webOrigin}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("passes web authentication, channel and CSRF checks", function() {
+          expect(res.status).to.not.equal(401);
+          expect(res.status).to.not.equal(403);
+          expect(res.status).to.not.equal(419);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  يختبر `GET /api/sabr/getAllSabrs` ضمن مجموعة Sabrs.
+
+  المسار يستخدم جلسة الويب HttpOnly الخاصة بـSanctum، ولا يقبل Bearer Token للموبايل.
+
+  الصلاحية المطلوبة: `عرض كافة السبور`.

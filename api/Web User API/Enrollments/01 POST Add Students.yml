@@ -1,0 +1,61 @@
+info:
+  name: POST Add Students
+  type: http
+  seq: 1
+  tags:
+    - web-session
+    - write
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/studentCircle/addStudentsToCircle"
+  headers:
+    - name: Accept
+      value: "application/json"
+    - name: Origin
+      value: "{{webOrigin}}"
+    - name: X-XSRF-TOKEN
+      value: "{{xsrfToken}}"
+  body:
+    type: multipart-form
+    data:
+      - name: circle_id
+        type: text
+        value: "5"
+      - name: student_ids[]
+        type: text
+        value: "2"
+      - name: student_ids[]
+        type: text
+        value: "6"
+        disabled: true
+      - name: student_ids[]
+        type: text
+        value: "5"
+        disabled: true
+
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("passes web authentication, channel and CSRF checks", function() {
+          expect(res.status).to.not.equal(401);
+          expect(res.status).to.not.equal(403);
+          expect(res.status).to.not.equal(419);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  يختبر `POST /api/studentCircle/addStudentsToCircle` ضمن مجموعة Enrollments.
+
+  المسار يستخدم جلسة الويب HttpOnly الخاصة بـSanctum، ولا يقبل Bearer Token للموبايل.
+
+  الصلاحية المطلوبة: `إضافة طلاب للحلقة`.
+
+  تنبيه: هذا الطلب قد يغيّر البيانات. راجع القيم قبل الإرسال.

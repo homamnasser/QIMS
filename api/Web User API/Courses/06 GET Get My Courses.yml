@@ -1,0 +1,60 @@
+info:
+  name: GET Get My Courses
+  type: http
+  seq: 6
+  tags:
+    - web-session
+    - read
+
+http:
+  method: GET
+  url: "{{baseUrl}}/api/course/getMyCourses"
+  params:
+    - name: name
+      value: qqq
+      type: query
+      disabled: true
+    - name: mosque_id
+      value: "6"
+      type: query
+      disabled: true
+    - name: project_id
+      value: "6"
+      type: query
+      disabled: true
+    - name: mosque_name
+      value: ansar
+      type: query
+      disabled: true
+    - name: project_name
+      value: wwws
+      type: query
+      disabled: true
+  headers:
+    - name: Accept
+      value: "application/json"
+    - name: Origin
+      value: "{{webOrigin}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("passes web authentication, channel and CSRF checks", function() {
+          expect(res.status).to.not.equal(401);
+          expect(res.status).to.not.equal(403);
+          expect(res.status).to.not.equal(419);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  يختبر `GET /api/course/getMyCourses` ضمن مجموعة Courses.
+
+  المسار يستخدم جلسة الويب HttpOnly الخاصة بـSanctum، ولا يقبل Bearer Token للموبايل.
+
+  الصلاحية المطلوبة: `الإشراف على المشاريع والكورسات`.

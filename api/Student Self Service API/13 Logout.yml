@@ -1,0 +1,38 @@
+info:
+  name: 13 Logout
+  type: http
+  seq: 13
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/mobile/auth/logout"
+  headers:
+    - name: Accept
+      value: application/json
+  auth:
+    type: bearer
+    token: "{{studentToken}}"
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        if (res.status === 200) {
+          bru.setEnvVar("studentToken", "");
+          bru.setEnvVar("refreshToken", "");
+        }
+    - type: tests
+      code: |-
+        test("revokes this mobile device token pair", function() {
+          expect(res.status).to.equal(200);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  Revokes the access and refresh token pair for this device only. Other mobile
+  devices and the browser dashboard session remain active.

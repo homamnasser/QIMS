@@ -1,0 +1,75 @@
+info:
+  name: POST Update Staff Member
+  type: http
+  seq: 5
+  tags:
+    - web-session
+    - write
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/updateStaffMember/:id"
+  params:
+    - name: id
+      value: "{{staffId}}"
+      type: path
+  headers:
+    - name: Accept
+      value: "application/json"
+    - name: Origin
+      value: "{{webOrigin}}"
+    - name: X-XSRF-TOKEN
+      value: "{{xsrfToken}}"
+  body:
+    type: multipart-form
+    data:
+      - name: first_name
+        type: text
+        value: homamw
+      - name: last_name
+        type: text
+        value: nasser
+      - name: phone
+        type: text
+        value: "0989280708"
+      - name: email
+        type: text
+        value: 0989280708@gmail.com
+      - name: password
+        type: text
+        value: "123456789"
+      - name: password_confirmation
+        type: text
+        value: "123456789"
+      - name: birth_date
+        type: text
+        value: 2002-02-18
+      - name: role_id
+        type: text
+        value: "2"
+
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("passes web authentication, channel and CSRF checks", function() {
+          expect(res.status).to.not.equal(401);
+          expect(res.status).to.not.equal(403);
+          expect(res.status).to.not.equal(419);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  يختبر `POST /api/updateStaffMember/{id}` ضمن مجموعة Staff.
+
+  المسار يستخدم جلسة الويب HttpOnly الخاصة بـSanctum، ولا يقبل Bearer Token للموبايل.
+
+  الصلاحية المطلوبة: `تعديل موظف`.
+
+  تنبيه: هذا الطلب قد يغيّر البيانات. راجع القيم قبل الإرسال.

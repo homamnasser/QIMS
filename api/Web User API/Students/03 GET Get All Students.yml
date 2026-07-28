@@ -1,0 +1,59 @@
+info:
+  name: GET Get All Students
+  type: http
+  seq: 3
+  tags:
+    - web-session
+    - read
+
+http:
+  method: GET
+  url: "{{baseUrl}}/api/student/getAllStudents"
+  params:
+    - name: first_name
+      value: homam
+      type: query
+      disabled: true
+    - name: last_name
+      value: ""
+      type: query
+      disabled: true
+    - name: academic_class
+      value: ""
+      type: query
+      disabled: true
+    - name: reading_level
+      value: level_2
+      type: query
+      disabled: true
+    - name: parent_social_state
+      value: divorced
+      type: query
+  headers:
+    - name: Accept
+      value: "application/json"
+    - name: Origin
+      value: "{{webOrigin}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("passes web authentication, channel and CSRF checks", function() {
+          expect(res.status).to.not.equal(401);
+          expect(res.status).to.not.equal(403);
+          expect(res.status).to.not.equal(419);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  يختبر `GET /api/student/getAllStudents` ضمن مجموعة Students.
+
+  المسار يستخدم جلسة الويب HttpOnly الخاصة بـSanctum، ولا يقبل Bearer Token للموبايل.
+
+  الصلاحية المطلوبة: `عرض كافة الطلاب`.

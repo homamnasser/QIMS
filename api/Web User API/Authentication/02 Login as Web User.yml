@@ -1,0 +1,57 @@
+info:
+  name: Login as Web User
+  type: http
+  seq: 2
+  tags:
+    - public
+    - write
+
+http:
+  method: POST
+  url: http://127.0.0.1:8000/api/web/auth/login
+  headers:
+    - name: Accept
+      value: application/json
+    - name: Origin
+      value: http://127.0.0.1:5173
+  body:
+    type: json
+    data: |-
+      {
+        "email": "superadmin@gmail.com",
+        "password": "password123"
+      }
+
+runtime:
+  scripts:
+    - type: before-request
+      code: |-
+        const token = bru.cookies.get("XSRF-TOKEN");
+
+        if (!token) {
+          throw new Error("Run Initialize CSRF Cookies first.");
+        }
+
+        req.setHeader("X-XSRF-TOKEN", decodeURIComponent(token));
+    - type: tests
+      code: |-
+        test("logs in with a server-side web session", function() {
+          expect(res.status).to.equal(200);
+          expect(res.body.data.user.account_type).to.equal("staff");
+          expect(res.body.data).to.not.have.property("access_token");
+          expect(res.body.data).to.not.have.property("token");
+          expect(bru.cookies.has("qims_web_session")).to.equal(true);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  يختبر `POST /api/web/auth/login` ضمن مجموعة Authentication.
+
+  المسار عام ولا يعتمد على جلسة الموظف، لكنه يبقى خاضعًا للتحقق من المدخلات وتحديد المعدل.
+
+  تنبيه: هذا الطلب قد يغيّر البيانات. راجع القيم قبل الإرسال.

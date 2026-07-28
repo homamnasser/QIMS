@@ -1,0 +1,65 @@
+info:
+  name: POST Update Role
+  type: http
+  seq: 6
+  tags:
+    - web-session
+    - write
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/role/updateRole/:id"
+  params:
+    - name: id
+      value: "{{roleId}}"
+      type: path
+  headers:
+    - name: Accept
+      value: "application/json"
+    - name: Origin
+      value: "{{webOrigin}}"
+    - name: X-XSRF-TOKEN
+      value: "{{xsrfToken}}"
+  body:
+    type: multipart-form
+    data:
+      - name: name
+        type: text
+        value: student
+      - name: permissions[]
+        type: text
+        value: "1"
+        disabled: true
+      - name: permissions[]
+        type: text
+        value: "3"
+      - name: permissions[]
+        type: text
+        value: "12"
+        disabled: true
+
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("passes web authentication, channel and CSRF checks", function() {
+          expect(res.status).to.not.equal(401);
+          expect(res.status).to.not.equal(403);
+          expect(res.status).to.not.equal(419);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  يختبر `POST /api/role/updateRole/{id}` ضمن مجموعة Roles.
+
+  المسار يستخدم جلسة الويب HttpOnly الخاصة بـSanctum، ولا يقبل Bearer Token للموبايل.
+
+  الصلاحية المطلوبة: `تعديل الدور`.
+
+  تنبيه: هذا الطلب قد يغيّر البيانات. راجع القيم قبل الإرسال.
