@@ -10,7 +10,6 @@ use App\Models\Role;
 use App\Models\User;
 use App\Services\StudentService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 class RoleFlexibilityTest extends TestCase
@@ -241,6 +240,6 @@ class RoleFlexibilityTest extends TestCase
             'password' => 'password123',
         ]);
         $rootUser->syncRoles([$rootRole]);
-        Sanctum::actingAs($rootUser);
+        $this->actingAs($rootUser, 'web');
     }
 }

@@ -2,48 +2,51 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
-use App\Services\StaffService;
-use App\Services\ProjectService;
-use App\IService\IStaffService;
+use App\IService\ICircleService;
+use App\IService\ICourseCurriculumService;
+use App\IService\ICourseDateService;
+use App\IService\ICourseService;
+use App\IService\IExamService;
+use App\IService\ILessonService;
+use App\IService\IMarkService;
+use App\IService\IMemorizationService;
+use App\IService\IMobileAuthenticationService;
+use App\IService\IMosqueService;
+use App\IService\INoteService;
 use App\IService\IProjectService;
 use App\IService\IRoleService;
-use App\Services\RoleService;
-use Illuminate\Support\Facades\Gate;
-use App\Services\MosqueService;
-use App\IService\IMosqueService;
-use App\IService\ICourseService;
-use App\Services\CourseService;
-use App\IService\ISubjectService;
-use App\Services\SubjectService;
-use App\IService\ILessonService;
-use App\Services\LessonService;
-use App\IService\ICourseDateService;
-use App\Services\CourseDateService;
-use App\IService\ICourseCurriculumService;
-use App\Services\CourseCurriculumService;
-use App\Services\CircleService;
-use App\IService\ICircleService;
-use App\IService\IStudentService;
-use App\IService\IStudentLearningService;
-use App\Services\StudentService;
-use App\Services\StudentLearningService;
-use App\IService\IStudentCircleService;
-use App\Services\StudentCircleService;
-use App\IService\INoteService;
-use App\Services\NoteService;
 use App\IService\ISabrService;
-use App\Services\SabrService;
-use App\IService\IMemorizationService;
-use App\IService\IWarningService;
-use App\Services\MemorizationService;
-use App\Services\WarningService;
-use App\IService\IExamService;
-use App\Services\ExamService;
+use App\IService\IStaffService;
+use App\IService\IStudentCircleService;
 use App\IService\IStudentCourseAbsenceService;
-use App\Services\StudentCourseAbsenceService;
-use App\IService\IMarkService;
+use App\IService\IStudentLearningService;
+use App\IService\IStudentService;
+use App\IService\ISubjectService;
+use App\IService\IWarningService;
+use App\Services\CircleService;
+use App\Services\CourseCurriculumService;
+use App\Services\CourseDateService;
+use App\Services\CourseService;
+use App\Services\ExamService;
+use App\Services\LessonService;
 use App\Services\MarkService;
+use App\Services\MemorizationService;
+use App\Services\MobileAuthenticationService;
+use App\Services\MosqueService;
+use App\Services\NoteService;
+use App\Services\ProjectService;
+use App\Services\RoleService;
+use App\Services\SabrService;
+use App\Services\StaffService;
+use App\Services\StudentCircleService;
+use App\Services\StudentCourseAbsenceService;
+use App\Services\StudentLearningService;
+use App\Services\StudentService;
+use App\Services\SubjectService;
+use App\Services\WarningService;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\ServiceProvider;
+
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -67,10 +70,14 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(INoteService::class, NoteService::class);
         $this->app->bind(ISabrService::class, SabrService::class);
         $this->app->bind(IMemorizationService::class, MemorizationService::class);
-        $this->app->bind(IWarningService::class,WarningService::class);
+        $this->app->bind(IWarningService::class, WarningService::class);
         $this->app->bind(IExamService::class, ExamService::class);
-        $this->app->bind(IStudentCourseAbsenceService::class,StudentCourseAbsenceService::class);
+        $this->app->bind(IStudentCourseAbsenceService::class, StudentCourseAbsenceService::class);
         $this->app->bind(IMarkService::class, MarkService::class);
+        $this->app->bind(
+            IMobileAuthenticationService::class,
+            MobileAuthenticationService::class
+        );
     }
 
     public function boot(): void

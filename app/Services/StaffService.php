@@ -2,12 +2,10 @@
 
 namespace App\Services;
 
-use App\Models\User;
 use App\IService\IStaffService;
+use App\Models\User;
 use App\Traits\FileTrait;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Http\UploadedFile;
 
 class StaffService implements IStaffService
 {
@@ -18,7 +16,7 @@ class StaffService implements IStaffService
         $roleId = $data['role_id'] ?? null;
         unset($data['role_id']);
 
-        if (isset($data['image']) && $data['image'] instanceof \Illuminate\Http\UploadedFile) {
+        if (isset($data['image']) && $data['image'] instanceof UploadedFile) {
             if ($user->image) {
                 $this->deleteFile($user->image);
             }
@@ -38,7 +36,7 @@ class StaffService implements IStaffService
         $roleId = $data['role_id'] ?? null;
         unset($data['role_id']);
 
-        if (isset($data['image']) && $data['image'] instanceof \Illuminate\Http\UploadedFile) {
+        if (isset($data['image']) && $data['image'] instanceof UploadedFile) {
             $data['image'] = $this->saveFile($data['image'], 'users/images');
         }
 
@@ -49,35 +47,6 @@ class StaffService implements IStaffService
         }
 
         return $user->load('roles.permissions');
-    }
-
-
-    public function login(array $credentials): ?string
-    {
-        if (filter_var($credentials['email'], FILTER_VALIDATE_EMAIL)) {
-
-            if (!Auth::attempt(['email' => $credentials['email'], 'password' => $credentials['password']])) {
-                return null;
-            }
-
-            /** @var User $user */
-            $user = Auth::user();
-            return $user->createToken('API TOKEN')->plainTextToken;
-        }
-
-        $student = \App\Models\Student::where('username', $credentials['email'])->first();
-
-        if (!$student || !\Illuminate\Support\Facades\Hash::check($credentials['password'], $student->password)) {
-            return null;
-        }
-
-        return $student->createToken('API TOKEN')->plainTextToken;
-    }
-
-    public function logout(Authenticatable $user): bool
-    {
-        $user->tokens()->delete();
-        return true;
     }
 
     public function assignRoleToUser(User $user, int $roleId): void
@@ -94,8 +63,7 @@ class StaffService implements IStaffService
     {
         $user = User::find($id);
 
-
-        if (!$user || $user->projects()->exists() || $user->circles()->exists()) {
+        if (! $user || $user->projects()->exists() || $user->circles()->exists()) {
             return false;
         }
 
@@ -111,12 +79,12 @@ class StaffService implements IStaffService
         $query = User::with('roles.permissions')
             ->when($name, function ($query, $name) {
                 return $query->where(function ($q) use ($name) {
-                    $q->where('first_name', 'LIKE', '%' . $name . '%')
-                        ->orWhere('last_name', 'LIKE', '%' . $name . '%');
+                    $q->where('first_name', 'LIKE', '%'.$name.'%')
+                        ->orWhere('last_name', 'LIKE', '%'.$name.'%');
                 });
             })
             ->orderBy('id', 'desc');
-            
+
         return $limit ? $query->paginate($limit) : $query->get();
     }
 }

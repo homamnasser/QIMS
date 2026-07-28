@@ -8,6 +8,7 @@ use App\Http\Controllers\CourseDateController;
 use App\Http\Controllers\ExamController;
 use App\Http\Controllers\LessonController;
 use App\Http\Controllers\MemorizationController;
+use App\Http\Controllers\MobileAuthenticationController;
 use App\Http\Controllers\MosqueController;
 use App\Http\Controllers\NoteController;
 use App\Http\Controllers\ProjectController;
@@ -22,6 +23,7 @@ use App\Http\Controllers\StudentLearningController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\SurveyController;
 use App\Http\Controllers\WarningController;
+use App\Http\Controllers\WebAuthenticationController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -35,8 +37,32 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('/loginUser', [AuthController::class, 'loginUser']);
-Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
+Route::prefix('web/auth')
+    ->middleware('frontend.request')
+    ->group(function (): void {
+        Route::post('/login', [WebAuthenticationController::class, 'login'])
+            ->middleware('throttle:web-login');
+        Route::middleware(['auth:sanctum', 'auth.channel:web'])
+            ->group(function (): void {
+                Route::get('/me', [WebAuthenticationController::class, 'me']);
+                Route::post('/logout', [WebAuthenticationController::class, 'logout']);
+            });
+    });
+
+Route::prefix('mobile/auth')->group(function (): void {
+    Route::post('/login', [MobileAuthenticationController::class, 'login'])
+        ->middleware('throttle:mobile-login');
+    Route::get('/me', [MobileAuthenticationController::class, 'me'])
+        ->middleware(['auth:sanctum', 'auth.channel:mobile-access']);
+    Route::post('/refresh', [MobileAuthenticationController::class, 'refresh'])
+        ->middleware([
+            'auth:sanctum',
+            'auth.channel:mobile-refresh',
+            'throttle:mobile-refresh',
+        ]);
+    Route::post('/logout', [MobileAuthenticationController::class, 'logout'])
+        ->middleware(['auth:sanctum', 'auth.channel:mobile-token']);
+});
 
 Route::prefix('public/surveys')->group(function (): void {
     Route::get('/{publicToken}', [PublicSurveyController::class, 'show']);
@@ -44,7 +70,9 @@ Route::prefix('public/surveys')->group(function (): void {
     Route::post('/{publicToken}/responses', [PublicSurveyController::class, 'submit']);
 });
 
-Route::middleware(['api', 'auth:sanctum'])->prefix('surveys')->group(function (): void {
+$webAuthenticatedMiddleware = ['auth:sanctum', 'auth.channel:web'];
+
+Route::middleware($webAuthenticatedMiddleware)->prefix('surveys')->group(function (): void {
     Route::get('/student-fields', [SurveyController::class, 'studentFields'])
         ->middleware('permission:إنشاء استبيان|تعديل استبيان');
     Route::get('/files/{accessToken}', [SurveyController::class, 'downloadFile'])
@@ -70,7 +98,7 @@ Route::middleware(['api', 'auth:sanctum'])->prefix('surveys')->group(function ()
 });
 
 Route::group([
-    'middleware' => ['api', 'auth:sanctum'],
+    'middleware' => $webAuthenticatedMiddleware,
 ], function ($router) {
     Route::post('/createStaffMember', [AuthController::class, 'createStaffMember'])->middleware('permission:إنشاء موظف');
     Route::post('/updateStaffMember/{id}', [AuthController::class, 'updateStaffMember'])->middleware('permission:تعديل موظف');
@@ -80,7 +108,7 @@ Route::group([
 });
 
 Route::group([
-    'middleware' => ['api', 'auth:sanctum'],
+    'middleware' => $webAuthenticatedMiddleware,
     'prefix' => 'role',
 ], function ($router) {
     Route::post('/createRole', [RoleController::class, 'createRole'])->middleware('permission:إنشاء دور');
@@ -92,7 +120,7 @@ Route::group([
 });
 
 Route::group([
-    'middleware' => ['api', 'auth:sanctum'],
+    'middleware' => $webAuthenticatedMiddleware,
     'prefix' => 'project',
 ], function ($router) {
     Route::post('/createProject', [ProjectController::class, 'createProject'])->middleware('permission:إنشاء مشروع');
@@ -107,7 +135,7 @@ Route::group([
 });
 
 Route::group([
-    'middleware' => ['api', 'auth:sanctum'],
+    'middleware' => $webAuthenticatedMiddleware,
     'prefix' => 'mosque',
 ], function ($router) {
     Route::post('/createMosque', [MosqueController::class, 'createMosque'])->middleware('permission:إنشاء مسجد');
@@ -118,7 +146,7 @@ Route::group([
 });
 
 Route::group([
-    'middleware' => ['api', 'auth:sanctum'],
+    'middleware' => $webAuthenticatedMiddleware,
     'prefix' => 'course',
 ], function ($router) {
     Route::post('/createCourse', [CourseController::class, 'createCourse'])->middleware('permission:إنشاء كورس');
@@ -132,7 +160,7 @@ Route::group([
 });
 
 Route::group([
-    'middleware' => ['api', 'auth:sanctum'],
+    'middleware' => $webAuthenticatedMiddleware,
     'prefix' => 'subject',
 ], function ($router) {
     Route::post('/createSubject', [SubjectController::class, 'createSubject'])->middleware('permission:إنشاء مادة');
@@ -143,7 +171,7 @@ Route::group([
 });
 
 Route::group([
-    'middleware' => ['api', 'auth:sanctum'],
+    'middleware' => $webAuthenticatedMiddleware,
     'prefix' => 'lesson',
 ], function ($router) {
     Route::post('/createLesson', [LessonController::class, 'createLesson'])->middleware('permission:إنشاء درس');
@@ -153,7 +181,7 @@ Route::group([
     Route::delete('/deleteLesson/{id}', [LessonController::class, 'deleteLesson'])->middleware('permission:حذف درس');
 });
 Route::group([
-    'middleware' => ['api', 'auth:sanctum'],
+    'middleware' => $webAuthenticatedMiddleware,
     'prefix' => 'courseDate',
 ], function ($router) {
     Route::post('/createCourseDate', [CourseDateController::class, 'createCourseDate'])->middleware('permission:إنشاء تاريخ الكورس');
@@ -163,7 +191,7 @@ Route::group([
 });
 
 Route::group([
-    'middleware' => ['api', 'auth:sanctum'],
+    'middleware' => $webAuthenticatedMiddleware,
     'prefix' => 'dateLesson',
 ], function ($router) {
     Route::post('/assignLessonsToDate', [CourseCurriculumController::class, 'assignLessonsToDate'])->middleware('permission:إسناد الدروس للتاريخ');
@@ -174,7 +202,7 @@ Route::group([
 });
 
 Route::group([
-    'middleware' => ['api', 'auth:sanctum'],
+    'middleware' => $webAuthenticatedMiddleware,
     'prefix' => 'circle',
 ], function ($router) {
     Route::post('/createCircle', [CircleController::class, 'createCircle'])->middleware('permission:إنشاء حلقة');
@@ -186,7 +214,7 @@ Route::group([
 });
 
 Route::group([
-    'middleware' => ['api', 'auth:sanctum'],
+    'middleware' => $webAuthenticatedMiddleware,
     'prefix' => 'student',
 ], function ($router) {
     Route::post('/createStudent', [StudentController::class, 'createStudent'])->middleware('permission:إنشاء طالب');
@@ -197,8 +225,8 @@ Route::group([
 });
 
 Route::group([
-    'middleware' => ['api', 'auth:sanctum'],
-    'prefix' => 'student/me',
+    'middleware' => ['auth:sanctum', 'auth.channel:mobile-access'],
+    'prefix' => 'mobile/student/me',
 ], function (): void {
     Route::get('/mosque', [StudentLearningController::class, 'mosque'])
         ->middleware('permission:'.config('roles.student_capabilities.mosque'));
@@ -222,7 +250,7 @@ Route::group([
 });
 
 Route::group([
-    'middleware' => ['api', 'auth:sanctum'],
+    'middleware' => $webAuthenticatedMiddleware,
     'prefix' => 'studentCircle',
 ], function ($router) {
     Route::post('/addStudentsToCircle', [StudentCircleController::class, 'addStudents'])->middleware('permission:إضافة طلاب للحلقة');
@@ -231,7 +259,7 @@ Route::group([
 });
 
 Route::group([
-    'middleware' => ['api', 'auth:sanctum'],
+    'middleware' => $webAuthenticatedMiddleware,
     'prefix' => 'note',
 ], function ($router) {
     Route::post('/createNote', [NoteController::class, 'createNote'])->middleware('permission:إنشاء ملاحظة');
@@ -241,7 +269,7 @@ Route::group([
 });
 
 Route::group([
-    'middleware' => ['api', 'auth:sanctum'],
+    'middleware' => $webAuthenticatedMiddleware,
     'prefix' => 'sabr',
 ], function ($router) {
     Route::post('/createSabr', [SabrController::class, 'createSabr'])->middleware('permission:إنشاء سبر');
@@ -253,7 +281,7 @@ Route::group([
 });
 
 Route::group([
-    'middleware' => ['api', 'auth:sanctum'],
+    'middleware' => $webAuthenticatedMiddleware,
     'prefix' => 'memorization',
 ], function ($router) {
     Route::post('/createMemorization', [MemorizationController::class, 'createMemorization'])->middleware('permission:إنشاء تسميع');
@@ -264,7 +292,7 @@ Route::group([
 });
 
 Route::group([
-    'middleware' => ['api', 'auth:sanctum'],
+    'middleware' => $webAuthenticatedMiddleware,
     'prefix' => 'warning',
 ], function ($router) {
     Route::post('/createWarning', [WarningController::class, 'createWarning'])->middleware('permission:إنشاء إنذار');
@@ -275,7 +303,7 @@ Route::group([
 
 });
 Route::group([
-    'middleware' => ['api', 'auth:sanctum'],
+    'middleware' => $webAuthenticatedMiddleware,
     'prefix' => 'exam',
 ], function ($router) {
     Route::post('/createExam', [ExamController::class, 'createExam'])->middleware('permission:إنشاء امتحان');
@@ -287,7 +315,7 @@ Route::group([
 });
 
 Route::group([
-    'middleware' => ['api', 'auth:sanctum'],
+    'middleware' => $webAuthenticatedMiddleware,
     'prefix' => 'absence',
 ], function ($router) {
     Route::post('/createAbsence', [StudentCourseAbsenceController::class, 'createAbsence']);
@@ -299,7 +327,7 @@ Route::group([
 });
 
 Route::group([
-    'middleware' => ['api', 'auth:sanctum'],
+    'middleware' => $webAuthenticatedMiddleware,
 ], function ($router) {
     Route::get('/courses-students', [ReportApiController::class, 'getCoursesStudents']);
     Route::get('/student-info', [ReportApiController::class, 'getStudentInfo']);

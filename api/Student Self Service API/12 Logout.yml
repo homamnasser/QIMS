@@ -1,11 +1,11 @@
 info:
-  name: 11 Logout
+  name: 12 Logout
   type: http
-  seq: 11
+  seq: 12
 
 http:
   method: POST
-  url: "{{baseUrl}}/api/logout"
+  url: "{{baseUrl}}/api/mobile/auth/logout"
   headers:
     - name: Accept
       value: application/json
@@ -19,10 +19,11 @@ runtime:
       code: |-
         if (res.status === 200) {
           bru.setEnvVar("studentToken", "");
+          bru.setEnvVar("refreshToken", "");
         }
     - type: tests
       code: |-
-        test("student logout succeeds", function() {
+        test("revokes this mobile device token pair", function() {
           expect(res.status).to.equal(200);
         });
 
@@ -33,5 +34,5 @@ settings:
   maxRedirects: 5
 
 docs: |-
-  Revokes all Sanctum tokens for the authenticated student and clears the token
-  stored in the selected Local environment.
+  Revokes the access and refresh token pair for this device only. Other mobile
+  devices and the browser dashboard session remain active.

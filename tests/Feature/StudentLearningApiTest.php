@@ -22,7 +22,6 @@ use App\Models\User;
 use App\Models\Warning;
 use Database\Seeders\TestDataSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 class StudentLearningApiTest extends TestCase
@@ -217,21 +216,21 @@ class StudentLearningApiTest extends TestCase
         ]);
         $otherDate->lessons()->attach($otherLesson->id);
 
-        Sanctum::actingAs($student);
+        $this->authenticateMobile($student);
 
-        $this->getJson('/api/student/me/mosque')
+        $this->getJson('/api/mobile/student/me/mosque')
             ->assertOk()
             ->assertJsonPath('data.id', $ownMosque->id)
             ->assertJsonPath('data.name', 'مسجد الطالب')
             ->assertJsonMissing(['next_student_sequence']);
 
-        $this->getJson('/api/student/me/circles')
+        $this->getJson('/api/mobile/student/me/circles')
             ->assertOk()
             ->assertJsonCount(1, 'data')
             ->assertJsonPath('data.0.id', $ownCircle->id)
             ->assertJsonPath('data.0.course.id', $ownCourse->id);
 
-        $coursesResponse = $this->getJson('/api/student/me/courses')
+        $coursesResponse = $this->getJson('/api/mobile/student/me/courses')
             ->assertOk()
             ->assertJsonCount(1, 'data')
             ->assertJsonPath('data.0.id', $ownCourse->id);
@@ -241,7 +240,7 @@ class StudentLearningApiTest extends TestCase
             collect($coursesResponse->json('data'))->pluck('id')->all()
         );
 
-        $this->getJson("/api/student/me/courses/{$ownCourse->id}/schedule")
+        $this->getJson("/api/mobile/student/me/courses/{$ownCourse->id}/schedule")
             ->assertOk()
             ->assertJsonPath('data.course.id', $ownCourse->id)
             ->assertJsonCount(1, 'data.schedule')
@@ -249,10 +248,10 @@ class StudentLearningApiTest extends TestCase
             ->assertJsonCount(1, 'data.schedule.0.lessons')
             ->assertJsonPath('data.schedule.0.lessons.0.id', $ownLesson->id);
 
-        $this->getJson("/api/student/me/courses/{$sameMosqueOtherCourse->id}/schedule")
+        $this->getJson("/api/mobile/student/me/courses/{$sameMosqueOtherCourse->id}/schedule")
             ->assertNotFound()
             ->assertJsonPath('data', null);
-        $this->getJson("/api/student/me/courses/{$otherMosqueCourse->id}/schedule")
+        $this->getJson("/api/mobile/student/me/courses/{$otherMosqueCourse->id}/schedule")
             ->assertNotFound()
             ->assertJsonPath('data', null);
     }
@@ -263,7 +262,7 @@ class StudentLearningApiTest extends TestCase
         $studentRole->givePermissionTo(array_values(config('roles.student_capabilities')));
         $student = $this->createStudent('student-global-scope-check', null, $studentRole);
 
-        Sanctum::actingAs($student);
+        $this->authenticateMobile($student);
 
         foreach ([
             '/api/mosque/getAllMosques',
@@ -384,25 +383,25 @@ class StudentLearningApiTest extends TestCase
             'mark' => 99,
         ]);
 
-        Sanctum::actingAs($student);
+        $this->authenticateMobile($student);
 
-        $this->getJson("/api/student/me/notes?student_id={$otherStudent->id}")
+        $this->getJson("/api/mobile/student/me/notes?student_id={$otherStudent->id}")
             ->assertOk()
             ->assertJsonCount(1, 'data')
             ->assertJsonPath('data.0.id', $ownNote->id);
-        $this->getJson('/api/student/me/sabrs')
+        $this->getJson('/api/mobile/student/me/sabrs')
             ->assertOk()
             ->assertJsonCount(1, 'data')
             ->assertJsonPath('data.0.id', $ownSabr->id);
-        $this->getJson('/api/student/me/memorizations')
+        $this->getJson('/api/mobile/student/me/memorizations')
             ->assertOk()
             ->assertJsonCount(1, 'data')
             ->assertJsonPath('data.0.memorization_id', $ownMemorization->id);
-        $this->getJson('/api/student/me/warnings')
+        $this->getJson('/api/mobile/student/me/warnings')
             ->assertOk()
             ->assertJsonCount(1, 'data')
             ->assertJsonPath('data.0.id', $ownWarning->id);
-        $this->getJson('/api/student/me/exams')
+        $this->getJson('/api/mobile/student/me/exams')
             ->assertOk()
             ->assertJsonCount(1, 'data')
             ->assertJsonPath('data.0.id', $ownExam->id);
@@ -411,33 +410,33 @@ class StudentLearningApiTest extends TestCase
     public function test_student_self_service_routes_require_authentication_and_the_exact_permission(): void
     {
         foreach ([
-            '/api/student/me/mosque',
-            '/api/student/me/circles',
-            '/api/student/me/courses',
-            '/api/student/me/courses/1/schedule',
-            '/api/student/me/notes',
-            '/api/student/me/sabrs',
-            '/api/student/me/memorizations',
-            '/api/student/me/warnings',
-            '/api/student/me/exams',
+            '/api/mobile/student/me/mosque',
+            '/api/mobile/student/me/circles',
+            '/api/mobile/student/me/courses',
+            '/api/mobile/student/me/courses/1/schedule',
+            '/api/mobile/student/me/notes',
+            '/api/mobile/student/me/sabrs',
+            '/api/mobile/student/me/memorizations',
+            '/api/mobile/student/me/warnings',
+            '/api/mobile/student/me/exams',
         ] as $endpoint) {
             $this->getJson($endpoint)->assertUnauthorized();
         }
 
         $studentRole = $this->createRole('student-without-self-service', RoleFamily::Student);
         $student = $this->createStudent('student-no-api-permissions', null, $studentRole);
-        Sanctum::actingAs($student);
+        $this->authenticateMobile($student);
 
         foreach ([
-            '/api/student/me/mosque',
-            '/api/student/me/circles',
-            '/api/student/me/courses',
-            '/api/student/me/courses/1/schedule',
-            '/api/student/me/notes',
-            '/api/student/me/sabrs',
-            '/api/student/me/memorizations',
-            '/api/student/me/warnings',
-            '/api/student/me/exams',
+            '/api/mobile/student/me/mosque',
+            '/api/mobile/student/me/circles',
+            '/api/mobile/student/me/courses',
+            '/api/mobile/student/me/courses/1/schedule',
+            '/api/mobile/student/me/notes',
+            '/api/mobile/student/me/sabrs',
+            '/api/mobile/student/me/memorizations',
+            '/api/mobile/student/me/warnings',
+            '/api/mobile/student/me/exams',
         ] as $endpoint) {
             $this->getJson($endpoint)->assertForbidden();
         }
@@ -445,20 +444,22 @@ class StudentLearningApiTest extends TestCase
 
     public function test_non_student_accounts_cannot_use_student_routes_even_with_permissions(): void
     {
+        $teacherRole = $this->createRole('mobile-teacher', RoleFamily::Teacher);
         $user = $this->createUser('staff-with-student-permissions@example.com', '0990000003');
+        $user->syncRoles([$teacherRole]);
         $user->givePermissionTo(array_values(config('roles.student_capabilities')));
-        Sanctum::actingAs($user);
+        $this->authenticateMobile($user);
 
         foreach ([
-            '/api/student/me/mosque',
-            '/api/student/me/circles',
-            '/api/student/me/courses',
-            '/api/student/me/courses/1/schedule',
-            '/api/student/me/notes',
-            '/api/student/me/sabrs',
-            '/api/student/me/memorizations',
-            '/api/student/me/warnings',
-            '/api/student/me/exams',
+            '/api/mobile/student/me/mosque',
+            '/api/mobile/student/me/circles',
+            '/api/mobile/student/me/courses',
+            '/api/mobile/student/me/courses/1/schedule',
+            '/api/mobile/student/me/notes',
+            '/api/mobile/student/me/sabrs',
+            '/api/mobile/student/me/memorizations',
+            '/api/mobile/student/me/warnings',
+            '/api/mobile/student/me/exams',
         ] as $endpoint) {
             $this->getJson($endpoint)
                 ->assertForbidden()
@@ -467,6 +468,17 @@ class StudentLearningApiTest extends TestCase
                     'هذه الواجهات متاحة لحسابات الطلاب فقط.'
                 );
         }
+    }
+
+    private function authenticateMobile(Student|User $account): void
+    {
+        $token = $account->createToken(
+            'student-api-test-device',
+            [config('auth_tokens.mobile.abilities.access')],
+            now()->addHour()
+        );
+
+        $this->withToken($token->plainTextToken);
     }
 
     private function createRole(string $name, RoleFamily $family): Role

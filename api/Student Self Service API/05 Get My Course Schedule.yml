@@ -5,7 +5,7 @@ info:
 
 http:
   method: GET
-  url: http://127.0.0.1:8000/api/student/me/courses/:courseId/schedule
+  url: "{{baseUrl}}/api/mobile/student/me/courses/:courseId/schedule"
   headers:
     - name: Accept
       value: application/json

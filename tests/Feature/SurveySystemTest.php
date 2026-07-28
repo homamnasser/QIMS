@@ -16,7 +16,6 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Storage;
-use Laravel\Sanctum\Sanctum;
 use Spatie\Permission\Models\Permission;
 use Tests\TestCase;
 
@@ -32,7 +31,7 @@ class SurveySystemTest extends TestCase
             Storage::fake('public');
             $user = $this->createUser('survey-timezone@example.com', '0990000011');
             $user->givePermissionTo(Permission::findOrCreate('إنشاء استبيان', 'web'));
-            Sanctum::actingAs($user);
+            $this->actingAs($user, 'web');
 
             $create = $this->post('/api/surveys', [
                 'name' => 'استبيان التوقيت المحلي',
@@ -143,7 +142,7 @@ class SurveySystemTest extends TestCase
     public function test_survey_index_requires_the_explicit_permission(): void
     {
         $user = $this->createUser('permissions@example.com', '0990000010');
-        Sanctum::actingAs($user);
+        $this->actingAs($user, 'web');
 
         $this->getJson('/api/surveys')->assertForbidden();
 
@@ -165,7 +164,7 @@ class SurveySystemTest extends TestCase
         ] as $permissionName) {
             $user->givePermissionTo(Permission::findOrCreate($permissionName, 'web'));
         }
-        Sanctum::actingAs($user);
+        $this->actingAs($user, 'web');
 
         $create = $this->post('/api/surveys', [
             'name' => 'استبيان API',

@@ -9,7 +9,6 @@ use App\Models\Project;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 class ProjectDeletionTest extends TestCase
@@ -32,7 +31,7 @@ class ProjectDeletionTest extends TestCase
             'end_date' => now()->addMonth()->toDateString(),
         ]);
 
-        Sanctum::actingAs($rootUser);
+        $this->actingAs($rootUser, 'web');
 
         $response = $this->deleteJson("/api/project/deleteProject/{$project->id}");
 
@@ -56,7 +55,7 @@ class ProjectDeletionTest extends TestCase
         $rootUser = $this->createRootUser();
         $project = $this->createProject($rootUser);
 
-        Sanctum::actingAs($rootUser);
+        $this->actingAs($rootUser, 'web');
 
         $this->deleteJson("/api/project/deleteProject/{$project->id}")
             ->assertOk()

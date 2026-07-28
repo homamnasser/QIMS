@@ -6,7 +6,11 @@ variables:
     value: hammam-nasser
   - name: studentPassword
     value: student123
+  - name: deviceName
+    value: Bruno Local Device
   - name: studentToken
+    value: ""
+  - name: refreshToken
     value: ""
   - name: courseId
     value: "1"
