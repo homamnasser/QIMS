@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Mosque extends Model
 {
@@ -18,17 +19,27 @@ class Mosque extends Model
         'next_student_sequence' => 'integer',
     ];
 
-    public function courses(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function courses(): HasMany
     {
         return $this->hasMany(Course::class);
     }
 
-    public function students(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function students(): HasMany
     {
         return $this->hasMany(Student::class);
     }
 
-    public function selfNumberReservations(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function staff(): HasMany
+    {
+        return $this->hasMany(User::class);
+    }
+
+    public function surveys(): HasMany
+    {
+        return $this->hasMany(Survey::class);
+    }
+
+    public function selfNumberReservations(): HasMany
     {
         return $this->hasMany(StudentSelfNumberReservation::class);
     }

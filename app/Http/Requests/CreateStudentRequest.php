@@ -2,10 +2,11 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Contracts\Validation\Validator;
-use Illuminate\Http\Exceptions\HttpResponseException;
 use App\Enums\RoleFamily;
+use Illuminate\Contracts\Validation\ValidationRule;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Validation\Rule;
 
 class CreateStudentRequest extends FormRequest
@@ -21,33 +22,39 @@ class CreateStudentRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
         return [
-            'first_name'          => 'required|string|max:50',
-            'last_name'           => 'required|string|max:50',
-            'phone_number'        => [
+            'first_name' => 'required|string|max:50',
+            'last_name' => 'required|string|max:50',
+            'phone_number' => [
                 'nullable',
                 'string',
                 'regex:/^09[0-9]{8}$/',
-                'unique:students,phone_number'
+                'unique:students,phone_number',
             ],
-            'birth_date'          => 'required|date',
-            'academic_class'      => 'required|string',
-            'reading_level'       => 'required|in:level_1,level_2,level_3',
-            'father_name'         => 'required|string',
+            'birth_date' => 'required|date',
+            'academic_class' => 'required|string',
+            'reading_level' => 'required|in:level_1,level_2,level_3',
+            'father_name' => 'required|string',
             'parent_social_state' => 'required|in:married,divorced,widowed',
-            'father_phone'        => [
+            'father_phone' => [
                 'required',
                 'string',
-                'regex:/^09[0-9]{8}$/'
+                'regex:/^09[0-9]{8}$/',
             ],
-            'password'            => 'required|min:8|confirmed',
-            'username'            => 'nullable|string|unique:students,username',
-            'image'               => 'sometimes|nullable|file|image|mimes:jpg,jpeg,png|max:5120',
-            'role_id'             => [
+            'password' => 'required|min:8|confirmed',
+            'username' => 'nullable|string|unique:students,username',
+            'mosque_id' => [
+                'sometimes',
+                'nullable',
+                'integer',
+                Rule::exists('mosques', 'id'),
+            ],
+            'image' => 'sometimes|nullable|file|image|mimes:jpg,jpeg,png|max:5120',
+            'role_id' => [
                 'nullable',
                 Rule::exists('roles', 'id')->where(
                     fn ($query) => $query->where('role_family', RoleFamily::Student->value)
@@ -60,10 +67,11 @@ class CreateStudentRequest extends FormRequest
     {
         if ($this->first_name && $this->last_name) {
             $this->merge([
-                'username' => strtolower($this->first_name . '-' . $this->last_name),
+                'username' => strtolower($this->first_name.'-'.$this->last_name),
             ]);
         }
     }
+
     public function messages()
     {
         return [
@@ -81,13 +89,15 @@ class CreateStudentRequest extends FormRequest
             'password.required' => 'كلمة المرور مطلوبة.',
             'password.min' => 'كلمة المرور يجب أن تكون 8 أحرف على الأقل.',
             'password.confirmed' => 'تأكيد كلمة المرور غير متطابق.',
+            'mosque_id.exists' => 'المسجد المحدد غير موجود.',
         ];
     }
+
     public function failedValidation(Validator $validator)
     {
         throw new HttpResponseException(response()->json([
-            'code'    => 422,
-            'message'  => $validator->errors()
+            'code' => 422,
+            'message' => $validator->errors(),
         ], 422));
     }
 }

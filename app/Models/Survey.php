@@ -28,6 +28,7 @@ class Survey extends Model
         'allow_multiple_responses',
         'settings',
         'created_by',
+        'mosque_id',
         'published_at',
     ];
 
@@ -49,6 +50,11 @@ class Survey extends Model
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function mosque()
+    {
+        return $this->belongsTo(Mosque::class);
     }
 
     public function sections()

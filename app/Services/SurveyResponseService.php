@@ -49,6 +49,8 @@ class SurveyResponseService
             ]);
         }
 
+        $this->assertStudentInSurveyScope($survey, $student);
+
         if (! $survey->allow_multiple_responses
             && $survey->responses()->where('student_id', $student->id)->exists()) {
             throw ValidationException::withMessages([
@@ -116,6 +118,8 @@ class SurveyResponseService
                     'access_token' => 'تعذر التحقق من الطالب. أعد بدء الاستبيان.',
                 ]);
             }
+
+            $this->assertStudentInSurveyScope($lockedSurvey, $student);
 
             if (! $lockedSurvey->allow_multiple_responses
                 && SurveyResponse::query()
@@ -280,6 +284,18 @@ class SurveyResponseService
         }
 
         return $snapshot;
+    }
+
+    private function assertStudentInSurveyScope(Survey $survey, Student $student): void
+    {
+        if (
+            $survey->mosque_id !== null
+            && (int) $survey->mosque_id !== (int) $student->mosque_id
+        ) {
+            throw ValidationException::withMessages([
+                'selfnumber' => 'هذا الاستبيان مخصص لطلاب مسجد آخر.',
+            ]);
+        }
     }
 
     private function evaluateLogic(Survey $survey, array $answers): array

@@ -126,6 +126,7 @@ class SurveyDefinitionService
                 'id' => $survey->creator->id,
                 'name' => trim($survey->creator->first_name.' '.$survey->creator->last_name),
             ] : null,
+            'mosque_id' => $survey->mosque_id,
         ];
 
         if (! $includeDefinition) {

@@ -16,4 +16,9 @@ class EvaluationAuditEvent extends Model
         'context' => 'array',
         'occurred_at' => 'datetime',
     ];
+
+    public function cycle()
+    {
+        return $this->belongsTo(EvaluationCycle::class, 'evaluation_cycle_id');
+    }
 }

@@ -59,6 +59,21 @@ class Handler extends ExceptionHandler
                 ], 409);
             }
         });
+
+        $this->renderable(function (MosqueHasScopedRecordsException $e, $request) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'code' => 409,
+                    'error_code' => 'MOSQUE_HAS_SCOPED_RECORDS',
+                    'message' => 'لا يمكن حذف المسجد لأنه مرتبط بموظفين مقيّدين أو طلاب أو استبيانات. انقل هذه السجلات إلى نطاق آخر قبل حذف المسجد.',
+                    'data' => [
+                        'staff_count' => $e->staffCount,
+                        'students_count' => $e->studentsCount,
+                        'surveys_count' => $e->surveysCount,
+                    ],
+                ], 409);
+            }
+        });
     }
 
     protected function unauthenticated($request, AuthenticationException $exception)

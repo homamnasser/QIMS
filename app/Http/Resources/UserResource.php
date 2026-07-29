@@ -31,7 +31,16 @@ class UserResource extends JsonResource
             'is_super_admin' => $this->isSuperAdmin(),
             'can_supervise' => $this->canSupervise(),
             'has_full_field_operations_access' => $this->hasFullFieldOperationsAccess(),
-            'permissions' => $this->getAllPermissions()->pluck('name'),
+            'permissions' => $this->effectivePermissionNames(),
+            'work_scope' => $this->work_scope instanceof \BackedEnum
+                ? $this->work_scope->value
+                : $this->work_scope,
+            'mosque_id' => $this->mosque_id,
+            'mosque' => $this->mosque ? [
+                'id' => $this->mosque->id,
+                'name' => $this->mosque->name,
+            ] : null,
+            'work_scope_locked' => $this->isMosqueScoped(),
             'image_url' => $this->formatImageUrl($this->image),
         ];
     }

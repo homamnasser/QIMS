@@ -51,6 +51,9 @@ class SurveyController extends Controller
     {
         $data = $request->safe()->except('logo');
         $data['created_by'] = $request->user()->id;
+        $data['mosque_id'] = $request->user()->isMosqueScoped()
+            ? $request->user()->mosque_id
+            : null;
         $data['status'] = Survey::STATUS_DRAFT;
         $data['logo_path'] = $this->saveFile($request->file('logo'), 'surveys/logos');
 

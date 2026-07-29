@@ -3,12 +3,15 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Enums\StaffWorkScope;
 use App\Traits\HasRoleFamilies;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Collection;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 
@@ -29,6 +32,8 @@ class User extends Authenticatable
         'email',
         'password',
         'image',
+        'work_scope',
+        'mosque_id',
     ];
 
     /**
@@ -49,6 +54,7 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'work_scope' => StaffWorkScope::class,
     ];
 
     public function projects(): HasMany
@@ -94,6 +100,61 @@ class User extends Authenticatable
     public function surveys(): HasMany
     {
         return $this->hasMany(Survey::class, 'created_by');
+    }
+
+    public function mosque(): BelongsTo
+    {
+        return $this->belongsTo(Mosque::class);
+    }
+
+    public function isInstituteWide(): bool
+    {
+        return $this->work_scope !== StaffWorkScope::Mosque;
+    }
+
+    public function isMosqueScoped(): bool
+    {
+        return $this->work_scope === StaffWorkScope::Mosque;
+    }
+
+    public function canAccessMosque(int $mosqueId): bool
+    {
+        return $this->isInstituteWide()
+            || (int) $this->mosque_id === $mosqueId;
+    }
+
+    /**
+     * Return UI permissions after removing mutations that have institute-wide
+     * consequences. The underlying Spatie permissions remain unchanged.
+     *
+     * @return Collection<int, string>
+     */
+    public function effectivePermissionNames()
+    {
+        $permissions = $this->getAllPermissions()->pluck('name');
+
+        if (! $this->isMosqueScoped()) {
+            return $permissions;
+        }
+
+        return $permissions->reject(fn (string $permission): bool => in_array(
+            $permission,
+            [
+                'إنشاء دور',
+                'عرض كافة الأدوار',
+                'عرض تفاصيل الدور',
+                'تعديل الدور',
+                'حذف الدور',
+                'عرض كافة الصلاحيات',
+                'إنشاء مشروع',
+                'تعديل المشروع',
+                'حذف المشروع',
+                'تعديل حالة المشروع',
+                'إنشاء مسجد',
+                'حذف مسجد',
+            ],
+            true
+        ))->values();
     }
 
     public function canSupervise(): bool

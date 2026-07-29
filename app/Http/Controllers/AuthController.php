@@ -6,6 +6,8 @@ use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Http\Resources\UserResource;
 use App\IService\IStaffService;
+use App\Models\Mosque;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -29,6 +31,29 @@ class AuthController extends Controller
             'message' => 'تم إنشاء مستخدم جديد',
             'data' => new UserResource($user),
         ], 201);
+    }
+
+    public function staffScopeOptions(Request $request): JsonResponse
+    {
+        /** @var User $staff */
+        $staff = $request->user();
+        $mosques = Mosque::query()
+            ->select(['id', 'name'])
+            ->orderBy('name')
+            ->get();
+
+        return response()->json([
+            'code' => 200,
+            'message' => 'تم جلب خيارات نطاق عمل الموظفين بنجاح.',
+            'data' => [
+                'work_scope_locked' => $staff->isMosqueScoped(),
+                'work_scope' => $staff->isMosqueScoped()
+                    ? 'mosque'
+                    : 'institute',
+                'mosque_id' => $staff->mosque_id,
+                'mosques' => $mosques,
+            ],
+        ]);
     }
 
     /* تحديث عضو هيئة تدريس (مع التأكد من وجوده أولاً) */

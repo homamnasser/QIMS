@@ -79,9 +79,17 @@ Route::prefix('public/surveys')->group(function (): void {
 
 Route::get('/public/certificates/verify/{token}', [CertificateController::class, 'verify']);
 
-$webAuthenticatedMiddleware = ['auth:sanctum', 'auth.channel:web'];
+$webAuthenticatedMiddleware = [
+    'auth:sanctum',
+    'auth.channel:web',
+    'staff.mosque.scope',
+];
 $mobileStudentMiddleware = ['auth:sanctum', 'auth.channel:mobile-student'];
-$mobileStaffMiddleware = ['auth:sanctum', 'auth.channel:mobile-staff'];
+$mobileStaffMiddleware = [
+    'auth:sanctum',
+    'auth.channel:mobile-staff',
+    'staff.mosque.scope',
+];
 
 Route::middleware($webAuthenticatedMiddleware)->prefix('surveys')->group(function (): void {
     Route::get('/student-fields', [SurveyController::class, 'studentFields'])
@@ -116,6 +124,8 @@ Route::group([
     Route::delete('/deleteStaffMember/{id}', [AuthController::class, 'deleteStaffMember'])->middleware('permission:حذف موظف');
     Route::get('/getStaffById/{id}', [AuthController::class, 'getStaffById'])->middleware('permission:عرض تفاصيل الموظف');
     Route::get('/getAllStaff', [AuthController::class, 'getAllStaff'])->middleware('permission:عرض كافة الموظفين');
+    Route::get('/staffScopeOptions', [AuthController::class, 'staffScopeOptions'])
+        ->middleware('permission:إنشاء موظف|تعديل موظف');
 });
 
 Route::group([

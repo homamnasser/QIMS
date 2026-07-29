@@ -23,6 +23,52 @@ use App\IService\IStudentLearningService;
 use App\IService\IStudentService;
 use App\IService\ISubjectService;
 use App\IService\IWarningService;
+use App\Models\AdministrationBehaviorObservation;
+use App\Models\Certificate;
+use App\Models\Circle;
+use App\Models\Course;
+use App\Models\CourseDate;
+use App\Models\EvaluationAuditEvent;
+use App\Models\EvaluationCandidate;
+use App\Models\EvaluationCandidateEnrollment;
+use App\Models\EvaluationCriterionResult;
+use App\Models\EvaluationCycle;
+use App\Models\EvaluationExamResult;
+use App\Models\EvaluationPeriod;
+use App\Models\EvaluationPolicy;
+use App\Models\EvaluationResult;
+use App\Models\EvaluationRun;
+use App\Models\Exam;
+use App\Models\Lesson;
+use App\Models\Memorization;
+use App\Models\Mosque;
+use App\Models\Note;
+use App\Models\Project;
+use App\Models\QuranPeriodAssessment;
+use App\Models\ReadingImprovement;
+use App\Models\RecognitionAward;
+use App\Models\RecognitionBatch;
+use App\Models\Sabr;
+use App\Models\SabrPartAchievement;
+use App\Models\Student;
+use App\Models\StudentCircle;
+use App\Models\StudentCourseAbsence;
+use App\Models\StudentMark;
+use App\Models\StudentSelfNumberReservation;
+use App\Models\Subject;
+use App\Models\Survey;
+use App\Models\SurveyAnswer;
+use App\Models\SurveyLogicRule;
+use App\Models\SurveyQuestion;
+use App\Models\SurveyQuestionOption;
+use App\Models\SurveyResponse;
+use App\Models\SurveyResponseFile;
+use App\Models\SurveySection;
+use App\Models\SurveyStudentField;
+use App\Models\TeacherPeriodEvaluation;
+use App\Models\User;
+use App\Models\Warning;
+use App\Scopes\StaffMosqueScope;
 use App\Services\CircleService;
 use App\Services\CourseCurriculumService;
 use App\Services\CourseDateService;
@@ -44,6 +90,7 @@ use App\Services\StudentLearningService;
 use App\Services\StudentService;
 use App\Services\SubjectService;
 use App\Services\WarningService;
+use App\Support\StaffScopeContext;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
@@ -54,6 +101,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        $this->app->singleton(StaffScopeContext::class);
         $this->app->bind(IStaffService::class, StaffService::class);
         $this->app->bind(IRoleService::class, RoleService::class);
         $this->app->bind(IProjectService::class, ProjectService::class);
@@ -82,6 +130,59 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        $scope = new StaffMosqueScope;
+        $scopedModels = [
+            AdministrationBehaviorObservation::class,
+            Certificate::class,
+            Circle::class,
+            Course::class,
+            CourseDate::class,
+            EvaluationAuditEvent::class,
+            EvaluationCandidate::class,
+            EvaluationCandidateEnrollment::class,
+            EvaluationCriterionResult::class,
+            EvaluationCycle::class,
+            EvaluationExamResult::class,
+            EvaluationPeriod::class,
+            EvaluationPolicy::class,
+            EvaluationResult::class,
+            EvaluationRun::class,
+            Exam::class,
+            Lesson::class,
+            Memorization::class,
+            Mosque::class,
+            Note::class,
+            Project::class,
+            QuranPeriodAssessment::class,
+            ReadingImprovement::class,
+            RecognitionAward::class,
+            RecognitionBatch::class,
+            Sabr::class,
+            SabrPartAchievement::class,
+            Student::class,
+            StudentCircle::class,
+            StudentCourseAbsence::class,
+            StudentMark::class,
+            StudentSelfNumberReservation::class,
+            Subject::class,
+            Survey::class,
+            SurveyAnswer::class,
+            SurveyLogicRule::class,
+            SurveyQuestion::class,
+            SurveyQuestionOption::class,
+            SurveyResponse::class,
+            SurveyResponseFile::class,
+            SurveySection::class,
+            SurveyStudentField::class,
+            TeacherPeriodEvaluation::class,
+            User::class,
+            Warning::class,
+        ];
+
+        foreach ($scopedModels as $modelClass) {
+            $modelClass::addGlobalScope($scope);
+        }
+
         Gate::before(function ($user, $ability) {
             return $user->isSuperAdmin() ? true : null;
         });
