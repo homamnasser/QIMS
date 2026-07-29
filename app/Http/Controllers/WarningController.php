@@ -84,7 +84,11 @@ class WarningController extends Controller
             ], 404);
         }
 
-        if ((int)$warning->warner !== (int)auth()->id()) {
+        $user = auth()->user();
+        if (
+            (int) $warning->warner !== (int) $user->id
+            && ! $user->hasFullFieldOperationsAccess()
+        ) {
             return response()->json([
                 'code'    => 403,
                 'message' => 'غير مصرّح! يمكنك فقط حذف الإنذارات التي أنشأتها بنفسك.'

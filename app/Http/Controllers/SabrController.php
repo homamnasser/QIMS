@@ -44,7 +44,11 @@ class SabrController extends Controller
         }
 
 
-        if ($sabr->giver !== auth()->id()) {
+        $user = auth()->user();
+        if (
+            (int) $sabr->giver !== (int) $user->id
+            && ! $user->hasFullFieldOperationsAccess()
+        ) {
             return response()->json([
                 'code'    => 403,
                 'message' => 'غير مصرّح لك بتحديث هذا السجل لأنه يعود لمعلم آخر.'

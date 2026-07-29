@@ -13,13 +13,22 @@ class StudentCourseAbsence extends Model
     protected $fillable = [
         'student',
         'course',
+        'course_date_id',
+        'circle_id',
         'note',
         'type',
+        'is_excused',
+        'source',
+        'external_reference',
+        'captured_at',
+        'recorded_by',
         'date',
     ];
 
     protected $casts = [
         'date' => 'date',
+        'is_excused' => 'boolean',
+        'captured_at' => 'datetime',
     ];
 
 
@@ -37,6 +46,11 @@ class StudentCourseAbsence extends Model
     public function courseDetails(): BelongsTo
     {
         return $this->belongsTo(Course::class, 'course', 'id');
+    }
+
+    public function courseDate(): BelongsTo
+    {
+        return $this->belongsTo(CourseDate::class);
     }
 
     public function scopeFilter($query, array $filters)

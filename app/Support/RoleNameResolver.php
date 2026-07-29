@@ -41,6 +41,9 @@ class RoleNameResolver
             'superadmin' => RoleFamily::SuperAdmin,
             'admin' => RoleFamily::Admin,
             'supervisor' => RoleFamily::Supervisor,
+            'field supervisor' => RoleFamily::FieldSupervisor,
+            'fieldsupervisor' => RoleFamily::FieldSupervisor,
+            'مشرف ميداني' => RoleFamily::FieldSupervisor,
             'teacher' => RoleFamily::Teacher,
             'student' => RoleFamily::Student,
         ];
@@ -57,6 +60,13 @@ class RoleNameResolver
         // supervisory-capable while retaining their own semantic family.
         if ($this->containsAnyToken($normalized, ['admin', 'administrator', 'اداري'])) {
             return RoleFamily::Admin;
+        }
+
+        if (
+            $this->containsAllTokens($normalized, ['field', 'supervisor'])
+            || $this->containsAllTokens($normalized, ['مشرف', 'ميداني'])
+        ) {
+            return RoleFamily::FieldSupervisor;
         }
 
         if ($this->containsAnyToken($normalized, [
@@ -120,5 +130,19 @@ class RoleNameResolver
         $tokens = preg_split('/\s+/u', $normalized, -1, PREG_SPLIT_NO_EMPTY) ?: [];
 
         return count(array_intersect($tokens, self::NEGATION_TOKENS)) > 0;
+    }
+
+    /**
+     * @param  array<int, string>  $needles
+     */
+    private function containsAllTokens(string $haystack, array $needles): bool
+    {
+        $tokens = preg_split('/\s+/u', $haystack, -1, PREG_SPLIT_NO_EMPTY) ?: [];
+        $normalizedNeedles = array_map(
+            fn (string $needle): string => $this->normalize($needle),
+            $needles
+        );
+
+        return count(array_diff($normalizedNeedles, $tokens)) === 0;
     }
 }

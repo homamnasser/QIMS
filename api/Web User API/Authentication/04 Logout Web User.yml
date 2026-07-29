@@ -8,24 +8,17 @@ info:
 
 http:
   method: POST
-  url: http://127.0.0.1:8000/api/web/auth/logout
+  url: "{{baseUrl}}/api/web/auth/logout"
   headers:
     - name: Accept
-      value: application/json
+      value: "application/json"
     - name: Origin
-      value: http://127.0.0.1:5173
+      value: "{{webOrigin}}"
+    - name: X-XSRF-TOKEN
+      value: "{{xsrfToken}}"
 
 runtime:
   scripts:
-    - type: before-request
-      code: |-
-        const token = bru.cookies.get("XSRF-TOKEN");
-
-        if (!token) {
-          throw new Error("Run Initialize CSRF Cookies first.");
-        }
-
-        req.setHeader("X-XSRF-TOKEN", decodeURIComponent(token));
     - type: after-response
       code: |-
         if (res.status === 200) {

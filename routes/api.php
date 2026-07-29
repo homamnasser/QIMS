@@ -1,10 +1,15 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\CircleController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\CourseCurriculumController;
 use App\Http\Controllers\CourseDateController;
+use App\Http\Controllers\EvaluationAuditController;
+use App\Http\Controllers\EvaluationCycleController;
+use App\Http\Controllers\EvaluationInputController;
+use App\Http\Controllers\EvaluationRunController;
 use App\Http\Controllers\ExamController;
 use App\Http\Controllers\LessonController;
 use App\Http\Controllers\MemorizationController;
@@ -13,12 +18,14 @@ use App\Http\Controllers\MosqueController;
 use App\Http\Controllers\NoteController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\PublicSurveyController;
+use App\Http\Controllers\RecognitionController;
 use App\Http\Controllers\ReportApiController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SabrController;
 use App\Http\Controllers\StudentCircleController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\StudentCourseAbsenceController;
+use App\Http\Controllers\StudentFinalResultController;
 use App\Http\Controllers\StudentLearningController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\SurveyController;
@@ -70,7 +77,11 @@ Route::prefix('public/surveys')->group(function (): void {
     Route::post('/{publicToken}/responses', [PublicSurveyController::class, 'submit']);
 });
 
+Route::get('/public/certificates/verify/{token}', [CertificateController::class, 'verify']);
+
 $webAuthenticatedMiddleware = ['auth:sanctum', 'auth.channel:web'];
+$mobileStudentMiddleware = ['auth:sanctum', 'auth.channel:mobile-student'];
+$mobileStaffMiddleware = ['auth:sanctum', 'auth.channel:mobile-staff'];
 
 Route::middleware($webAuthenticatedMiddleware)->prefix('surveys')->group(function (): void {
     Route::get('/student-fields', [SurveyController::class, 'studentFields'])
@@ -224,8 +235,100 @@ Route::group([
     Route::delete('/deleteStudent/{id}', [StudentController::class, 'deleteStudent'])->middleware('permission:حذف الطالب');
 });
 
+Route::middleware($webAuthenticatedMiddleware)
+    ->prefix('evaluation-cycles')
+    ->group(function (): void {
+        Route::get('/', [EvaluationCycleController::class, 'index'])
+            ->middleware('permission:عرض دورات التقييم');
+        Route::post('/', [EvaluationCycleController::class, 'store'])
+            ->middleware('permission:إدارة دورات التقييم');
+        Route::get('/{cycle}', [EvaluationCycleController::class, 'show'])
+            ->middleware('permission:عرض دورات التقييم');
+        Route::post('/{cycle}/sync-candidates', [EvaluationCycleController::class, 'syncCandidates'])
+            ->middleware('permission:إدارة دورات التقييم');
+        Route::get('/{cycle}/readiness', [EvaluationCycleController::class, 'readiness'])
+            ->middleware('permission:عرض تقييمات الطلاب النهائية');
+        Route::get('/{cycle}/audit-events', [EvaluationAuditController::class, 'index'])
+            ->middleware('permission:عرض سجل تدقيق التقييم');
+        Route::get('/{cycle}/recognition', [RecognitionController::class, 'show'])
+            ->middleware('permission:إدارة التكريم النهائي');
+        Route::put('/{cycle}/status', [EvaluationCycleController::class, 'transition'])
+            ->middleware('permission:إدارة دورات التقييم');
+        Route::post('/{cycle}/runs', [EvaluationRunController::class, 'store'])
+            ->middleware('permission:احتساب النتائج النهائية');
+    });
+
+Route::middleware($webAuthenticatedMiddleware)
+    ->prefix('evaluation-candidates')
+    ->group(function (): void {
+        Route::get('/{candidate}/review', [EvaluationInputController::class, 'review'])
+            ->middleware('permission:إدخال تقييم المدرس|عرض تقييمات الطلاب النهائية');
+        Route::put('/{candidate}/teacher-evaluation', [EvaluationInputController::class, 'teacher'])
+            ->middleware('permission:إدخال تقييم المدرس');
+        Route::put('/{candidate}/quran-assessment', [EvaluationInputController::class, 'quran'])
+            ->middleware('permission:إدخال تقييم القرآن');
+    });
+
+Route::middleware($mobileStaffMiddleware)
+    ->prefix('mobile/teacher/evaluation-candidates')
+    ->group(function (): void {
+        Route::get('/', [EvaluationInputController::class, 'teacherCandidates'])
+            ->middleware('permission:إدخال تقييم المدرس');
+        Route::get('/{candidate}/review', [EvaluationInputController::class, 'review'])
+            ->middleware('permission:إدخال تقييم المدرس|عرض تقييمات الطلاب النهائية');
+        Route::put('/{candidate}/teacher-evaluation', [EvaluationInputController::class, 'teacher'])
+            ->middleware('permission:إدخال تقييم المدرس');
+        Route::put('/{candidate}/quran-assessment', [EvaluationInputController::class, 'quran'])
+            ->middleware('permission:إدخال تقييم القرآن');
+    });
+
+Route::middleware($webAuthenticatedMiddleware)
+    ->prefix('evaluation-runs')
+    ->group(function (): void {
+        Route::get('/{run}', [EvaluationRunController::class, 'show'])
+            ->middleware('permission:عرض تقييمات الطلاب النهائية');
+        Route::post('/{run}/approve', [EvaluationRunController::class, 'approve'])
+            ->middleware('permission:اعتماد النتائج النهائية');
+        Route::post('/{run}/publish', [EvaluationRunController::class, 'publish'])
+            ->middleware('permission:نشر النتائج النهائية');
+        Route::post('/{run}/certificates', [CertificateController::class, 'issueBatch'])
+            ->middleware('permission:إصدار الشهادات النهائية');
+    });
+
+Route::post('/evaluation-results/{result}/certificate', [CertificateController::class, 'issue'])
+    ->middleware([
+        ...$webAuthenticatedMiddleware,
+        'permission:إصدار الشهادات النهائية',
+    ]);
+
+Route::middleware($webAuthenticatedMiddleware)
+    ->prefix('certificates')
+    ->group(function (): void {
+        Route::get('/{certificate}/download', [CertificateController::class, 'download'])
+            ->middleware('permission:عرض تقييمات الطلاب النهائية');
+        Route::post('/{certificate}/revoke', [CertificateController::class, 'revoke'])
+            ->middleware('permission:إصدار الشهادات النهائية');
+    });
+
+Route::middleware($webAuthenticatedMiddleware)
+    ->prefix('recognition-batches')
+    ->group(function (): void {
+        Route::post('/{batch}/approve', [RecognitionController::class, 'approve'])
+            ->middleware('permission:إدارة التكريم النهائي');
+        Route::post('/{batch}/publish', [RecognitionController::class, 'publish'])
+            ->middleware('permission:إدارة التكريم النهائي');
+    });
+
+Route::post(
+    '/administration-observations/{observation}/approve',
+    [EvaluationInputController::class, 'approveAdministration']
+)->middleware([
+    ...$webAuthenticatedMiddleware,
+    'permission:إدارة تقييم الإدارة',
+]);
+
 Route::group([
-    'middleware' => ['auth:sanctum', 'auth.channel:mobile-access'],
+    'middleware' => $mobileStudentMiddleware,
     'prefix' => 'mobile/student/me',
 ], function (): void {
     Route::get('/mosque', [StudentLearningController::class, 'mosque'])
@@ -247,6 +350,14 @@ Route::group([
         ->middleware('permission:'.config('roles.student_capabilities.warnings'));
     Route::get('/exams', [StudentLearningController::class, 'exams'])
         ->middleware('permission:'.config('roles.student_capabilities.exams'));
+    Route::get('/final-results', [StudentFinalResultController::class, 'index'])
+        ->middleware('permission:'.config('roles.student_capabilities.final_results'));
+    Route::get('/final-results/{resultId}', [StudentFinalResultController::class, 'show'])
+        ->whereNumber('resultId')
+        ->middleware('permission:'.config('roles.student_capabilities.final_results'));
+    Route::get('/certificates/{certificateId}', [CertificateController::class, 'studentDownload'])
+        ->whereNumber('certificateId')
+        ->middleware('permission:'.config('roles.student_capabilities.certificates'));
 });
 
 Route::group([
@@ -318,13 +429,191 @@ Route::group([
     'middleware' => $webAuthenticatedMiddleware,
     'prefix' => 'absence',
 ], function ($router) {
-    Route::post('/createAbsence', [StudentCourseAbsenceController::class, 'createAbsence']);
-    Route::get('/getAbsenceById/{id}', [StudentCourseAbsenceController::class, 'getAbsenceById']);
-    Route::post('/updateAbsence/{id}', [StudentCourseAbsenceController::class, 'updateAbsence']);
-    Route::delete('/deleteAbsence/{id}', [StudentCourseAbsenceController::class, 'deleteAbsence']);
-    Route::get('/getAllAbsences', [StudentCourseAbsenceController::class, 'getAllAbsence']);
+    Route::post('/createAbsence', [StudentCourseAbsenceController::class, 'createAbsence'])->middleware('permission:إنشاء غياب');
+    Route::get('/getAbsenceById/{id}', [StudentCourseAbsenceController::class, 'getAbsenceById'])->middleware('permission:عرض تفاصيل الغياب');
+    Route::post('/updateAbsence/{id}', [StudentCourseAbsenceController::class, 'updateAbsence'])->middleware('permission:تعديل الغياب');
+    Route::delete('/deleteAbsence/{id}', [StudentCourseAbsenceController::class, 'deleteAbsence'])->middleware('permission:حذف غياب');
+    Route::get('/getAllAbsences', [StudentCourseAbsenceController::class, 'getAllAbsence'])->middleware('permission:عرض كافة الغيابات');
 
 });
+
+Route::middleware($mobileStaffMiddleware)
+    ->prefix('mobile/staff')
+    ->group(function (): void {
+        Route::get('/courses', [CourseController::class, 'getAllCourses'])
+            ->middleware('permission:عرض كافة الكورسات');
+        Route::get('/courses/{id}', [CourseController::class, 'getCourse'])
+            ->whereNumber('id')
+            ->middleware('permission:عرض تفاصيل الكورس');
+        Route::get('/subjects', [SubjectController::class, 'getAllSubjects'])
+            ->middleware('permission:عرض كافة المواد');
+        Route::get('/subjects/{id}', [SubjectController::class, 'getSubject'])
+            ->whereNumber('id')
+            ->middleware('permission:عرض تفاصيل المادة');
+        Route::get('/lessons', [LessonController::class, 'getAllLessons'])
+            ->middleware('permission:عرض كافة الدروس');
+        Route::get('/lessons/{id}', [LessonController::class, 'getLesson'])
+            ->whereNumber('id')
+            ->middleware('permission:عرض تفاصيل الدرس');
+        Route::get('/courses/{courseId}/dates', [CourseDateController::class, 'getDateByCourse'])
+            ->whereNumber('courseId')
+            ->middleware('permission:عرض تواريخ الكورس');
+        Route::get('/course-dates/{id}/lessons', [CourseCurriculumController::class, 'getLessonsByDate'])
+            ->whereNumber('id')
+            ->middleware('permission:عرض دروس التاريخ');
+        Route::get('/courses/{courseId}/curriculum', [CourseCurriculumController::class, 'getCurriculumByCourse'])
+            ->whereNumber('courseId')
+            ->middleware('permission:عرض المنهج الدراسي للكورس');
+        Route::get('/circles/mine/curriculum', [CircleController::class, 'getMyCircleCurriculum'])
+            ->middleware('permission:عرض منهج حلقتي');
+        Route::get('/circles', [CircleController::class, 'getAllCircles'])
+            ->middleware('permission:عرض كافة الحلقات');
+        Route::get('/circles/{id}', [CircleController::class, 'getCircle'])
+            ->whereNumber('id')
+            ->middleware('permission:عرض تفاصيل الحلقة');
+        Route::get('/circles/{circleId}/students', [StudentCircleController::class, 'getStudents'])
+            ->whereNumber('circleId')
+            ->middleware('permission:عرض طلاب الحلقة');
+        Route::get('/students', [StudentController::class, 'getAllStudents'])
+            ->middleware('permission:عرض كافة الطلاب');
+        Route::get('/students/{id}', [StudentController::class, 'getStudentById'])
+            ->whereNumber('id')
+            ->middleware('permission:عرض تفاصيل الطالب');
+
+        Route::get('/attendance', [StudentCourseAbsenceController::class, 'getAllAbsence'])
+            ->middleware('permission:عرض كافة الغيابات');
+        Route::post('/attendance', [StudentCourseAbsenceController::class, 'createAbsence'])
+            ->middleware('permission:إنشاء غياب');
+        Route::get('/attendance/{id}', [StudentCourseAbsenceController::class, 'getAbsenceById'])
+            ->whereNumber('id')
+            ->middleware('permission:عرض تفاصيل الغياب');
+        Route::put('/attendance/{id}', [StudentCourseAbsenceController::class, 'updateAbsence'])
+            ->whereNumber('id')
+            ->middleware('permission:تعديل الغياب');
+        Route::delete('/attendance/{id}', [StudentCourseAbsenceController::class, 'deleteAbsence'])
+            ->whereNumber('id')
+            ->middleware('permission:حذف غياب');
+
+        Route::get('/warnings/mine', [WarningController::class, 'getMyWarnings'])
+            ->middleware('permission:عرض إنذاراتي');
+        Route::get('/warnings', [WarningController::class, 'getAllWarnings'])
+            ->middleware('permission:عرض كافة الإنذارات');
+        Route::post('/warnings', [WarningController::class, 'createWarning'])
+            ->middleware('permission:إنشاء إنذار');
+        Route::get('/warnings/{id}', [WarningController::class, 'getWarningById'])
+            ->whereNumber('id')
+            ->middleware('permission:عرض تفاصيل الإنذار');
+        Route::delete('/warnings/{id}', [WarningController::class, 'deleteWarning'])
+            ->whereNumber('id')
+            ->middleware('permission:حذف إنذار');
+
+        Route::get('/notes/mine', [NoteController::class, 'getMyNotes'])
+            ->middleware('permission:عرض ملاحظاتي');
+        Route::get('/notes/students/{studentId}', [NoteController::class, 'getNotesByStudentId'])
+            ->whereNumber('studentId')
+            ->middleware('permission:عرض ملاحظات الطالب');
+        Route::post('/notes', [NoteController::class, 'createNote'])
+            ->middleware('permission:إنشاء ملاحظة');
+        Route::delete('/notes/{noteId}', [NoteController::class, 'deleteNote'])
+            ->whereNumber('noteId')
+            ->middleware('permission:حذف ملاحظة');
+
+        Route::get('/sabrs/mine', [SabrController::class, 'getMySabrs'])
+            ->middleware('permission:عرض سبري');
+        Route::get('/sabrs', [SabrController::class, 'getAllSabrs'])
+            ->middleware('permission:عرض كافة السبور');
+        Route::post('/sabrs', [SabrController::class, 'createSabr'])
+            ->middleware('permission:إنشاء سبر');
+        Route::get('/sabrs/{id}', [SabrController::class, 'getSabrById'])
+            ->whereNumber('id')
+            ->middleware('permission:عرض سبر الطالب');
+        Route::put('/sabrs/{id}', [SabrController::class, 'updateResult'])
+            ->whereNumber('id')
+            ->middleware('permission:تعديل نتيجة السبر');
+        Route::delete('/sabrs/{id}', [SabrController::class, 'deleteSabr'])
+            ->whereNumber('id')
+            ->middleware('permission:حذف سبر');
+
+        Route::get('/memorizations/mine', [MemorizationController::class, 'getMyMemorizations'])
+            ->middleware('permission:عرض تسميعاتي');
+        Route::get('/memorizations', [MemorizationController::class, 'getAllMemorizations'])
+            ->middleware('permission:عرض كافة التسميعات');
+        Route::post('/memorizations', [MemorizationController::class, 'createMemorization'])
+            ->middleware('permission:إنشاء تسميع');
+        Route::get('/memorizations/{id}', [MemorizationController::class, 'getMemorizationById'])
+            ->whereNumber('id')
+            ->middleware('permission:عرض تسميع الطالب');
+        Route::delete('/memorizations/{id}', [MemorizationController::class, 'deleteMemorization'])
+            ->whereNumber('id')
+            ->middleware('permission:حذف تسميع');
+
+        Route::get('/exams', [ExamController::class, 'getAllExams'])
+            ->middleware('permission:عرض كافة الامتحانات');
+        Route::post('/exams', [ExamController::class, 'createExam'])
+            ->middleware('permission:إنشاء امتحان');
+        Route::get('/exams/mine', [ExamController::class, 'myExams'])
+            ->middleware('permission:امتحاناتي');
+        Route::get('/exams/{id}', [ExamController::class, 'getExamById'])
+            ->whereNumber('id')
+            ->middleware('permission:عرض تفاصيل الامتحان');
+        Route::put('/exams/{id}', [ExamController::class, 'updateExam'])
+            ->whereNumber('id')
+            ->middleware('permission:تعديل الامتحان');
+        Route::delete('/exams/{id}', [ExamController::class, 'deleteExam'])
+            ->whereNumber('id')
+            ->middleware('permission:حذف امتحان');
+
+        Route::get('/evaluation-cycles', [EvaluationCycleController::class, 'index'])
+            ->middleware('permission:عرض دورات التقييم');
+        Route::post('/evaluation-cycles', [EvaluationCycleController::class, 'store'])
+            ->middleware('permission:إدارة دورات التقييم');
+        Route::get('/evaluation-cycles/{cycle}', [EvaluationCycleController::class, 'show'])
+            ->middleware('permission:عرض دورات التقييم');
+        Route::post('/evaluation-cycles/{cycle}/sync-candidates', [EvaluationCycleController::class, 'syncCandidates'])
+            ->middleware('permission:إدارة دورات التقييم');
+        Route::get('/evaluation-cycles/{cycle}/readiness', [EvaluationCycleController::class, 'readiness'])
+            ->middleware('permission:عرض تقييمات الطلاب النهائية');
+        Route::get('/evaluation-cycles/{cycle}/audit-events', [EvaluationAuditController::class, 'index'])
+            ->middleware('permission:عرض سجل تدقيق التقييم');
+        Route::get('/evaluation-cycles/{cycle}/recognition', [RecognitionController::class, 'show'])
+            ->middleware('permission:إدارة التكريم النهائي');
+        Route::put('/evaluation-cycles/{cycle}/status', [EvaluationCycleController::class, 'transition'])
+            ->middleware('permission:إدارة دورات التقييم');
+        Route::post('/evaluation-cycles/{cycle}/runs', [EvaluationRunController::class, 'store'])
+            ->middleware('permission:احتساب النتائج النهائية');
+
+        Route::get('/evaluation-candidates', [EvaluationInputController::class, 'teacherCandidates'])
+            ->middleware('permission:إدخال تقييم المدرس|عرض تقييمات الطلاب النهائية');
+        Route::get('/evaluation-candidates/{candidate}/review', [EvaluationInputController::class, 'review'])
+            ->middleware('permission:إدخال تقييم المدرس|عرض تقييمات الطلاب النهائية');
+        Route::put('/evaluation-candidates/{candidate}/teacher-evaluation', [EvaluationInputController::class, 'teacher'])
+            ->middleware('permission:إدخال تقييم المدرس');
+        Route::put('/evaluation-candidates/{candidate}/quran-assessment', [EvaluationInputController::class, 'quran'])
+            ->middleware('permission:إدخال تقييم القرآن');
+
+        Route::get('/evaluation-runs/{run}', [EvaluationRunController::class, 'show'])
+            ->middleware('permission:عرض تقييمات الطلاب النهائية');
+        Route::post('/evaluation-runs/{run}/approve', [EvaluationRunController::class, 'approve'])
+            ->middleware('permission:اعتماد النتائج النهائية');
+        Route::post('/evaluation-runs/{run}/publish', [EvaluationRunController::class, 'publish'])
+            ->middleware('permission:نشر النتائج النهائية');
+        Route::post('/evaluation-runs/{run}/certificates', [CertificateController::class, 'issueBatch'])
+            ->middleware('permission:إصدار الشهادات النهائية');
+        Route::post('/evaluation-results/{result}/certificate', [CertificateController::class, 'issue'])
+            ->middleware('permission:إصدار الشهادات النهائية');
+        Route::get('/certificates/{certificate}/download', [CertificateController::class, 'download'])
+            ->middleware('permission:عرض تقييمات الطلاب النهائية');
+        Route::post('/certificates/{certificate}/revoke', [CertificateController::class, 'revoke'])
+            ->middleware('permission:إصدار الشهادات النهائية');
+        Route::post('/recognition-batches/{batch}/approve', [RecognitionController::class, 'approve'])
+            ->middleware('permission:إدارة التكريم النهائي');
+        Route::post('/recognition-batches/{batch}/publish', [RecognitionController::class, 'publish'])
+            ->middleware('permission:إدارة التكريم النهائي');
+        Route::post(
+            '/administration-observations/{observation}/approve',
+            [EvaluationInputController::class, 'approveAdministration']
+        )->middleware('permission:إدارة تقييم الإدارة');
+    });
 
 Route::group([
     'middleware' => $webAuthenticatedMiddleware,

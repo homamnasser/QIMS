@@ -5,9 +5,11 @@ import { fileURLToPath } from "node:url";
 const projectRoot = dirname(dirname(fileURLToPath(import.meta.url)));
 const webRoot = join(projectRoot, "api", "Web User API");
 const studentRoot = join(projectRoot, "api", "Student Self Service API");
+const mobileStaffRoot = join(projectRoot, "api", "Mobile Staff API");
 const routes = loadLaravelRoutes();
 const webRequests = loadRequests(webRoot);
 const studentRequests = loadRequests(studentRoot);
+const mobileStaffRequests = loadRequests(mobileStaffRoot);
 const errors = [];
 
 validateCoverage(
@@ -17,14 +19,44 @@ validateCoverage(
 );
 validateCoverage(
   "Student Self Service API",
-  routes.filter((route) => route.uri.startsWith("api/mobile/")),
+  routes.filter(
+    (route) =>
+      route.uri.startsWith("api/mobile/auth/") ||
+      route.uri.startsWith("api/mobile/student/"),
+  ),
   studentRequests,
+);
+validateCoverage(
+  "Mobile Staff API",
+  routes.filter(
+    (route) =>
+      route.uri.startsWith("api/mobile/auth/") ||
+      route.uri.startsWith("api/mobile/staff/") ||
+      route.uri.startsWith("api/mobile/teacher/"),
+  ),
+  mobileStaffRequests,
 );
 validateSequences(webRequests, true);
 validateSequences(studentRequests, false);
+validateSequences(mobileStaffRequests, true);
 validateWebSecurity(webRequests);
-validateStudentSecurity(studentRequests);
-validateNoEmbeddedSecretsOrLocalPaths([...webRequests, ...studentRequests]);
+validateMobileSecurity(
+  "Student Self Service API",
+  studentRequests,
+  "studentToken",
+  "refreshToken",
+);
+validateMobileSecurity(
+  "Mobile Staff API",
+  mobileStaffRequests,
+  "staffToken",
+  "staffRefreshToken",
+);
+validateNoEmbeddedSecretsOrLocalPaths([
+  ...webRequests,
+  ...studentRequests,
+  ...mobileStaffRequests,
+]);
 
 if (errors.length > 0) {
   console.error(`Bruno collection validation failed with ${errors.length} error(s):`);
@@ -34,10 +66,10 @@ if (errors.length > 0) {
   process.exitCode = 1;
 } else {
   console.log(
-    `Validated ${webRequests.length} web/public requests and ${studentRequests.length} mobile student requests.`,
+    `Validated ${webRequests.length} web/public, ${studentRequests.length} mobile student, and ${mobileStaffRequests.length} mobile staff requests.`,
   );
-  console.log(`All ${webRequests.length + studentRequests.length} Laravel API routes are covered exactly once.`);
-  console.log("Web requests use Cookie/CSRF authentication; mobile requests use the correct Bearer token type.");
+  console.log("Every Laravel route is covered by its intended Bruno collection.");
+  console.log("Web requests use Cookie/CSRF authentication; student and staff mobile requests use their own Bearer token variables.");
 }
 
 function loadLaravelRoutes() {
@@ -202,19 +234,24 @@ function validateWebSecurity(requests) {
   }
 }
 
-function validateStudentSecurity(requests) {
+function validateMobileSecurity(
+  collectionLabel,
+  requests,
+  accessTokenVariable,
+  refreshTokenVariable,
+) {
   for (const request of requests) {
     const label = relative(projectRoot, request.path);
     const isLogin =
       request.method === "POST" && request.uri === "api/mobile/auth/login";
     const tokenVariable =
       request.method === "POST" && request.uri === "api/mobile/auth/refresh"
-        ? "refreshToken"
-        : "studentToken";
+        ? refreshTokenVariable
+        : accessTokenVariable;
 
     if (isLogin) {
       if (/^  auth:/m.test(request.content)) {
-        errors.push(`Mobile login must not require an existing token: ${label}`);
+        errors.push(`${collectionLabel} login must not require an existing token: ${label}`);
       }
       continue;
     }
@@ -224,7 +261,7 @@ function validateStudentSecurity(requests) {
     }
     if (!request.content.includes(`token: "{{${tokenVariable}}}"`)) {
       errors.push(
-        `Mobile request uses the wrong token variable (${tokenVariable} expected): ${label}`,
+        `${collectionLabel} request uses the wrong token variable (${tokenVariable} expected): ${label}`,
       );
     }
     if (/^\s+- name: Cookie$/m.test(request.content)) {
@@ -262,7 +299,8 @@ function isWebCollectionRoute(route) {
   if (
     route.uri === "sanctum/csrf-cookie" ||
     route.uri.startsWith("api/web/auth/") ||
-    route.uri.startsWith("api/public/surveys/")
+    route.uri.startsWith("api/public/surveys/") ||
+    route.uri.startsWith("api/public/certificates/")
   ) {
     return true;
   }

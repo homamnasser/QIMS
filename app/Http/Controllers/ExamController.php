@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\IService\IExamService;
 use App\Http\Requests\StoreExamRequest;
-use App\Http\Resources\ExamResource;
-use Illuminate\Http\JsonResponse;
 use App\Http\Requests\UpdateExamRequest;
+use App\Http\Resources\ExamResource;
+use App\IService\IExamService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+
 class ExamController extends Controller
 {
     protected $examService;
@@ -18,7 +18,6 @@ class ExamController extends Controller
         $this->examService = $examService;
     }
 
-
     public function createExam(StoreExamRequest $request): JsonResponse
     {
         $exam = $this->examService->createExamMark($request->validated());
@@ -26,28 +25,29 @@ class ExamController extends Controller
         $exam->load(['studentDetails', 'subjectDetails', 'courseDetails']);
 
         return response()->json([
-            'code'    => 201,
+            'code' => 201,
             'message' => 'تم تسجيل علامة الامتحان بنجاح.',
-            'data'    => new ExamResource($exam)
+            'data' => new ExamResource($exam),
         ], 201);
     }
+
     public function getExamById(int $id): JsonResponse
     {
         $exam = $this->examService->getExamById($id);
 
-        if (!$exam) {
+        if (! $exam) {
             return response()->json([
-                'code'    => 404,
-                'message' => 'سجل الامتحان غير موجود.'
+                'code' => 404,
+                'message' => 'سجل الامتحان غير موجود.',
             ], 404);
         }
 
         $exam->load(['studentDetails', 'subjectDetails', 'courseDetails']);
 
         return response()->json([
-            'code'    => 200,
+            'code' => 200,
             'message' => 'تم جلب سجل الامتحان بنجاح.',
-            'data'    => new ExamResource($exam)
+            'data' => new ExamResource($exam),
         ], 200);
     }
 
@@ -58,10 +58,10 @@ class ExamController extends Controller
     {
         $exam = $this->examService->getExamById($id);
 
-        if (!$exam) {
+        if (! $exam) {
             return response()->json([
-                'code'    => 404,
-                'message' => 'سجل الامتحان غير موجود.'
+                'code' => 404,
+                'message' => 'سجل الامتحان غير موجود.',
             ], 404);
         }
 
@@ -70,9 +70,9 @@ class ExamController extends Controller
         $exam->load(['studentDetails', 'subjectDetails', 'courseDetails']);
 
         return response()->json([
-            'code'    => 200,
+            'code' => 200,
             'message' => 'تم تحديث علامة الامتحان بنجاح.',
-            'data'    => new ExamResource($exam)
+            'data' => new ExamResource($exam),
         ], 200);
     }
 
@@ -83,10 +83,10 @@ class ExamController extends Controller
     {
         $exam = $this->examService->getExamById($id);
 
-        if (!$exam) {
+        if (! $exam) {
             return response()->json([
-                'code'    => 404,
-                'message' => 'سجل الامتحان غير موجود.'
+                'code' => 404,
+                'message' => 'سجل الامتحان غير موجود.',
             ], 404);
         }
 
@@ -94,8 +94,8 @@ class ExamController extends Controller
         $this->examService->deleteExam($exam);
 
         return response()->json([
-            'code'    => 200,
-            'message' => 'تم حذف سجل الامتحان بنجاح.'
+            'code' => 200,
+            'message' => 'تم حذف سجل الامتحان بنجاح.',
         ], 200);
     }
 
@@ -106,30 +106,24 @@ class ExamController extends Controller
         $exams = $this->examService->getAllExamMarks($filters);
 
         return response()->json([
-            'code'   => 200,
+            'code' => 200,
             'message' => 'تم جلب سجلات الامتحانات بنجاح.',
-            'data'   => ExamResource::collection($exams)
+            'data' => ExamResource::collection($exams),
         ], 200);
     }
-    
-    public function myExams(): JsonResponse
+
+    public function myExams(Request $request): JsonResponse
     {
-        $studentId = Auth::id();
-
-        if (!$studentId) {
-            return response()->json([
-                'code'    => 401,
-                'status'  => 'error',
-                'message' => 'غير مصرّح. الطالب غير مسجّل الدخول.'
-            ], 401);
-        }
-
-        $exams = $this->examService->getAllExamMarks(['student_id' => $studentId]);
+        $filters = $request->only(['student_id', 'subject_id', 'course_id']);
+        $exams = $this->examService->getExamMarksForTeacher(
+            (int) $request->user()->id,
+            $filters
+        );
 
         return response()->json([
-            'code'   => 200,
+            'code' => 200,
             'status' => 'success',
-            'data'   => \App\Http\Resources\ExamResource::collection($exams)
+            'data' => ExamResource::collection($exams),
         ], 200);
     }
 }

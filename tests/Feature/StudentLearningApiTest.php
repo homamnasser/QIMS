@@ -63,6 +63,7 @@ class StudentLearningApiTest extends TestCase
             'admin',
             'supervisor',
             'teacher',
+            'field-supervisor',
         ])->get();
 
         foreach (config('roles.student_capabilities') as $permission) {

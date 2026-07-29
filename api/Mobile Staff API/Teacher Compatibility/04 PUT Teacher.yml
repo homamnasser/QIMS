@@ -1,0 +1,56 @@
+info:
+  name: PUT Teacher
+  type: http
+  seq: 4
+
+http:
+  method: PUT
+  url: "{{baseUrl}}/api/mobile/teacher/evaluation-candidates/:candidate/teacher-evaluation"
+  params:
+    - name: candidate
+      value: "{{evaluationCandidateId}}"
+      type: path
+  headers:
+    - name: Accept
+      value: application/json
+    - name: Content-Type
+      value: application/json
+  auth:
+    type: bearer
+    token: "{{staffToken}}"
+  body:
+    type: json
+    data: |-
+      {
+        "evaluation_period_id": "{{evaluationPeriodId}}",
+        "circle_id": "{{circleId}}",
+        "behavior_score": 10,
+        "participation_score": 10,
+        "teacher_opinion_score": 10,
+        "comments": "اختبار مسار التوافق القديم",
+        "status": "submitted"
+      }
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("passes mobile staff authentication and authorization", function() {
+          expect(res.status).to.not.equal(401);
+          expect(res.status).to.not.equal(403);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  يختبر `PUT api/mobile/teacher/evaluation-candidates/{candidate}/teacher-evaluation` باستخدام Bearer Access Token خاص بقناة كادر الموبايل.
+  
+  الصلاحية المطلوبة: `إدخال تقييم المدرس`.
+  
+  هذا مسار توافق قديم؛ المسار الجديد المكافئ موجود تحت `/api/mobile/staff`.
+  
+  تنبيه: قد يغيّر هذا الطلب البيانات المحلية.

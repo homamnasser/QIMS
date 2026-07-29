@@ -13,6 +13,12 @@ class MemorizationResource extends JsonResource
             'memorization_id' => $this->id,
             'page_number' => $this->page_number,
             'name' => $this->name,
+            'record_type' => $this->record_type ?? 'memorization',
+            'recorded_at' => $this->recorded_at?->toIso8601String()
+                ?? $this->created_at?->toIso8601String(),
+            'course_id' => $this->course_id,
+            'circle_id' => $this->circle_id,
+            'course_date_id' => $this->course_date_id,
 
             'student' => [
                 'id' => $this->studentDetails ? $this->studentDetails->id : null,

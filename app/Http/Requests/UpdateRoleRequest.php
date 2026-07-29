@@ -47,6 +47,7 @@ class UpdateRoleRequest extends FormRequest
             && in_array($requestedFamily, [
                 RoleFamily::Admin->value,
                 RoleFamily::Supervisor->value,
+                RoleFamily::FieldSupervisor->value,
             ], true);
 
         return [

@@ -9,6 +9,11 @@ use Illuminate\Support\Facades\DB;
 
 class StoreSabrRequest extends FormRequest
 {
+    protected function prepareForValidation(): void
+    {
+        $this->merge(['giver' => auth()->id()]);
+    }
+
     /**
      * Determine if the user is authorized to make this request.
      */

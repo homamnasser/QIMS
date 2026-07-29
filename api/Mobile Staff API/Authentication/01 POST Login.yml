@@ -1,0 +1,52 @@
+info:
+  name: POST Login
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/mobile/auth/login"
+  headers:
+    - name: Accept
+      value: application/json
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "email": "{{staffEmail}}",
+        "password": "{{staffPassword}}",
+        "device_name": "{{deviceName}}"
+      }
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        if (res.status === 200 && res.body?.data?.access_token) {
+          bru.setEnvVar("staffToken", String(res.body.data.access_token));
+          bru.setEnvVar("staffRefreshToken", String(res.body.data.refresh_token));
+        }
+    - type: tests
+      code: |-
+        test("logs in an allowed mobile staff account", function() {
+          expect(res.status).to.equal(200);
+          expect(res.body.data.user.account_type).to.equal("staff");
+          expect(["teacher", "field-supervisor"]).to.include(
+            res.body.data.user.role_family
+          );
+          expect(res.body.data.access_token).to.be.a("string");
+          expect(res.body.data.refresh_token).to.be.a("string");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  يختبر `POST api/mobile/auth/login` باستخدام Bearer Access Token خاص بقناة كادر الموبايل.
+  
+  تنبيه: قد يغيّر هذا الطلب البيانات المحلية.

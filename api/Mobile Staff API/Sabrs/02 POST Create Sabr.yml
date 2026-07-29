@@ -1,0 +1,50 @@
+info:
+  name: POST Create Sabr
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/mobile/staff/sabrs"
+  headers:
+    - name: Accept
+      value: application/json
+    - name: Content-Type
+      value: application/json
+  auth:
+    type: bearer
+    token: "{{staffToken}}"
+  body:
+    type: json
+    data: |-
+      {
+        "student": "{{studentId}}",
+        "course": "{{courseId}}",
+        "date": "2030-01-15",
+        "type": "داخلي",
+        "parts": [
+          1
+        ]
+      }
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("passes mobile staff authentication and authorization", function() {
+          expect(res.status).to.not.equal(401);
+          expect(res.status).to.not.equal(403);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  يختبر `POST api/mobile/staff/sabrs` باستخدام Bearer Access Token خاص بقناة كادر الموبايل.
+  
+  الصلاحية المطلوبة: `إنشاء سبر`.
+  
+  تنبيه: قد يغيّر هذا الطلب البيانات المحلية.

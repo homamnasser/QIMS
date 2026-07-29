@@ -116,4 +116,14 @@ class Student extends Authenticatable
     {
         return $this->hasMany(StudentMark::class, 'student', 'id');
     }
+
+    public function evaluationCandidates(): HasMany
+    {
+        return $this->hasMany(EvaluationCandidate::class);
+    }
+
+    public function sabrPartAchievements(): HasMany
+    {
+        return $this->hasMany(SabrPartAchievement::class);
+    }
 }

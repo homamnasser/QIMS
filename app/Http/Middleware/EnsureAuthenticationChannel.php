@@ -2,7 +2,6 @@
 
 namespace App\Http\Middleware;
 
-use App\Enums\RoleFamily;
 use App\Models\Student;
 use App\Models\User;
 use Closure;
@@ -26,6 +25,10 @@ class EnsureAuthenticationChannel
                 && $token instanceof TransientToken,
             'mobile-access' => $this->isAllowedMobileAccount($account)
                 && $this->hasExactAbility($token, 'access'),
+            'mobile-student' => $account instanceof Student
+                && $this->hasExactAbility($token, 'access'),
+            'mobile-staff' => $this->isAllowedMobileStaff($account)
+                && $this->hasExactAbility($token, 'access'),
             'mobile-refresh' => $this->isAllowedMobileAccount($account)
                 && $this->hasExactAbility($token, 'refresh'),
             'mobile-token' => $this->isAllowedMobileAccount($account)
@@ -40,7 +43,7 @@ class EnsureAuthenticationChannel
             return new JsonResponse([
                 'code' => 403,
                 'error_code' => 'AUTH_CHANNEL_MISMATCH',
-                'message' => 'رمز المصادقة لا يخص قناة الوصول المطلوبة.',
+                'message' => $this->mismatchMessage($channel, $account),
                 'data' => null,
             ], 403);
         }
@@ -51,9 +54,14 @@ class EnsureAuthenticationChannel
     private function isAllowedMobileAccount(mixed $account): bool
     {
         return $account instanceof Student
-            || (
-                $account instanceof User
-                && $account->hasRoleFamily(RoleFamily::Teacher)
+            || $this->isAllowedMobileStaff($account);
+    }
+
+    private function isAllowedMobileStaff(mixed $account): bool
+    {
+        return $account instanceof User
+            && $account->hasRoleFamily(
+                ...config('roles.mobile_staff_families', [])
             );
     }
 
@@ -70,5 +78,18 @@ class EnsureAuthenticationChannel
             $token->abilities ?? [],
             true
         );
+    }
+
+    private function mismatchMessage(string $channel, mixed $account): string
+    {
+        if ($channel === 'mobile-student' && ! $account instanceof Student) {
+            return 'هذه الواجهات متاحة لحسابات الطلاب فقط.';
+        }
+
+        if ($channel === 'mobile-staff' && ! $this->isAllowedMobileStaff($account)) {
+            return 'هذه الواجهات متاحة لحسابات الكادر الميداني المصرح له فقط.';
+        }
+
+        return 'رمز المصادقة لا يخص قناة الوصول المطلوبة.';
     }
 }

@@ -47,3 +47,5 @@ docs: |-
   يختبر `GET /api/absence/getAllAbsences` ضمن مجموعة Absences.
 
   المسار يستخدم جلسة الويب HttpOnly الخاصة بـSanctum، ولا يقبل Bearer Token للموبايل.
+
+  الصلاحية المطلوبة: `عرض كافة الغيابات`.

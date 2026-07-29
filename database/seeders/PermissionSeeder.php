@@ -116,9 +116,11 @@ class PermissionSeeder extends Seeder
             'عرض وتصدير ردود الاستبيان',
             config('roles.capabilities.supervise'),
             ...array_values(config('roles.student_capabilities')),
+            ...config('roles.field_supervisor_permissions'),
+            ...config('evaluation.permissions'),
         ];
 
-        foreach ($permissions as $permission) {
+        foreach (array_unique($permissions) as $permission) {
             Permission::firstOrCreate(['name' => $permission, 'guard_name' => 'web']);
         }
     }

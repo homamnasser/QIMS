@@ -1,0 +1,56 @@
+name: Local
+variables:
+  - name: baseUrl
+    value: "http://localhost:8000"
+  - name: staffEmail
+    value: "field.supervisor@example.com"
+  - name: teacherEmail
+    value: "samer.khalil@example.com"
+  - name: staffPassword
+    value: "password123"
+  - name: deviceName
+    value: "Bruno Mobile Staff Device"
+  - name: staffToken
+    value: ""
+  - name: staffRefreshToken
+    value: ""
+  - name: courseId
+    value: "1"
+  - name: courseDateId
+    value: "1"
+  - name: subjectId
+    value: "1"
+  - name: lessonId
+    value: "1"
+  - name: circleId
+    value: "1"
+  - name: studentId
+    value: "1"
+  - name: attendanceId
+    value: "1"
+  - name: warningId
+    value: "1"
+  - name: noteId
+    value: "1"
+  - name: sabrId
+    value: "1"
+  - name: memorizationId
+    value: "1"
+  - name: examId
+    value: "1"
+  - name: evaluationCycleId
+    value: "1"
+  - name: evaluationCandidateId
+    value: "1"
+  - name: evaluationPeriodId
+    value: "1"
+  - name: evaluationRunId
+    value: "1"
+  - name: evaluationResultId
+    value: "1"
+  - name: certificateId
+    value: "1"
+  - name: recognitionBatchId
+    value: "1"
+  - name: administrationObservationId
+    value: "1"

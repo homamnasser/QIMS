@@ -1,0 +1,58 @@
+info:
+  name: POST Store
+  type: http
+  seq: 9
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/mobile/staff/evaluation-cycles"
+  headers:
+    - name: Accept
+      value: application/json
+    - name: Content-Type
+      value: application/json
+  auth:
+    type: bearer
+    token: "{{staffToken}}"
+  body:
+    type: json
+    data: |-
+      {
+        "project_id": 1,
+        "name": "دورة تقييم تجريبية",
+        "season": "summer",
+        "top_students_count": 10,
+        "course_ids": [
+          "{{courseId}}"
+        ],
+        "periods": [
+          {
+            "name": "الفترة الأولى",
+            "sequence": 1,
+            "start_date": "2026-07-01",
+            "end_date": "2026-07-31"
+          }
+        ]
+      }
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("passes mobile staff authentication and authorization", function() {
+          expect(res.status).to.not.equal(401);
+          expect(res.status).to.not.equal(403);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  يختبر `POST api/mobile/staff/evaluation-cycles` باستخدام Bearer Access Token خاص بقناة كادر الموبايل.
+  
+  الصلاحية المطلوبة: `إدارة دورات التقييم`.
+  
+  تنبيه: قد يغيّر هذا الطلب البيانات المحلية.

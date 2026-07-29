@@ -1,0 +1,45 @@
+info:
+  name: POST Logout
+  type: http
+  seq: 4
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/mobile/auth/logout"
+  headers:
+    - name: Accept
+      value: application/json
+    - name: Content-Type
+      value: application/json
+  auth:
+    type: bearer
+    token: "{{staffToken}}"
+  body:
+    type: json
+    data: |-
+      {}
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        if (res.status === 200) {
+          bru.setEnvVar("staffToken", "");
+          bru.setEnvVar("staffRefreshToken", "");
+        }
+    - type: tests
+      code: |-
+        test("revokes the current mobile device token pair", function() {
+          expect(res.status).to.equal(200);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  يختبر `POST api/mobile/auth/logout` باستخدام Bearer Access Token خاص بقناة كادر الموبايل.
+  
+  تنبيه: قد يغيّر هذا الطلب البيانات المحلية.

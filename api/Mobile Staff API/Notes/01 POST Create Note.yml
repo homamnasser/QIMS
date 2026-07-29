@@ -1,0 +1,46 @@
+info:
+  name: POST Create Note
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/mobile/staff/notes"
+  headers:
+    - name: Accept
+      value: application/json
+    - name: Content-Type
+      value: application/json
+  auth:
+    type: bearer
+    token: "{{staffToken}}"
+  body:
+    type: json
+    data: |-
+      {
+        "student_id": "{{studentId}}",
+        "title": "ملاحظة تجريبية",
+        "description": "مثال محلي من Bruno"
+      }
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("passes mobile staff authentication and authorization", function() {
+          expect(res.status).to.not.equal(401);
+          expect(res.status).to.not.equal(403);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  يختبر `POST api/mobile/staff/notes` باستخدام Bearer Access Token خاص بقناة كادر الموبايل.
+  
+  الصلاحية المطلوبة: `إنشاء ملاحظة`.
+  
+  تنبيه: قد يغيّر هذا الطلب البيانات المحلية.

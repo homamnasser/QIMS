@@ -3,7 +3,6 @@
 namespace App\Http\Resources;
 
 use App\Enums\RoleFamily;
-use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class UserResource extends JsonResource
@@ -19,20 +18,21 @@ class UserResource extends JsonResource
         $roleFamily = $role?->role_family;
 
         return [
-            'id'          => $this->id,
-            'first_name'  => $this->first_name,
-            'last_name'   => $this->last_name,
-            'email'       => $this->email,
-            'phone'       => $this->phone,
-            'birth_date'  => $this->birth_date,
-            'role_id'     => $role?->id,
-            'role'        => $role?->name,
+            'id' => $this->id,
+            'first_name' => $this->first_name,
+            'last_name' => $this->last_name,
+            'email' => $this->email,
+            'phone' => $this->phone,
+            'birth_date' => $this->birth_date,
+            'role_id' => $role?->id,
+            'role' => $role?->name,
             'role_family' => $roleFamily instanceof RoleFamily ? $roleFamily->value : $roleFamily,
             'account_type' => 'staff',
             'is_super_admin' => $this->isSuperAdmin(),
             'can_supervise' => $this->canSupervise(),
+            'has_full_field_operations_access' => $this->hasFullFieldOperationsAccess(),
             'permissions' => $this->getAllPermissions()->pluck('name'),
-            'image_url'   => $this->formatImageUrl($this->image),
+            'image_url' => $this->formatImageUrl($this->image),
         ];
     }
 
@@ -51,6 +51,6 @@ class UserResource extends JsonResource
             return asset($cleanPath);
         }
 
-        return asset('storage/' . $cleanPath);
+        return asset('storage/'.$cleanPath);
     }
 }

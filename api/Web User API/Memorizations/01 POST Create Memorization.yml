@@ -17,20 +17,18 @@ http:
     - name: X-XSRF-TOKEN
       value: "{{xsrfToken}}"
   body:
-    type: multipart-form
-    data:
-      - name: student_id
-        type: text
-        value: "4"
-      - name: name
-        type: text
-        value: ddييي
-      - name: start_page
-        type: text
-        value: "601"
-      - name: end_page
-        type: text
-        value: "601"
+    type: json
+    data: |-
+      {
+        "student_id": "{{studentId}}",
+        "circle_id": "{{circleId}}",
+        "course_id": "{{courseId}}",
+        "record_type": "memorization",
+        "recorded_at": "2026-08-01",
+        "name": "تسميع تجريبي",
+        "start_page": 1,
+        "end_page": 2
+      }
 
 
 runtime:

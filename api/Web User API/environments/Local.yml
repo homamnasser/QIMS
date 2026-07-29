@@ -54,3 +54,21 @@ variables:
     value: "replace-after-identify-request"
   - name: studentSelfnumber
     value: "TEST01-000001"
+  - name: evaluationCycleId
+    value: "1"
+  - name: evaluationCandidateId
+    value: "1"
+  - name: evaluationPeriodId
+    value: "1"
+  - name: evaluationRunId
+    value: "1"
+  - name: evaluationResultId
+    value: "1"
+  - name: certificateId
+    value: "1"
+  - name: recognitionBatchId
+    value: "1"
+  - name: administrationObservationId
+    value: "1"
+  - name: certificateVerificationToken
+    value: "replace-with-64-character-verification-token"

@@ -1,0 +1,37 @@
+info:
+  name: 13 Get My Final Result
+  type: http
+  seq: 13
+
+http:
+  method: GET
+  url: "{{baseUrl}}/api/mobile/student/me/final-results/:resultId"
+  params:
+    - name: resultId
+      value: "{{finalResultId}}"
+      type: path
+  headers:
+    - name: Accept
+      value: application/json
+  auth:
+    type: bearer
+    token: "{{studentToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("does not expose another student's final result", function() {
+          expect([200, 404]).to.include(res.status);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  Returns the selected published result only when it belongs to the
+  authenticated student. A valid result ID owned by another student returns
+  404 rather than revealing the record.

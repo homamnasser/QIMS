@@ -37,6 +37,8 @@ const folderConfiguration = [
   ["Surveys", 20],
   ["Public Surveys", 21],
   ["Reports", 22],
+  ["Evaluations", 23],
+  ["Public Certificates", 24],
 ];
 
 const folderSequence = new Map(folderConfiguration);
@@ -69,6 +71,15 @@ const environmentVariables = [
   ["publicSurveyToken", "replace-with-public-survey-token"],
   ["surveyParticipantAccessToken", "replace-after-identify-request"],
   ["studentSelfnumber", "TEST01-000001"],
+  ["evaluationCycleId", "1"],
+  ["evaluationCandidateId", "1"],
+  ["evaluationPeriodId", "1"],
+  ["evaluationRunId", "1"],
+  ["evaluationResultId", "1"],
+  ["certificateId", "1"],
+  ["recognitionBatchId", "1"],
+  ["administrationObservationId", "1"],
+  ["certificateVerificationToken", "replace-with-64-character-verification-token"],
 ];
 
 const specialBodies = new Map([
@@ -136,6 +147,70 @@ const specialBodies = new Map([
       answers: { "1": "yes" },
       student_fields: {},
     }),
+  ],
+  [
+    "POST api/memorization/createMemorization",
+    jsonBody({
+      student_id: "{{studentId}}",
+      circle_id: "{{circleId}}",
+      course_id: "{{courseId}}",
+      record_type: "memorization",
+      recorded_at: "2026-08-01",
+      name: "تسميع تجريبي",
+      start_page: 1,
+      end_page: 2,
+    }),
+  ],
+  [
+    "POST api/evaluation-cycles",
+    jsonBody({
+      project_id: "{{projectId}}",
+      name: "دورة تقييم تجريبية",
+      season: "summer",
+      top_students_count: 10,
+      course_ids: ["{{courseId}}"],
+      periods: [
+        {
+          name: "الفترة الأولى",
+          sequence: 1,
+          start_date: "2026-07-01",
+          end_date: "2026-07-31",
+        },
+      ],
+    }),
+  ],
+  [
+    "PUT api/evaluation-cycles/{cycle}/status",
+    jsonBody({ status: "data_collection" }),
+  ],
+  [
+    "POST api/evaluation-cycles/{cycle}/runs",
+    jsonBody({ preview: true }),
+  ],
+  [
+    "PUT api/evaluation-candidates/{candidate}/teacher-evaluation",
+    jsonBody({
+      evaluation_period_id: "{{evaluationPeriodId}}",
+      circle_id: "{{circleId}}",
+      behavior_score: 10,
+      participation_score: 10,
+      teacher_opinion_score: 10,
+      comments: "تقييم تجريبي من Bruno",
+      status: "submitted",
+    }),
+  ],
+  [
+    "PUT api/evaluation-candidates/{candidate}/quran-assessment",
+    jsonBody({
+      evaluation_period_id: "{{evaluationPeriodId}}",
+      circle_id: "{{circleId}}",
+      below_minimum: false,
+      notes: "تحقق تجريبي من الحد الأدنى",
+    }),
+  ],
+  [
+    "POST api/certificates/{certificate}/revoke",
+    jsonBody({ reason: "إلغاء تجريبي للشهادة من Bruno" }),
   ],
 ]);
 
@@ -220,6 +295,10 @@ function isWebCollectionRoute(route) {
   }
 
   if (route.uri.startsWith("api/public/surveys/")) {
+    return true;
+  }
+
+  if (route.uri.startsWith("api/public/certificates/")) {
     return true;
   }
 
@@ -728,7 +807,16 @@ function folderFor(route) {
   if (uri.startsWith("api/exam/")) return "Exams";
   if (uri.startsWith("api/absence/")) return "Absences";
   if (uri.startsWith("api/public/surveys/")) return "Public Surveys";
+  if (uri.startsWith("api/public/certificates/")) return "Public Certificates";
   if (uri.startsWith("api/surveys")) return "Surveys";
+  if (
+    uri.startsWith("api/evaluation-") ||
+    uri.startsWith("api/certificates/") ||
+    uri.startsWith("api/recognition-batches/") ||
+    uri.startsWith("api/administration-observations/")
+  ) {
+    return "Evaluations";
+  }
   if (
     uri === "api/courses-students" ||
     uri === "api/courses-dates-lessons" ||
@@ -777,6 +865,14 @@ function environmentVariableForPathParameter(uri, parameter) {
     accessToken: "surveyFileAccessToken",
     survey: "surveyId",
     response: "surveyResponseId",
+    cycle: "evaluationCycleId",
+    candidate: "evaluationCandidateId",
+    run: "evaluationRunId",
+    result: "evaluationResultId",
+    certificate: "certificateId",
+    batch: "recognitionBatchId",
+    observation: "administrationObservationId",
+    token: "certificateVerificationToken",
   };
 
   if (direct[parameter]) {

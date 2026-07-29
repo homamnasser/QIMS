@@ -1,0 +1,40 @@
+info:
+  name: DELETE Delete Note
+  type: http
+  seq: 2
+
+http:
+  method: DELETE
+  url: "{{baseUrl}}/api/mobile/staff/notes/:noteId"
+  params:
+    - name: noteId
+      value: "{{noteId}}"
+      type: path
+  headers:
+    - name: Accept
+      value: application/json
+  auth:
+    type: bearer
+    token: "{{staffToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("passes mobile staff authentication and authorization", function() {
+          expect(res.status).to.not.equal(401);
+          expect(res.status).to.not.equal(403);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  يختبر `DELETE api/mobile/staff/notes/{noteId}` باستخدام Bearer Access Token خاص بقناة كادر الموبايل.
+  
+  الصلاحية المطلوبة: `حذف ملاحظة`.
+  
+  تنبيه: قد يغيّر هذا الطلب البيانات المحلية.

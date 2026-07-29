@@ -1,0 +1,49 @@
+info:
+  name: PUT Update Result
+  type: http
+  seq: 5
+
+http:
+  method: PUT
+  url: "{{baseUrl}}/api/mobile/staff/sabrs/:id"
+  params:
+    - name: id
+      value: "{{sabrId}}"
+      type: path
+  headers:
+    - name: Accept
+      value: application/json
+    - name: Content-Type
+      value: application/json
+  auth:
+    type: bearer
+    token: "{{staffToken}}"
+  body:
+    type: json
+    data: |-
+      {
+        "value": "ممتاز",
+        "note": "تم تحديث نتيجة السبر من تطبيق الموبايل"
+      }
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("passes mobile staff authentication and authorization", function() {
+          expect(res.status).to.not.equal(401);
+          expect(res.status).to.not.equal(403);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  يختبر `PUT api/mobile/staff/sabrs/{id}` باستخدام Bearer Access Token خاص بقناة كادر الموبايل.
+  
+  الصلاحية المطلوبة: `تعديل نتيجة السبر`.
+  
+  تنبيه: قد يغيّر هذا الطلب البيانات المحلية.

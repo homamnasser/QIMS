@@ -16,7 +16,7 @@ class CourseDateScheduleResource extends JsonResource
     {
         return [
             'id'           => $this->id,
-            'session_date' => $this->session_date,
+            'session_date' => $this->session_date->format('Y-m-d'),
             'course_id'    => $this->course_id,
             'lessons'      => LessonResource::collection($this->whenLoaded('lessons')),
             'created_at'   => $this->created_at->format('Y-m-d H:i:s'),

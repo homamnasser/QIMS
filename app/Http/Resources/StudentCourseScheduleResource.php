@@ -15,7 +15,7 @@ class StudentCourseScheduleResource extends JsonResource
             'schedule' => $this->whenLoaded('courseDates', fn () => $this->courseDates
                 ->map(fn ($courseDate): array => [
                     'id' => $courseDate->id,
-                    'session_date' => $courseDate->session_date,
+                    'session_date' => $courseDate->session_date->format('Y-m-d'),
                     'day_name' => Carbon::parse($courseDate->session_date)->format('l'),
                     'lessons' => LessonResource::collection($courseDate->lessons),
                 ])

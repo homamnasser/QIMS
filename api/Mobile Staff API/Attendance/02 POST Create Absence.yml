@@ -1,0 +1,48 @@
+info:
+  name: POST Create Absence
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/mobile/staff/attendance"
+  headers:
+    - name: Accept
+      value: application/json
+    - name: Content-Type
+      value: application/json
+  auth:
+    type: bearer
+    token: "{{staffToken}}"
+  body:
+    type: json
+    data: |-
+      {
+        "student": "{{studentId}}",
+        "course": "{{courseId}}",
+        "date": "2026-08-01",
+        "type": "present",
+        "note": "تسجيل حضور من تطبيق الموبايل"
+      }
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("passes mobile staff authentication and authorization", function() {
+          expect(res.status).to.not.equal(401);
+          expect(res.status).to.not.equal(403);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  يختبر `POST api/mobile/staff/attendance` باستخدام Bearer Access Token خاص بقناة كادر الموبايل.
+  
+  الصلاحية المطلوبة: `إنشاء غياب`.
+  
+  تنبيه: قد يغيّر هذا الطلب البيانات المحلية.

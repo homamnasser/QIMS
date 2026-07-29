@@ -15,6 +15,11 @@ class Warning extends Model
         'warner',
         'title',
         'description',
+        'deduction_points',
+    ];
+
+    protected $casts = [
+        'deduction_points' => 'decimal:2',
     ];
 
     /**
@@ -25,12 +30,12 @@ class Warning extends Model
         $query->when($filters['student_id'] ?? null, function ($q, $studentId) {
             $q->where('student', $studentId);
         })
-        ->when($filters['warner_id'] ?? null, function ($q, $warnerId) {
-            $q->where('warner', $warnerId);
-        })
-        ->when($filters['title'] ?? null, function ($q, $title) {
-            $q->where('title', 'like', '%' . $title . '%');
-        });
+            ->when($filters['warner_id'] ?? null, function ($q, $warnerId) {
+                $q->where('warner', $warnerId);
+            })
+            ->when($filters['title'] ?? null, function ($q, $title) {
+                $q->where('title', 'like', '%'.$title.'%');
+            });
     }
 
     /**

@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Enums\RoleFamily;
 use App\IService\IMobileAuthenticationService;
 use App\Models\Student;
 use App\Models\User;
@@ -100,8 +99,11 @@ class MobileAuthenticationService implements IMobileAuthenticationService
     {
         if (filter_var($login, FILTER_VALIDATE_EMAIL)) {
             $user = User::query()->where('email', $login)->first();
+            $mobileStaffFamilies = config('roles.mobile_staff_families', []);
 
-            return $user?->hasRoleFamily(RoleFamily::Teacher) ? $user : null;
+            return $user && $user->hasRoleFamily(...$mobileStaffFamilies)
+                ? $user
+                : null;
         }
 
         return Student::query()->where('username', $login)->first();

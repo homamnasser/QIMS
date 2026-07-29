@@ -76,7 +76,7 @@ class User extends Authenticatable
         return $this->hasMany(Note::class, 'user_id');
     }
 
-    public function givenSabrs(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function givenSabrs(): HasMany
     {
         return $this->hasMany(Sabr::class, 'giver');
     }
@@ -86,7 +86,7 @@ class User extends Authenticatable
         return $this->hasMany(Memorization::class, 'giver');
     }
 
-    public function issuedWarnings(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function issuedWarnings(): HasMany
     {
         return $this->hasMany(Warning::class, 'warner');
     }
@@ -104,5 +104,13 @@ class User extends Authenticatable
 
         return $this->getAllPermissions()
             ->contains('name', config('roles.capabilities.supervise'));
+    }
+
+    public function hasFullFieldOperationsAccess(): bool
+    {
+        return $this->getAllPermissions()->contains(
+            'name',
+            config('roles.capabilities.field_operations')
+        );
     }
 }

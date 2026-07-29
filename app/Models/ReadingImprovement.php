@@ -13,8 +13,28 @@ class ReadingImprovement extends Model
     protected $fillable = [
         'student',
         'course',
+        'evaluation_candidate_id',
+        'evaluation_period_id',
+        'evaluator_id',
         'type',
+        'baseline_score',
+        'final_score',
+        'baseline_level',
+        'final_level',
+        'difference',
+        'points',
+        'promotion_recommended',
+        'status',
+        'rule_trace',
         'description',
+    ];
+
+    protected $casts = [
+        'baseline_score' => 'decimal:2',
+        'final_score' => 'decimal:2',
+        'difference' => 'decimal:2',
+        'promotion_recommended' => 'boolean',
+        'rule_trace' => 'array',
     ];
 
     // =========================================================================
@@ -35,6 +55,16 @@ class ReadingImprovement extends Model
     public function courseDetails(): BelongsTo
     {
         return $this->belongsTo(Course::class, 'course', 'id');
+    }
+
+    public function evaluationCandidate(): BelongsTo
+    {
+        return $this->belongsTo(EvaluationCandidate::class);
+    }
+
+    public function evaluationPeriod(): BelongsTo
+    {
+        return $this->belongsTo(EvaluationPeriod::class);
     }
 
     // =========================================================================

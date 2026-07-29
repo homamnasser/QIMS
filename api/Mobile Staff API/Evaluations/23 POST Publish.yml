@@ -1,0 +1,46 @@
+info:
+  name: POST Publish
+  type: http
+  seq: 23
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/mobile/staff/recognition-batches/:batch/publish"
+  params:
+    - name: batch
+      value: "{{recognitionBatchId}}"
+      type: path
+  headers:
+    - name: Accept
+      value: application/json
+    - name: Content-Type
+      value: application/json
+  auth:
+    type: bearer
+    token: "{{staffToken}}"
+  body:
+    type: json
+    data: |-
+      {}
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("passes mobile staff authentication and authorization", function() {
+          expect(res.status).to.not.equal(401);
+          expect(res.status).to.not.equal(403);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  يختبر `POST api/mobile/staff/recognition-batches/{batch}/publish` باستخدام Bearer Access Token خاص بقناة كادر الموبايل.
+  
+  الصلاحية المطلوبة: `إدارة التكريم النهائي`.
+  
+  تنبيه: قد يغيّر هذا الطلب البيانات المحلية.

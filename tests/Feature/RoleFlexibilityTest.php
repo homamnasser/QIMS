@@ -133,6 +133,45 @@ class RoleFlexibilityTest extends TestCase
         $this->assertTrue($role->hasPermissionTo(config('roles.capabilities.supervise')));
     }
 
+    public function test_created_field_supervisor_requires_confirmation_and_keeps_all_operational_permissions(): void
+    {
+        $this->authenticateAsRoot();
+        $permission = Permission::firstOrCreate([
+            'name' => 'صلاحية إضافية للمشرف الميداني',
+            'guard_name' => 'web',
+        ]);
+        $payload = [
+            'name' => 'مشرف ميداني فرع دمشق',
+            'role_family' => RoleFamily::FieldSupervisor->value,
+            'permissions' => [$permission->id],
+        ];
+
+        $this->postJson('/api/role/createRole', $payload)
+            ->assertUnprocessable()
+            ->assertJsonPath(
+                'message.confirm_privileged_family.0',
+                'يجب تأكيد منح الأهلية الإدارية أو الإشرافية لهذا الدور.'
+            );
+
+        $this->postJson('/api/role/createRole', [
+            ...$payload,
+            'confirm_privileged_family' => true,
+        ])
+            ->assertCreated()
+            ->assertJsonPath('data.role_family', RoleFamily::FieldSupervisor->value);
+
+        $role = Role::where('name', 'مشرف ميداني فرع دمشق')->firstOrFail();
+
+        foreach (config('roles.field_supervisor_permissions') as $requiredPermission) {
+            $this->assertTrue(
+                $role->hasPermissionTo($requiredPermission),
+                "Missing required Field Supervisor permission: {$requiredPermission}"
+            );
+        }
+
+        $this->assertTrue($role->hasPermissionTo($permission));
+    }
+
     public function test_misleading_name_stays_custom_and_cannot_grant_supervision_by_itself(): void
     {
         $this->authenticateAsRoot();

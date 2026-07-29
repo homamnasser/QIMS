@@ -33,11 +33,12 @@ class NoteService implements INoteService
     /**
      * حذف ملاحظة (أمنياً: الأستاذ الذي كتب الملاحظة هو فقط من يستطيع حذفها)
      */
-    public function deleteNote(int $noteId, int $userId): bool
+    public function deleteNote(int $noteId, int $userId, bool $mayDeleteAny = false): bool
     {
-       return (bool) Note::where('id', $noteId)
-                             ->where('user_id', $userId)
-                             ->delete();
+       return (bool) Note::query()
+           ->whereKey($noteId)
+           ->when(! $mayDeleteAny, fn ($query) => $query->where('user_id', $userId))
+           ->delete();
     }
 
     public function getNotesByTeacher(int $teacherId, array $filters = []): Collection

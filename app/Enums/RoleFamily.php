@@ -7,6 +7,7 @@ enum RoleFamily: string
     case SuperAdmin = 'super-admin';
     case Admin = 'admin';
     case Supervisor = 'supervisor';
+    case FieldSupervisor = 'field-supervisor';
     case Teacher = 'teacher';
     case Student = 'student';
     case Custom = 'custom';
@@ -24,6 +25,7 @@ enum RoleFamily: string
         return [
             self::Admin->value,
             self::Supervisor->value,
+            self::FieldSupervisor->value,
             self::Teacher->value,
             self::Student->value,
             self::Custom->value,

@@ -2,7 +2,6 @@
 
 namespace App\Http\Resources;
 
-use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class CircleResource extends JsonResource
@@ -15,20 +14,22 @@ class CircleResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id'         => $this->id,
-            'name'       => $this->name,
+            'id' => $this->id,
+            'name' => $this->name,
             'teacher_id' => $this->teacher_id,
-            'course_id'  => $this->course_id,
-            'teacher'    => [
-                'id'   => $this->teacher->id ?? null,
-                'name' => $this->teacher ? ($this->teacher->first_name . ' ' . $this->teacher->last_name) : 'N/A',
+            'course_id' => $this->course_id,
+            'quran_mode' => $this->quran_mode->value,
+            'quran_mode_label' => $this->quran_mode->label(),
+            'teacher' => [
+                'id' => $this->teacher->id ?? null,
+                'name' => $this->teacher ? ($this->teacher->first_name.' '.$this->teacher->last_name) : 'N/A',
             ],
-            'course'     => [
-                'id'   => $this->course->id ?? null,
+            'course' => [
+                'id' => $this->course->id ?? null,
                 'name' => $this->course->name ?? 'N/A',
             ],
-            'mosque'     => [
-                'id'   => $this->course?->mosque?->id ?? null,
+            'mosque' => [
+                'id' => $this->course?->mosque?->id ?? null,
                 'name' => $this->course?->mosque?->name ?? 'غير معين',
             ],
             'created_at' => $this->created_at->format('Y-m-d'),

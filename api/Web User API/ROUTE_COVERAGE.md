@@ -26,4 +26,6 @@ Generated from `php artisan route:list --json`.
 | Surveys | 11 |
 | Public Surveys | 3 |
 | Reports | 3 |
-| **Total** | **116** |
+| Evaluations | 22 |
+| Public Certificates | 1 |
+| **Total** | **139** |

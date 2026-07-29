@@ -1,7 +1,7 @@
 info:
-  name: 12 Refresh Mobile Tokens
+  name: POST Refresh
   type: http
-  seq: 12
+  seq: 3
 
 http:
   method: POST
@@ -11,19 +11,19 @@ http:
       value: application/json
   auth:
     type: bearer
-    token: "{{refreshToken}}"
+    token: "{{staffRefreshToken}}"
 
 runtime:
   scripts:
     - type: after-response
       code: |-
         if (res.status === 200 && res.body?.data?.access_token) {
-          bru.setEnvVar("studentToken", String(res.body.data.access_token));
-          bru.setEnvVar("refreshToken", String(res.body.data.refresh_token));
+          bru.setEnvVar("staffToken", String(res.body.data.access_token));
+          bru.setEnvVar("staffRefreshToken", String(res.body.data.refresh_token));
         }
     - type: tests
       code: |-
-        test("rotates the mobile access and refresh tokens", function() {
+        test("rotates the mobile staff token pair", function() {
           expect(res.status).to.equal(200);
           expect(res.body.data.access_token).to.be.a("string");
           expect(res.body.data.refresh_token).to.be.a("string");
@@ -36,5 +36,6 @@ settings:
   maxRedirects: 5
 
 docs: |-
-  Uses the current refresh token once and replaces both tokens. The previous
-  access and refresh tokens are revoked immediately and cannot be reused.
+  يختبر `POST api/mobile/auth/refresh` باستخدام Bearer Access Token خاص بقناة كادر الموبايل.
+  
+  تنبيه: قد يغيّر هذا الطلب البيانات المحلية.

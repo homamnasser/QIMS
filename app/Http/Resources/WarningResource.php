@@ -16,6 +16,7 @@ class WarningResource extends JsonResource
             'id' => $this->id,
             'title' => $this->title,
             'description' => $this->description,
+            'deduction_points' => (float) ($this->deduction_points ?? 1),
 
             'date' => $this->created_at ? $this->created_at->format('Y-m-d') : null,
 

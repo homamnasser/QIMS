@@ -1,0 +1,53 @@
+info:
+  name: PUT Quran
+  type: http
+  seq: 2
+
+http:
+  method: PUT
+  url: "{{baseUrl}}/api/mobile/teacher/evaluation-candidates/:candidate/quran-assessment"
+  params:
+    - name: candidate
+      value: "{{evaluationCandidateId}}"
+      type: path
+  headers:
+    - name: Accept
+      value: application/json
+    - name: Content-Type
+      value: application/json
+  auth:
+    type: bearer
+    token: "{{staffToken}}"
+  body:
+    type: json
+    data: |-
+      {
+        "evaluation_period_id": "{{evaluationPeriodId}}",
+        "circle_id": "{{circleId}}",
+        "below_minimum": false,
+        "notes": "اختبار مسار التوافق القديم"
+      }
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("passes mobile staff authentication and authorization", function() {
+          expect(res.status).to.not.equal(401);
+          expect(res.status).to.not.equal(403);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  يختبر `PUT api/mobile/teacher/evaluation-candidates/{candidate}/quran-assessment` باستخدام Bearer Access Token خاص بقناة كادر الموبايل.
+  
+  الصلاحية المطلوبة: `إدخال تقييم القرآن`.
+  
+  هذا مسار توافق قديم؛ المسار الجديد المكافئ موجود تحت `/api/mobile/staff`.
+  
+  تنبيه: قد يغيّر هذا الطلب البيانات المحلية.

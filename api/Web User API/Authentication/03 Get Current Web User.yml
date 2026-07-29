@@ -8,12 +8,12 @@ info:
 
 http:
   method: GET
-  url: http://127.0.0.1:8000/api/web/auth/me
+  url: "{{baseUrl}}/api/web/auth/me"
   headers:
     - name: Accept
-      value: application/json
+      value: "application/json"
     - name: Origin
-      value: http://127.0.0.1:5173
+      value: "{{webOrigin}}"
 
 runtime:
   scripts:

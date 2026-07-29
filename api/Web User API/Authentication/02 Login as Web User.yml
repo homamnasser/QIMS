@@ -8,31 +8,25 @@ info:
 
 http:
   method: POST
-  url: http://127.0.0.1:8000/api/web/auth/login
+  url: "{{baseUrl}}/api/web/auth/login"
   headers:
     - name: Accept
-      value: application/json
+      value: "application/json"
     - name: Origin
-      value: http://127.0.0.1:5173
+      value: "{{webOrigin}}"
+    - name: X-XSRF-TOKEN
+      value: "{{xsrfToken}}"
   body:
     type: json
     data: |-
       {
-        "email": "superadmin@gmail.com",
-        "password": "password123"
+        "email": "{{webEmail}}",
+        "password": "{{webPassword}}"
       }
+
 
 runtime:
   scripts:
-    - type: before-request
-      code: |-
-        const token = bru.cookies.get("XSRF-TOKEN");
-
-        if (!token) {
-          throw new Error("Run Initialize CSRF Cookies first.");
-        }
-
-        req.setHeader("X-XSRF-TOKEN", decodeURIComponent(token));
     - type: tests
       code: |-
         test("logs in with a server-side web session", function() {

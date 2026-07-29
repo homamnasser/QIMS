@@ -77,11 +77,15 @@ class NoteController extends Controller
      */
     public function deleteNote(int $id): JsonResponse
     {
-        // جلب أيدي المستخدم الحالي
-        $userId = auth()->id();
+        $user = auth()->user();
+        $userId = $user->id;
 
         // تنفيذ عملية الحذف الأمنية المباشرة
-        $deleted = $this->noteService->deleteNote($id, $userId);
+        $deleted = $this->noteService->deleteNote(
+            $id,
+            $userId,
+            $user->hasFullFieldOperationsAccess()
+        );
 
         if (!$deleted) {
             return response()->json([

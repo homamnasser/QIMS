@@ -14,3 +14,7 @@ variables:
     value: ""
   - name: courseId
     value: "1"
+  - name: finalResultId
+    value: "1"
+  - name: certificateId
+    value: "1"

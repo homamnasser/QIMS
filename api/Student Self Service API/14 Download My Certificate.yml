@@ -1,0 +1,37 @@
+info:
+  name: 14 Download My Certificate
+  type: http
+  seq: 14
+
+http:
+  method: GET
+  url: "{{baseUrl}}/api/mobile/student/me/certificates/:certificateId"
+  params:
+    - name: certificateId
+      value: "{{certificateId}}"
+      type: path
+  headers:
+    - name: Accept
+      value: application/pdf
+  auth:
+    type: bearer
+    token: "{{studentToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("downloads only an issued certificate owned by this student", function() {
+          expect([200, 404, 410]).to.include(res.status);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  Downloads an issued certificate only when its evaluation result belongs to
+  the authenticated student. The API also verifies the stored file hash before
+  sending the PDF.

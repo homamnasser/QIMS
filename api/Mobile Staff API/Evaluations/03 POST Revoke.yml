@@ -1,0 +1,48 @@
+info:
+  name: POST Revoke
+  type: http
+  seq: 3
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/mobile/staff/certificates/:certificate/revoke"
+  params:
+    - name: certificate
+      value: "{{certificateId}}"
+      type: path
+  headers:
+    - name: Accept
+      value: application/json
+    - name: Content-Type
+      value: application/json
+  auth:
+    type: bearer
+    token: "{{staffToken}}"
+  body:
+    type: json
+    data: |-
+      {
+        "reason": "إلغاء تجريبي للشهادة من Bruno"
+      }
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("passes mobile staff authentication and authorization", function() {
+          expect(res.status).to.not.equal(401);
+          expect(res.status).to.not.equal(403);
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  يختبر `POST api/mobile/staff/certificates/{certificate}/revoke` باستخدام Bearer Access Token خاص بقناة كادر الموبايل.
+  
+  الصلاحية المطلوبة: `إصدار الشهادات النهائية`.
+  
+  تنبيه: قد يغيّر هذا الطلب البيانات المحلية.
