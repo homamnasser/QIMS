@@ -4,6 +4,19 @@ use App\Enums\RoleFamily;
 
 $fieldOperationsCapability = 'الإشراف الميداني الكامل';
 
+$attendanceAndAbsencePermissions = [
+    'عرض كافة الغيابات',
+    'إنشاء غياب',
+    'عرض تفاصيل الغياب',
+    'تعديل الغياب',
+    'حذف غياب',
+];
+
+$teacherAttendanceAndAbsencePermissions = array_values(array_diff(
+    $attendanceAndAbsencePermissions,
+    ['تعديل الغياب', 'حذف غياب']
+));
+
 $studentCapabilities = [
     'mosque' => 'عرض مسجدي الدراسي',
     'circles' => 'عرض حلقاتي الدراسية',
@@ -84,6 +97,8 @@ return [
         $fieldOperationsCapability,
         ...$fieldSupervisorPermissions,
     ])),
+    'attendance_and_absence_permissions' => $attendanceAndAbsencePermissions,
+    'teacher_attendance_and_absence_permissions' => $teacherAttendanceAndAbsencePermissions,
 
     // Kept for staff-facing legacy endpoints. Student-family roles are migrated
     // away from these ambiguous names to the explicit capabilities above.

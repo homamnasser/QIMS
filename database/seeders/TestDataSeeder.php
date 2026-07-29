@@ -156,7 +156,7 @@ class TestDataSeeder extends Seeder
             'إنشاء تسميع', 'عرض تسميع الطالب', 'عرض تسميعاتي',
             'إنشاء إنذار', 'عرض تفاصيل الإنذار', 'عرض إنذاراتي',
             'إنشاء امتحان', 'عرض تفاصيل الامتحان', 'امتحاناتي',
-            'إنشاء غياب', 'عرض تفاصيل الغياب',
+            ...config('roles.teacher_attendance_and_absence_permissions'),
             'إدخال تقييم المدرس', 'إدخال تقييم القرآن',
         ])->get();
         $teacherRole->syncPermissions($teacherPerms);
