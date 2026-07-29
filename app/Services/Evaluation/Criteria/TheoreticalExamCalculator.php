@@ -85,6 +85,7 @@ class TheoreticalExamCalculator
                     'maximum_score' => (float) ($result->subjectDetails?->max_marks ?? 0),
                     'weight' => 1,
                 ])->values()->all(),
+                'subject_count' => $results->count(),
                 'missing_subject_ids' => $missingSubjectIds->all(),
                 'normalized_percentage' => round($normalized, 4),
             ],

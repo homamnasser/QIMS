@@ -242,6 +242,8 @@ Route::middleware($webAuthenticatedMiddleware)
             ->middleware('permission:عرض دورات التقييم');
         Route::post('/', [EvaluationCycleController::class, 'store'])
             ->middleware('permission:إدارة دورات التقييم');
+        Route::get('/rule-template', [EvaluationCycleController::class, 'ruleTemplate'])
+            ->middleware('permission:إدارة دورات التقييم');
         Route::get('/{cycle}', [EvaluationCycleController::class, 'show'])
             ->middleware('permission:عرض دورات التقييم');
         Route::post('/{cycle}/sync-candidates', [EvaluationCycleController::class, 'syncCandidates'])
@@ -566,6 +568,8 @@ Route::middleware($mobileStaffMiddleware)
         Route::get('/evaluation-cycles', [EvaluationCycleController::class, 'index'])
             ->middleware('permission:عرض دورات التقييم');
         Route::post('/evaluation-cycles', [EvaluationCycleController::class, 'store'])
+            ->middleware('permission:إدارة دورات التقييم');
+        Route::get('/evaluation-cycles/rule-template', [EvaluationCycleController::class, 'ruleTemplate'])
             ->middleware('permission:إدارة دورات التقييم');
         Route::get('/evaluation-cycles/{cycle}', [EvaluationCycleController::class, 'show'])
             ->middleware('permission:عرض دورات التقييم');

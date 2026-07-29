@@ -7,6 +7,7 @@ use App\Models\Project;
 use App\Services\Evaluation\EvaluationAccessService;
 use App\Services\Evaluation\EvaluationCandidateSyncService;
 use App\Services\Evaluation\EvaluationCycleService;
+use App\Services\Evaluation\EvaluationRuleDefinitionService;
 use App\Services\Evaluation\EvaluationRunService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -18,6 +19,7 @@ class EvaluationCycleController extends Controller
         private readonly EvaluationCycleService $cycles,
         private readonly EvaluationCandidateSyncService $candidates,
         private readonly EvaluationRunService $runs,
+        private readonly EvaluationRuleDefinitionService $ruleDefinitions,
     ) {}
 
     public function index(Request $request): JsonResponse
@@ -49,6 +51,7 @@ class EvaluationCycleController extends Controller
             'periods.*.sequence' => ['required', 'integer', 'min:1', 'distinct'],
             'periods.*.start_date' => ['required', 'date'],
             'periods.*.end_date' => ['required', 'date'],
+            'rule_configuration' => ['nullable', 'array'],
         ]);
 
         $project = Project::findOrFail($data['project_id']);
@@ -60,6 +63,13 @@ class EvaluationCycleController extends Controller
         ], 201);
     }
 
+    public function ruleTemplate(Request $request): JsonResponse
+    {
+        return response()->json([
+            'data' => $this->ruleDefinitions->template(),
+        ]);
+    }
+
     public function show(Request $request, EvaluationCycle $cycle): JsonResponse
     {
         abort_unless($this->access->canViewCycle($request->user(), $cycle), 403);
@@ -67,11 +77,12 @@ class EvaluationCycleController extends Controller
         return response()->json([
             'data' => $cycle->load([
                 'project:id,name',
-                'policy:id,name,version,status',
+                'policy:id,name,version,status,configuration',
                 'periods',
                 'courses:id,name,project_id,mosque_id,supervisor_id',
                 'candidates.student:id,first_name,last_name,selfnumber,academic_class,reading_level',
                 'candidates.enrollments',
+                'latestFinalRun',
                 'runs' => fn ($query) => $query->latest('sequence')->limit(5),
             ])->loadCount('candidates'),
         ]);

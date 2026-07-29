@@ -35,6 +35,8 @@ class AdministrationEvaluationCalculator
             'inputs' => [
                 'initial_score' => $settings['maximum_score'],
                 'total_deductions' => round($deductions, 2),
+                'warning_count' => $warnings->count(),
+                'observation_count' => $observations->count(),
                 'source_warnings' => $warnings->map(fn ($warning) => [
                     'id' => $warning->id,
                     'title' => $warning->title,

@@ -36,7 +36,14 @@ class EvaluationCycleService
         }
 
         return DB::transaction(function () use ($data, $actor, $periods, $cycleStart, $cycleEnd) {
-            $policy = $this->policies->defaultPolicy($actor);
+            $policy = isset($data['rule_configuration'])
+                ? $this->policies->createForCycle(
+                    $data['rule_configuration'],
+                    $data['name'],
+                    (int) $data['project_id'],
+                    $actor
+                )
+                : $this->policies->defaultPolicy($actor);
             $cycle = EvaluationCycle::create([
                 'project_id' => $data['project_id'],
                 'policy_id' => $policy->id,

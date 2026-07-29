@@ -57,6 +57,8 @@ class SabrBonusCalculator
             });
 
         $score = (float) $achievements->sum('bonus_points');
+        $internalSuccessCount = $achievements->where('source_type', 'internal')->count();
+        $awqafSuccessCount = $achievements->where('source_type', 'awqaf')->count();
 
         return [
             'key' => 'sabr_bonus',
@@ -66,6 +68,9 @@ class SabrBonusCalculator
             'maximum_score' => 0,
             'inputs' => [
                 'achievements' => $achievements->values()->all(),
+                'achievement_count' => $achievements->count(),
+                'internal_success_count' => $internalSuccessCount,
+                'awqaf_success_count' => $awqafSuccessCount,
             ],
             'rule_trace' => [
                 'source' => 'sabrs',

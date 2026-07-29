@@ -35,9 +35,12 @@ use App\Services\Evaluation\Criteria\ReadingCalculator;
 use App\Services\Evaluation\Criteria\SabrBonusCalculator;
 use App\Services\Evaluation\Criteria\TeacherEvaluationCalculator;
 use App\Services\Evaluation\Criteria\TheoreticalExamCalculator;
+use App\Services\Evaluation\EvaluationCalculator;
 use App\Services\Evaluation\EvaluationCandidateSyncService;
 use App\Services\Evaluation\EvaluationCycleService;
 use App\Services\Evaluation\EvaluationInputService;
+use App\Services\Evaluation\EvaluationRuleDefinitionService;
+use App\Services\Evaluation\EvaluationRuleEngine;
 use App\Services\Evaluation\EvaluationRunService;
 use App\Services\Evaluation\ExcellenceEvaluator;
 use App\Services\Evaluation\RecognitionService;
@@ -51,6 +54,124 @@ use Tests\TestCase;
 class FinalEvaluationSystemTest extends TestCase
 {
     use RefreshDatabase;
+
+    public function test_dynamic_rule_template_reproduces_attendance_and_quran_formulas(): void
+    {
+        $definitions = app(EvaluationRuleDefinitionService::class);
+        $engine = app(EvaluationRuleEngine::class);
+        $rules = collect($definitions->normalize($definitions->template())['criteria']);
+
+        $attendance = $engine->apply([
+            'key' => 'attendance',
+            'name' => 'الحضور',
+            'is_applicable' => true,
+            'score' => 95,
+            'maximum_score' => 130,
+            'inputs' => ['attendance_percentage' => 95],
+            'rule_trace' => [],
+        ], $rules->get('attendance'));
+        $this->assertSame(110.0, $attendance['score']);
+        $this->assertSame('النتيجة الافتراضية', $attendance['rule_trace']['dynamic_rule']['matched_rule_label']);
+
+        $quranBelowTarget = $engine->apply([
+            'key' => 'quran',
+            'name' => 'القرآن',
+            'is_applicable' => true,
+            'score' => 0,
+            'maximum_score' => 100,
+            'inputs' => [
+                'pages_completed' => 10,
+                'target_pages' => 20,
+                'revision_pages' => 0,
+                'below_minimum' => false,
+            ],
+            'rule_trace' => [],
+        ], $rules->get('quran'));
+        $this->assertSame(0.0, $quranBelowTarget['score']);
+        $this->assertSame(
+            'quran-target-not-reached',
+            $quranBelowTarget['rule_trace']['dynamic_rule']['matched_rule_id']
+        );
+
+        $quranAboveTarget = $engine->apply([
+            'key' => 'quran',
+            'name' => 'القرآن',
+            'is_applicable' => true,
+            'score' => 0,
+            'maximum_score' => 100,
+            'inputs' => [
+                'pages_completed' => 22,
+                'target_pages' => 20,
+                'revision_pages' => 0,
+                'below_minimum' => false,
+            ],
+            'rule_trace' => [],
+        ], $rules->get('quran'));
+        $this->assertSame(72.0, $quranAboveTarget['score']);
+    }
+
+    public function test_new_cycle_can_freeze_a_custom_rule_policy(): void
+    {
+        $context = $this->context();
+        $configuration = app(EvaluationRuleDefinitionService::class)->template();
+        $configuration['criteria'][0]['rules'] = [];
+        $configuration['criteria'][0]['maximum_score'] = 200;
+        $configuration['criteria'][0]['default_score'] = [
+            'type' => 'fixed',
+            'value' => 42,
+        ];
+
+        $cycle = app(EvaluationCycleService::class)->create([
+            'project_id' => $context['project']->id,
+            'name' => 'دورة بقواعد مخصصة',
+            'season' => 'winter',
+            'course_ids' => [$context['course']->id],
+            'periods' => [[
+                'name' => 'فترة القواعد',
+                'sequence' => 1,
+                'start_date' => '2026-02-01',
+                'end_date' => '2026-02-28',
+            ]],
+            'rule_configuration' => $configuration,
+        ], $context['supervisor']);
+
+        $this->assertNotSame($context['policy']->id, $cycle->policy_id);
+        $this->assertSame(2, $cycle->policy->configuration['schema_version']);
+        $this->assertEquals(
+            200.0,
+            $cycle->policy->configuration['criteria_rules']['criteria']['attendance']['maximum_score']
+        );
+        $this->assertEquals(
+            42.0,
+            $cycle->policy->configuration['criteria_rules']['criteria']['attendance']['default_score']['value']
+        );
+    }
+
+    public function test_custom_cycle_rule_is_applied_by_the_full_evaluation_calculator(): void
+    {
+        $context = $this->context();
+        $definitions = app(EvaluationRuleDefinitionService::class);
+        $rules = $definitions->normalize($definitions->template());
+        $rules['criteria']['attendance']['rules'] = [];
+        $rules['criteria']['attendance']['default_score'] = [
+            'type' => 'fixed',
+            'value' => 42.0,
+        ];
+        $policy = config('evaluation.default_policy');
+        $policy['criteria_rules'] = $rules;
+
+        $calculation = app(EvaluationCalculator::class)->calculate(
+            $context['candidate']->fresh(),
+            $policy
+        );
+        $attendance = collect($calculation['criteria'])->keyBy('key')->get('attendance');
+
+        $this->assertSame(42.0, $attendance['score']);
+        $this->assertSame(
+            'النتيجة الافتراضية',
+            $attendance['rule_trace']['dynamic_rule']['matched_rule_label']
+        );
+    }
 
     public function test_cycle_range_is_derived_from_its_evaluation_periods(): void
     {
@@ -698,6 +819,7 @@ class FinalEvaluationSystemTest extends TestCase
         $this->assertCount(7, $result->criteria);
         $this->assertSame('calculated', $context['cycle']->fresh()->status);
         $this->assertNotNull($context['cycle']->fresh()->data_cutoff_at);
+        $this->assertSame($run->id, $context['cycle']->fresh()->latestFinalRun->id);
         $this->assertSame(
             config('evaluation.default_policy.schema_version'),
             $run->policy_snapshot['schema_version']

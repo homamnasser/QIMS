@@ -22,6 +22,7 @@ class EvaluationCalculator
         private readonly AdministrationEvaluationCalculator $administration,
         private readonly SabrBonusCalculator $sabr,
         private readonly ExcellenceEvaluator $excellence,
+        private readonly EvaluationRuleEngine $ruleEngine,
     ) {}
 
     public function calculate(EvaluationCandidate $candidate, array $policy): array
@@ -37,6 +38,14 @@ class EvaluationCalculator
             $this->administration->calculate($candidate, $policy),
         ];
         $bonus = $this->sabr->calculate($candidate, $policy);
+        $dynamicRules = collect($policy['criteria_rules']['criteria'] ?? []);
+        $criteria = collect($criteria)
+            ->map(fn (array $criterion) => $this->ruleEngine->apply(
+                $criterion,
+                $dynamicRules->get($criterion['key'])
+            ))
+            ->all();
+        $bonus = $this->ruleEngine->apply($bonus, $dynamicRules->get($bonus['key']));
         $excellence = $this->excellence->evaluate($criteria, $policy);
 
         $baseScore = collect($criteria)

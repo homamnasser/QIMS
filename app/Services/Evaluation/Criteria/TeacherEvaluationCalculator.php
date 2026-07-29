@@ -49,7 +49,9 @@ class TeacherEvaluationCalculator
                     'teacher_opinion_score' => (float) $evaluation->teacher_opinion_score,
                     'total_score' => (float) $evaluation->total_score,
                 ])->values()->all(),
+                'average_total_score' => round($score, 4),
                 'required_count' => count($requiredKeys),
+                'completed_count' => $evaluations->count(),
                 'missing_keys' => $missingKeys,
             ],
             'rule_trace' => [

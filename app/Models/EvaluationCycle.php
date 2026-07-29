@@ -45,4 +45,13 @@ class EvaluationCycle extends Model
     {
         return $this->hasMany(EvaluationRun::class);
     }
+
+    public function latestFinalRun()
+    {
+        return $this->hasOne(EvaluationRun::class)
+            ->ofMany(
+                ['sequence' => 'max'],
+                fn ($query) => $query->where('is_preview', false)
+            );
+    }
 }
