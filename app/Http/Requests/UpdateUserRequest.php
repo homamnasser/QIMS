@@ -42,7 +42,13 @@ class UpdateUserRequest extends FormRequest
         return [
             'first_name' => 'sometimes|required|string|max:55',
             'last_name' => 'sometimes|required|string|max:55',
-            'phone' => ['sometimes', 'unique:users,phone,'.$this->route('id')],
+            'phone' => [
+                'sometimes',
+                'required',
+                'string',
+                'regex:/^09[0-9]{8}$/',
+                'unique:users,phone,'.$this->route('id'),
+            ],
             'password' => 'sometimes|required|string|min:8|confirmed',
             'email' => 'sometimes|required|email|unique:users,email,'.$this->route('id'),
             'birth_date' => 'sometimes|required|date',
@@ -71,15 +77,16 @@ class UpdateUserRequest extends FormRequest
                     ])
                 ),
             ],
-            'image' => 'sometimes|nullable|file|image|mimes:jpg,jpeg,png|max:5120',
+            'image' => 'sometimes|nullable|file|image|mimes:jpg,jpeg,png,webp|max:8192',
         ];
     }
 
     public function messages(): array
     {
         return [
+            'phone.required' => 'رقم هاتف الموظف مطلوب.',
+            'phone.regex' => 'رقم هاتف الموظف يجب أن يبدأ بـ 09 ويتكون من 10 أرقام.',
             'phone.unique' => 'رقم الهاتف مستخدم مسبقاً.',
-            'phone.phone' => 'يرجى إدخال رقم هاتف صالح.',
             'email.email' => 'يرجى إدخال بريد إلكتروني صالح.',
             'password.min' => 'كلمة المرور يجب أن تكون 8 أحرف على الأقل.',
             'password.confirmed' => 'تأكيد كلمة المرور غير متطابق.',
@@ -89,6 +96,9 @@ class UpdateUserRequest extends FormRequest
             'mosque_id.required' => 'يجب اختيار مسجد واحد للموظف.',
             'mosque_id.prohibited' => 'لا يمكن ربط الموظف على مستوى المعهد بمسجد محدد.',
             'mosque_id.exists' => 'المسجد المحدد غير موجود.',
+            'image.image' => 'يجب أن يكون الملف صورة صالحة.',
+            'image.mimes' => 'يجب أن تكون الصورة بصيغة JPG أو PNG أو WebP.',
+            'image.max' => 'حجم الصورة يجب ألا يتجاوز 8 ميغابايت.',
 
         ];
     }
