@@ -9,6 +9,7 @@ use App\Models\Student;
 use App\Services\Evaluation\CertificateService;
 use App\Services\Evaluation\EvaluationAccessService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -116,28 +117,42 @@ class CertificateController extends Controller
         ]);
     }
 
-    public function verify(string $token): JsonResponse
+    /**
+     * هذا الرابط مطبوع داخل رمز QR على كل شهادة صادرة، فيخدم حالتين:
+     * صفحة نتيجة مقروءة للمتصفح الذي يمسح الرمز، واستجابة JSON لعملاء الـ API.
+     */
+    public function verify(Request $request, string $token): JsonResponse|Response
     {
-        $invalidTokenMessage = 'رمز التحقق غير صالح أو لا يقابل شهادة سارية.';
-        abort_unless(preg_match('/^[a-f0-9]{64}$/', $token) === 1, 404, $invalidTokenMessage);
-        $certificate = $this->certificates->verify($token);
-        abort_unless($certificate, 404, $invalidTokenMessage);
-        $snapshot = $certificate->data_snapshot;
+        // المتصفحات وحدها ترسل text/html صراحةً؛ عملاء الـ API يرسلون
+        // application/json أو */* فتبقى استجابتهم JSON كما هي.
+        $wantsPage = str_contains((string) $request->header('Accept'), 'text/html');
 
-        return response()->json([
-            'valid' => true,
-            'data' => [
-                'serial_number' => $certificate->serial_number,
-                'status' => $certificate->status,
-                'student_name' => $snapshot['student']['name'],
-                'project_name' => $snapshot['project']['name'],
-                'cycle_name' => $snapshot['cycle']['name'],
-                'final_score' => $snapshot['result']['final_score'],
-                'is_excellent' => $snapshot['result']['is_excellent'],
-                'rank' => $snapshot['result']['rank'],
-                'issued_at' => $certificate->issued_at,
-                'file_sha256' => $certificate->file_sha256,
-            ],
-        ]);
+        $certificate = preg_match('/^[a-f0-9]{64}$/', $token) === 1
+            ? $this->certificates->verify($token)
+            : null;
+
+        if (! $certificate) {
+            abort_unless($wantsPage, 404, 'رمز التحقق غير صالح أو لا يقابل شهادة سارية.');
+
+            return response()->view('certificates.verify', ['valid' => false, 'certificate' => null], 404);
+        }
+
+        $snapshot = $certificate->data_snapshot;
+        $data = [
+            'serial_number' => $certificate->serial_number,
+            'status' => $certificate->status,
+            'student_name' => $snapshot['student']['name'],
+            'project_name' => $snapshot['project']['name'],
+            'cycle_name' => $snapshot['cycle']['name'],
+            'final_score' => $snapshot['result']['final_score'],
+            'is_excellent' => $snapshot['result']['is_excellent'],
+            'rank' => $snapshot['result']['rank'],
+            'issued_at' => $certificate->issued_at,
+            'file_sha256' => $certificate->file_sha256,
+        ];
+
+        return $wantsPage
+            ? response()->view('certificates.verify', ['valid' => true, 'certificate' => $data])
+            : response()->json(['valid' => true, 'data' => $data]);
     }
 }

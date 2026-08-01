@@ -252,7 +252,7 @@ class CertificateService
             errorCorrectionLevel: ErrorCorrectionLevel::Medium,
             size: 220,
             margin: 8,
-            foregroundColor: new Color(24, 73, 66),
+            foregroundColor: new Color(42, 49, 93), // كحلي الهوية #2a315d
         ))->build()->getString();
     }
 
