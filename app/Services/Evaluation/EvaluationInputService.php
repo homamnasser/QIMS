@@ -238,8 +238,12 @@ class EvaluationInputService
     private function assertRange(float|int|string $value, float $minimum, float $maximum, string $field): void
     {
         if ((float) $value < $minimum || (float) $value > $maximum) {
+            // يُذكر اسم الحقل داخل الرسالة لأن الواجهة تعرضها في تنبيه واحد
+            // لا يوضح بذاته أي درجة تجاوزت الحد المسموح.
+            $key = "validation.attributes.{$field}";
+            $label = __($key) === $key ? $field : __($key);
             throw ValidationException::withMessages([
-                $field => ["يجب أن تكون القيمة بين {$minimum} و{$maximum}."],
+                $field => ["{$label}: يجب أن تكون القيمة بين {$minimum} و{$maximum}."],
             ]);
         }
     }

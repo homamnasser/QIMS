@@ -36,13 +36,23 @@ class CertificateController extends Controller
         $run->loadMissing(['cycle', 'results']);
         abort_unless($this->access->canApproveCycle($request->user(), $run->cycle), 403);
 
+        $publishedResults = $run->results->where('status', 'published');
+        if ($publishedResults->isEmpty()) {
+            return response()->json([
+                'code' => 422,
+                'error_code' => 'NO_PUBLISHED_RESULTS',
+                'message' => 'لا توجد نتائج منشورة في هذا التشغيل؛ يجب اعتماد النتائج ونشرها قبل إصدار الشهادات.',
+                'data' => null,
+            ], 422);
+        }
+
         $issued = [];
-        foreach ($run->results->where('status', 'published') as $result) {
+        foreach ($publishedResults as $result) {
             $issued[] = $this->certificates->issue($result, $request->user());
         }
 
         return response()->json([
-            'message' => 'تم إصدار شهادات النتائج المنشورة.',
+            'message' => 'تم إصدار شهادات النتائج المنشورة ('.count($issued).' شهادة).',
             'data' => ['count' => count($issued), 'certificates' => $issued],
         ]);
     }
@@ -54,7 +64,11 @@ class CertificateController extends Controller
             $this->access->canViewCycle($request->user(), $certificate->result->run->cycle),
             403
         );
-        abort_unless($certificate->status === 'issued', 410);
+        abort_unless(
+            $certificate->status === 'issued',
+            410,
+            'هذه الشهادة لم تعد سارية؛ تم إلغاؤها أو استُبدلت بإصدار أحدث.'
+        );
         $this->certificates->assertFileIntegrity($certificate);
 
         return Storage::disk($certificate->file_disk)->download(
@@ -104,9 +118,10 @@ class CertificateController extends Controller
 
     public function verify(string $token): JsonResponse
     {
-        abort_unless(preg_match('/^[a-f0-9]{64}$/', $token) === 1, 404);
+        $invalidTokenMessage = 'رمز التحقق غير صالح أو لا يقابل شهادة سارية.';
+        abort_unless(preg_match('/^[a-f0-9]{64}$/', $token) === 1, 404, $invalidTokenMessage);
         $certificate = $this->certificates->verify($token);
-        abort_unless($certificate, 404);
+        abort_unless($certificate, 404, $invalidTokenMessage);
         $snapshot = $certificate->data_snapshot;
 
         return response()->json([

@@ -11,6 +11,17 @@ use Illuminate\Validation\ValidationException;
 
 class EvaluationCycleService
 {
+    /** أسماء حالات الدورة كما تظهر للمستخدم، حتى لا تصل الرموز البرمجية للواجهة. */
+    private const STATUS_LABELS = [
+        'draft' => 'إعداد',
+        'data_collection' => 'جمع البيانات',
+        'ready' => 'جاهزة',
+        'calculated' => 'محسوبة',
+        'approved' => 'معتمدة',
+        'published' => 'منشورة',
+        'archived' => 'مؤرشفة',
+    ];
+
     public function __construct(
         private readonly EvaluationPolicyService $policies,
         private readonly EvaluationAuditService $audit,
@@ -82,8 +93,10 @@ class EvaluationCycleService
         ];
 
         if (! in_array($target, $allowed[$cycle->status] ?? [], true)) {
+            $from = self::STATUS_LABELS[$cycle->status] ?? $cycle->status;
+            $to = self::STATUS_LABELS[$target] ?? $target;
             throw ValidationException::withMessages([
-                'status' => ["الانتقال من {$cycle->status} إلى {$target} غير مسموح."],
+                'status' => ["لا يمكن نقل الدورة من حالة «{$from}» إلى حالة «{$to}»."],
             ]);
         }
         if ($target === 'data_collection' && $cycle->end_date->endOfDay()->isFuture()) {
@@ -110,14 +123,15 @@ class EvaluationCycleService
             $start = CarbonImmutable::parse($period['start_date'])->startOfDay();
             $end = CarbonImmutable::parse($period['end_date'])->startOfDay();
 
+            $number = $index + 1;
             if ($end->lessThan($start)) {
                 throw ValidationException::withMessages([
-                    "periods.{$index}" => ['يجب أن تكون نهاية الفترة مساوية لبدايتها أو لاحقة لها.'],
+                    "periods.{$index}" => ["الفترة رقم {$number}: يجب أن تكون نهاية الفترة مساوية لبدايتها أو لاحقة لها."],
                 ]);
             }
             if ($previousEnd && $start->lessThanOrEqualTo($previousEnd)) {
                 throw ValidationException::withMessages([
-                    "periods.{$index}" => ['فترات التقييم يجب ألا تتداخل.'],
+                    "periods.{$index}" => ["الفترة رقم {$number}: فترات التقييم يجب ألا تتداخل."],
                 ]);
             }
             $previousEnd = $end;

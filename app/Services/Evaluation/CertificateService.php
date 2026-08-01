@@ -143,7 +143,15 @@ class CertificateService
         $disk = Storage::disk($certificate->file_disk);
         if (! $disk->exists($certificate->file_path)
             || hash('sha256', $disk->get($certificate->file_path)) !== $certificate->file_sha256) {
-            throw new RuntimeException('ملف الشهادة مفقود أو لا يطابق البصمة المحفوظة.');
+            logger()->error('فشل التحقق من سلامة ملف الشهادة.', [
+                'error_code' => 'CERTIFICATE_FILE_CORRUPT',
+                'certificate_id' => $certificate->id,
+                'serial_number' => $certificate->serial_number,
+                'file_disk' => $certificate->file_disk,
+                'file_path' => $certificate->file_path,
+            ]);
+
+            abort(409, 'ملف الشهادة مفقود أو لا يطابق بصمته المحفوظة؛ يجب إلغاء الشهادة وإعادة إصدارها.');
         }
     }
 
@@ -252,7 +260,12 @@ class CertificateService
     {
         $chrome = config('evaluation.certificate.chrome_binary');
         if (! is_file($chrome) || ! is_executable($chrome)) {
-            throw new RuntimeException('تعذر العثور على محرك Chrome المخصص لتوليد الشهادات.');
+            logger()->error('محرك توليد الشهادات غير متاح.', [
+                'error_code' => 'CERTIFICATE_ENGINE_UNAVAILABLE',
+                'configured_path' => $chrome,
+            ]);
+
+            abort(503, 'خدمة توليد الشهادات غير متاحة حاليًا؛ يرجى إبلاغ الفريق التقني ثم إعادة المحاولة.');
         }
 
         $tempDirectory = storage_path('app/private/certificate-temp');
@@ -281,9 +294,14 @@ class CertificateService
             $process->run();
 
             if (! $process->isSuccessful() || ! is_file($pdfPath)) {
-                throw new RuntimeException(
-                    'فشل توليد ملف الشهادة: '.trim($process->getErrorOutput())
-                );
+                // مخرجات Chrome فنية وطويلة؛ تُحفظ في السجل ولا تُرسل للواجهة.
+                logger()->error('فشل توليد ملف الشهادة عبر Chrome.', [
+                    'error_code' => 'CERTIFICATE_RENDER_FAILED',
+                    'exit_code' => $process->getExitCode(),
+                    'stderr' => trim($process->getErrorOutput()),
+                ]);
+
+                abort(500, 'تعذر توليد ملف الشهادة. تم تسجيل التفاصيل الفنية للفريق التقني.');
             }
 
             return File::get($pdfPath);

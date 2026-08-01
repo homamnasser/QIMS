@@ -26,7 +26,10 @@ class EvaluationRunController extends Controller
         ]);
         if (! $data['preview'] && $cycle->status !== 'ready') {
             return response()->json([
-                'message' => 'يجب إغلاق جمع البيانات ووضع الدورة في حالة جاهزة قبل الحساب النهائي.',
+                'code' => 422,
+                'error_code' => 'CYCLE_NOT_READY',
+                'message' => 'يجب إغلاق جمع البيانات ووضع الدورة في حالة «جاهزة» قبل الاحتساب النهائي.',
+                'data' => ['cycle_status' => $cycle->status],
             ], 422);
         }
 

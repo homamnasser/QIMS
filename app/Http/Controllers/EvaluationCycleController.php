@@ -115,9 +115,17 @@ class EvaluationCycleController extends Controller
         if ($data['status'] === 'ready') {
             $readiness = $this->runs->readiness($cycle);
             if (! $readiness['is_ready']) {
+                // تفاصيل الجاهزية تُعاد في data لا في errors، لأن errors مخصص
+                // لأخطاء الحقول التي تعرضها الواجهة أسفل المدخلات.
                 return response()->json([
-                    'message' => 'لا يمكن إغلاق جمع البيانات قبل اكتمال المدخلات.',
-                    'errors' => ['readiness' => $readiness],
+                    'code' => 422,
+                    'error_code' => 'CYCLE_NOT_READY',
+                    'message' => sprintf(
+                        'لا يمكن إغلاق جمع البيانات قبل اكتمال المدخلات: %d من %d طالب جاهز.',
+                        $readiness['ready_candidate_count'],
+                        $readiness['candidate_count'],
+                    ),
+                    'data' => ['readiness' => $readiness],
                 ], 422);
             }
         }
