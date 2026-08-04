@@ -35,6 +35,15 @@ class Warning extends Model
             })
             ->when($filters['title'] ?? null, function ($q, $title) {
                 $q->where('title', 'like', '%'.$title.'%');
+            })
+            // قراءة جماعية لحلقة كاملة في طلب واحد بدل طلب لكل طالب.
+            ->when($filters['student_ids'] ?? null, function ($q, $studentIds) {
+                $q->whereIn('student', (array) $studentIds);
+            })
+            ->when($filters['circle_id'] ?? null, function ($q, $circleId) {
+                $q->whereIn('student', StudentCircle::query()
+                    ->where('circle', $circleId)
+                    ->select('student'));
             });
     }
 

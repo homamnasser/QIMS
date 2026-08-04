@@ -160,7 +160,7 @@ class MemorizationController extends Controller
 
     public function getAllMemorizations(Request $request): JsonResponse
     {
-        $filters = $request->only(['student_id', 'giver_id']);
+        $filters = $request->only(['student_id', 'giver_id', 'student_ids', 'circle_id']);
         $memorizations = $this->memorizationService->getAllMemorizations($filters);
 
         if ($memorizations->isEmpty()) {

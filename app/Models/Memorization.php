@@ -66,6 +66,20 @@ class Memorization extends Model
         })
             ->when($filters['giver_id'] ?? null, function ($q, $giverId) {
                 $q->where('giver', $giverId);
+            })
+            // قراءة جماعية لحلقة كاملة في طلب واحد بدل طلب لكل طالب.
+            ->when($filters['student_ids'] ?? null, function ($q, $studentIds) {
+                $q->whereIn('student', (array) $studentIds);
+            })
+            // circle_id عمود مباشر هنا، لكن السجلات القديمة قد تكون بلا ربط صريح،
+            // فنقبل الطلاب المنتسبين للحلقة أيضاً حتى لا تختفي سجلاتهم من الشبكة.
+            ->when($filters['circle_id'] ?? null, function ($q, $circleId) {
+                $q->where(function ($scoped) use ($circleId) {
+                    $scoped->where('circle_id', $circleId)
+                        ->orWhereIn('student', StudentCircle::query()
+                            ->where('circle', $circleId)
+                            ->select('student'));
+                });
             });
     }
 }

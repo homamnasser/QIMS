@@ -105,7 +105,10 @@ class StudentController extends Controller
             'academic_class',
             'reading_level',
             'parent_social_state',
-            'limit'
+            'q',
+            'circle_id',
+            'has_circle',
+            'limit',
         ]);
 
         $students = $this->studentService->getAllStudents($filters);

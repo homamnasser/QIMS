@@ -101,7 +101,7 @@ class ExamController extends Controller
 
     public function getAllExams(Request $request): JsonResponse
     {
-        $filters = $request->only(['student_id', 'subject_id', 'course_id']);
+        $filters = $request->only(['student_id', 'subject_id', 'course_id', 'student_ids', 'circle_id']);
 
         $exams = $this->examService->getAllExamMarks($filters);
 
@@ -114,7 +114,7 @@ class ExamController extends Controller
 
     public function myExams(Request $request): JsonResponse
     {
-        $filters = $request->only(['student_id', 'subject_id', 'course_id']);
+        $filters = $request->only(['student_id', 'subject_id', 'course_id', 'student_ids', 'circle_id']);
         $exams = $this->examService->getExamMarksForTeacher(
             (int) $request->user()->id,
             $filters

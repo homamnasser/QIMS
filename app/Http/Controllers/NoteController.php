@@ -72,6 +72,21 @@ class NoteController extends Controller
     }
 
     /**
+     * جلب ملاحظات مجموعة طلاب (حلقة كاملة) في طلب واحد.
+     */
+    public function getAllNotes(Request $request): JsonResponse
+    {
+        $filters = $request->only(['student_id', 'student_ids', 'circle_id']);
+
+        return response()->json([
+            'code'    => 200,
+            'status'  => 'success',
+            'message' => 'تم جلب الملاحظات بنجاح.',
+            'data'    => NoteResource::collection($this->noteService->getAllNotes($filters))
+        ], 200);
+    }
+
+    /**
      * 3. حذف ملاحظة
      * تمرير الـ userId المأخوذ من الـ Auth للسيرفس لمنع أي أستاذ من حذف ملاحظة غيره
      */

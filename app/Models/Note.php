@@ -32,6 +32,15 @@ class Note extends Model
     {
         $query->when($filters['student_id'] ?? null, function ($q, $studentId) {
             $q->where('student_id', $studentId);
-        });
+        })
+            // قراءة جماعية لحلقة كاملة في طلب واحد بدل طلب لكل طالب.
+            ->when($filters['student_ids'] ?? null, function ($q, $studentIds) {
+                $q->whereIn('student_id', (array) $studentIds);
+            })
+            ->when($filters['circle_id'] ?? null, function ($q, $circleId) {
+                $q->whereIn('student_id', StudentCircle::query()
+                    ->where('circle', $circleId)
+                    ->select('student'));
+            });
     }
 }

@@ -87,7 +87,7 @@ class SabrController extends Controller
 
     public function getAllSabrs(Request $request): JsonResponse
     {
-        $filters = $request->only(['course', 'giver', 'student']);
+        $filters = $request->only(['course', 'giver', 'student', 'student_ids', 'circle_id', 'has_result']);
 
         $sabrs = $this->sabrService->getAllSabrs($filters);
 

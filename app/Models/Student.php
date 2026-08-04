@@ -59,6 +59,28 @@ class Student extends Authenticatable
             })
             ->when($filters['parent_social_state'] ?? null, function ($q, $parentSocialState) {
                 $q->where('parent_social_state', $parentSocialState);
+            })
+            // بحث موحّد على الاسم والرقم الذاتي: حقل واحد في مساحة عمل الحلقة
+            // بدل ثلاثة حقول منفصلة.
+            ->when($filters['q'] ?? null, function ($q, $term) {
+                $q->where(function ($search) use ($term) {
+                    $search->where('first_name', 'like', '%'.$term.'%')
+                        ->orWhere('last_name', 'like', '%'.$term.'%')
+                        ->orWhere('selfnumber', 'like', '%'.$term.'%')
+                        ->orWhere('username', 'like', '%'.$term.'%');
+                });
+            })
+            ->when($filters['circle_id'] ?? null, function ($q, $circleId) {
+                $q->whereHas('studentCircles', function ($enrollment) use ($circleId) {
+                    $enrollment->where('circle', $circleId);
+                });
+            })
+            // طلاب بلا حلقة طابور عمل حقيقي: لا رقم ذاتي لهم ولا يظهرون في أي سياق حلقة.
+            // نستخدم isset لا ?? لأن '0' قيمة مقصودة.
+            ->when(isset($filters['has_circle']), function ($q) use ($filters) {
+                filter_var($filters['has_circle'], FILTER_VALIDATE_BOOLEAN)
+                    ? $q->has('studentCircles')
+                    : $q->doesntHave('studentCircles');
             });
     }
 

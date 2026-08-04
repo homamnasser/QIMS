@@ -85,11 +85,15 @@ class EvaluationSourceService
     {
         [$start, $end] = $this->sourceWindow($candidate);
 
+        // النافذة على created_at لا updated_at: تصحيح علامة بعد data_cutoff_at كان
+        // يدفع updated_at خارج النافذة فتختفي العلامة من الحساب صامتاً وتنخفض درجة
+        // الطالب. وبالمقابل كانت علامة أقدم من الدورة تدخلها بمجرد تعديلها.
+        // بقية مصادر التقييم (الإنذارات، القراءة، الملاحظات) تستخدم created_at أصلاً.
         return Exam::query()
             ->with('subjectDetails:id,name,min_marks,max_marks,course_id,shared_with_subject_id')
             ->where('student', $candidate->student_id)
             ->whereIn('course', $candidate->enrollments->pluck('course_id')->unique())
-            ->whereBetween('updated_at', [$start, $end])
+            ->whereBetween('created_at', [$start, $end])
             ->orderBy('subject')
             ->get();
     }

@@ -32,6 +32,8 @@ class CircleResource extends JsonResource
                 'id' => $this->course?->mosque?->id ?? null,
                 'name' => $this->course?->mosque?->name ?? 'غير معين',
             ],
+            // يظهر فقط عند withCount('students')، فلا يكلّف استعلاماً في المسارات القديمة.
+            'students_count' => $this->whenCounted('students'),
             'created_at' => $this->created_at->format('Y-m-d'),
         ];
     }

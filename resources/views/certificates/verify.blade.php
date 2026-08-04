@@ -155,6 +155,23 @@
             text-align: center;
         }
         .hint strong { color: var(--navy); font-weight: 700; }
+
+        /* تنبيه المطابقة: يُجبر المدقّق على مقارنة الاسم والرقم مع الورقة التي بين يديه،
+           لأن سريان الرمز وحده لا يمنع نسخه ولصقه على شهادة مزوّرة. */
+        .compare {
+            margin: 14px 20px 4px;
+            padding: 12px 14px;
+            border: 1px solid var(--sand);
+            border-radius: 12px;
+            background: rgba(222, 189, 135, .16);
+            color: var(--sand-ink);
+            font-size: .84rem;
+            font-weight: 700;
+            line-height: 1.7;
+            text-align: center;
+        }
+        .compare::before { content: "⚠ "; }
+        .compare span { display: block; margin-top: 4px; font-weight: 400; color: var(--ink); }
     </style>
 </head>
 <body>
@@ -170,8 +187,13 @@
         <div class="card">
             <div class="status is-ok">
                 <div class="mark" aria-hidden="true">✓</div>
-                <h2>شهادة سارية</h2>
-                <p>هذه الشهادة صادرة عن {{ $issuer }} ولا تزال سارية.</p>
+                <h2>الرمز يقابل شهادة سارية</h2>
+                <p>يعني هذا أن الرمز صحيح فقط؛ تأكّد أدناه أن بياناته تطابق الورقة التي بين يديك.</p>
+            </div>
+
+            <div class="compare">
+                طابِق الاسم ورقم الشهادة أدناه مع المطبوع على الشهادة التي بين يديك.
+                <span>إن اختلف أيٌّ منهما فالشهادة الورقية مزوّرة وإن كان الرمز صحيحًا.</span>
             </div>
 
             <div class="rule"><i></i><b></b><i></i></div>
@@ -225,8 +247,9 @@
         </div>
 
         <p class="hint">
-            قُرئت هذه البيانات مباشرة من سجلات <strong>{{ $issuer }}</strong> لحظة فتح الرابط.
-            طابق رقم الشهادة والبصمة الرقمية مع الملف الذي بين يديك للتأكد من عدم تعديله.
+            قُرئت هذه البيانات مباشرة من سجلات <strong>{{ $issuer }}</strong> لحظة فتح الرابط،
+            فهي المرجع لا ما هو مطبوع على الورقة. إن لم يتطابقا فاعتمد ما يظهر هنا وراجع
+            <strong>{{ $issuer }}</strong>.
         </p>
     @else
         <div class="card">

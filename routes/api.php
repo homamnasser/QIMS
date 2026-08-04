@@ -77,7 +77,10 @@ Route::prefix('public/surveys')->group(function (): void {
     Route::post('/{publicToken}/responses', [PublicSurveyController::class, 'submit']);
 });
 
-Route::get('/public/certificates/verify/{token}', [CertificateController::class, 'verify']);
+// مسار عام بلا مصادقة؛ نحدّ معدل الطلبات لمنع الإرهاق الآلي (60 طلبًا/دقيقة لكل IP).
+// المدقّق الشرعي يمسح رمزًا أو رمزين فلا يقترب من الحد. لا أثر على إصدار الشهادات.
+Route::get('/public/certificates/verify/{token}', [CertificateController::class, 'verify'])
+    ->middleware('throttle:60,1');
 
 $webAuthenticatedMiddleware = [
     'auth:sanctum',
@@ -387,6 +390,7 @@ Route::group([
 ], function ($router) {
     Route::post('/createNote', [NoteController::class, 'createNote'])->middleware('permission:إنشاء ملاحظة');
     Route::get('/getNotesByStudentId/{studentId}', [NoteController::class, 'getNotesByStudentId'])->middleware('permission:عرض ملاحظات الطالب');
+    Route::get('/getAllNotes', [NoteController::class, 'getAllNotes'])->middleware('permission:عرض ملاحظات الطالب');
     Route::delete('/deleteNote/{noteId}', [NoteController::class, 'deleteNote'])->middleware('permission:حذف ملاحظة');
     Route::get('/getMyNotes', [NoteController::class, 'getMyNotes'])->middleware('permission:عرض ملاحظاتي');
 });

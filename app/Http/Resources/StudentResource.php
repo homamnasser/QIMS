@@ -75,6 +75,11 @@ class StudentResource extends JsonResource
                         ->map(fn ($circle): array => [
                             'id' => $circle->id,
                             'name' => $circle->name,
+                            // تسجيل التسميع يشترط الحلقة، ويرفضها الخادم إن كانت
+                            // بلا قرآن؛ ومقرّرها هو ما يحدّد أيام الدوام المقبولة
+                            // لسجل المراجعة. الحقلان يجنّبان طلباً إضافياً لكل حلقة.
+                            'course_id' => $circle->course_id,
+                            'quran_mode' => $circle->quran_mode,
                         ])
                         ->all(),
                     'courses' => $courses

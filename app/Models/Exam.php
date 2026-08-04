@@ -31,6 +31,15 @@ class Exam extends Model
         })
         ->when($filters['course_id'] ?? null, function ($q, $courseId) {
             $q->where('course', $courseId);
+        })
+        // قراءة جماعية لحلقة كاملة في طلب واحد بدل طلب لكل طالب.
+        ->when($filters['student_ids'] ?? null, function ($q, $studentIds) {
+            $q->whereIn('student', (array) $studentIds);
+        })
+        ->when($filters['circle_id'] ?? null, function ($q, $circleId) {
+            $q->whereIn('student', StudentCircle::query()
+                ->where('circle', $circleId)
+                ->select('student'));
         });
     }
 

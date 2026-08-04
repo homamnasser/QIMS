@@ -31,6 +31,20 @@ class NoteService implements INoteService
     }
 
     /**
+     * جلب الملاحظات لمجموعة طلاب (حلقة كاملة) في استعلام واحد.
+     * المسار الفردي getNotesByStudentId يحتاج طلباً لكل طالب، وهو ما يجعل
+     * عمود الحالة في شبكة الحلقة مستحيلاً عملياً.
+     */
+    public function getAllNotes(array $filters = []): Collection
+    {
+        return Note::query()
+            ->with(['student', 'author'])
+            ->filter($filters)
+            ->latest()
+            ->get();
+    }
+
+    /**
      * حذف ملاحظة (أمنياً: الأستاذ الذي كتب الملاحظة هو فقط من يستطيع حذفها)
      */
     public function deleteNote(int $noteId, int $userId, bool $mayDeleteAny = false): bool

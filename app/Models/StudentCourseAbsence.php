@@ -63,6 +63,14 @@ class StudentCourseAbsence extends Model
         })
         ->when($filters['course_id'] ?? null, function ($q, $courseId) {
             $q->where('course', $courseId);
+        })
+        // جلسة واحدة لحلقة كاملة في طلب واحد بدل طلب لكل طالب:
+        // عمود الحالة يعرض حضور اليوم المحدد فقط، لا كل تواريخ الكورس.
+        ->when($filters['date'] ?? null, function ($q, $date) {
+            $q->whereDate('date', $date);
+        })
+        ->when($filters['student_ids'] ?? null, function ($q, $studentIds) {
+            $q->whereIn('student', (array) $studentIds);
         });
     }
 

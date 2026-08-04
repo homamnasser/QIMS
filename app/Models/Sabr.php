@@ -65,6 +65,21 @@ class Sabr extends Model
             })
             ->when($filters['student'] ?? null, function ($q, $studentId) {
                 $q->where('student', $studentId);
+            })
+            // قراءة جماعية لحلقة كاملة في طلب واحد بدل طلب لكل طالب.
+            ->when($filters['student_ids'] ?? null, function ($q, $studentIds) {
+                $q->whereIn('student', (array) $studentIds);
+            })
+            ->when($filters['circle_id'] ?? null, function ($q, $circleId) {
+                $q->whereIn('student', StudentCircle::query()
+                    ->where('circle', $circleId)
+                    ->select('student'));
+            })
+            // فصل السبور المجدولة (بانتظار النتيجة) عن المسجّلة: مرحلتان لا مرحلة واحدة.
+            ->when(isset($filters['has_result']), function ($q) use ($filters) {
+                filter_var($filters['has_result'], FILTER_VALIDATE_BOOLEAN)
+                    ? $q->whereNotNull('value')
+                    : $q->whereNull('value');
             });
     }
 }

@@ -108,7 +108,9 @@ class StaffMosqueScope implements Scope
             StudentCircle::class => ['studentDetails', 'circleDetails'],
             Note::class => ['student'],
             Sabr::class => ['studentDetails', 'courseDetails'],
-            Memorization::class => ['studentDetails', 'course', 'circle'],
+            // course_id/circle_id are nullable here, so whereHas() on them would
+            // hide the mosque's own legacy records. The student already anchors.
+            Memorization::class => ['studentDetails'],
             Warning::class => ['studentDetails'],
             Exam::class => ['studentDetails', 'subjectDetails', 'courseDetails'],
             StudentCourseAbsence::class => ['studentDetails', 'courseDetails'],
@@ -121,8 +123,10 @@ class StaffMosqueScope implements Scope
             EvaluationExamResult::class => ['candidate', 'subject'],
             TeacherPeriodEvaluation::class,
             QuranPeriodAssessment::class,
-            SabrPartAchievement::class,
             AdministrationBehaviorObservation::class => ['candidate'],
+            // evaluation_candidate_id stays null until the part lands inside a
+            // cycle, so only student_id is a reliable anchor.
+            SabrPartAchievement::class => ['student'],
             EvaluationRun::class => ['cycle'],
             EvaluationResult::class => ['candidate'],
             EvaluationCriterionResult::class,
@@ -135,7 +139,9 @@ class StaffMosqueScope implements Scope
             SurveyStudentField::class,
             SurveyLogicRule::class => ['survey'],
             SurveyQuestionOption::class => ['question'],
-            SurveyResponse::class => ['survey', 'student'],
+            // student_id is nulled when a student is deleted; the survey keeps
+            // the response tied to its owning mosque either way.
+            SurveyResponse::class => ['survey'],
             SurveyAnswer::class => ['response'],
             SurveyResponseFile::class => ['response'],
             default => [],

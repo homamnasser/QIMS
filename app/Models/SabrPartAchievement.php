@@ -17,4 +17,9 @@ class SabrPartAchievement extends Model
     {
         return $this->belongsTo(EvaluationCandidate::class, 'evaluation_candidate_id');
     }
+
+    public function student()
+    {
+        return $this->belongsTo(Student::class, 'student_id');
+    }
 }

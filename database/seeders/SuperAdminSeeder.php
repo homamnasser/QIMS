@@ -37,7 +37,7 @@ class SuperAdminSeeder extends Seeder
             [
                 'first_name' => 'super',
                 'last_name' => 'admin',
-                'password' => '123456789',
+                'password' => '12344321',
                 'phone' => '0938316303',
                 'birth_date' => '1990-01-01',
             ]

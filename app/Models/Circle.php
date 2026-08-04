@@ -57,6 +57,11 @@ class Circle extends Model
             });
     }
 
+    public function students(): HasMany
+    {
+        return $this->hasMany(StudentCircle::class, 'circle', 'id');
+    }
+
     public function circleMarks(): HasMany
     {
         return $this->hasMany(StudentMark::class, 'circle', 'id');

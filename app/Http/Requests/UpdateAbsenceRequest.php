@@ -20,6 +20,7 @@ class UpdateAbsenceRequest extends FormRequest
             'type' => 'required|in:present,full,first_period,second_period',
             'note' => 'nullable|string|max:255',
             'date' => 'required|date',
+            'is_excused' => 'sometimes|boolean',
         ];
     }
  public function messages(): array
@@ -33,6 +34,8 @@ class UpdateAbsenceRequest extends FormRequest
 
             'date.required' => 'حقل التاريخ مطلوب.',
             'date.date'     => 'التاريخ ليس بصيغة تاريخ صالحة.',
+
+            'is_excused.boolean' => 'حقل العذر يجب أن يكون صحيحاً أو خطأً.',
         ];
     }
     public function withValidator(Validator $validator)

@@ -5,12 +5,16 @@ namespace Tests\Feature;
 use App\Enums\RoleFamily;
 use App\Enums\StaffWorkScope;
 use App\Models\Course;
+use App\Models\Memorization;
 use App\Models\Mosque;
 use App\Models\Project;
 use App\Models\Role;
+use App\Models\SabrPartAchievement;
 use App\Models\Student;
 use App\Models\Survey;
+use App\Models\SurveyResponse;
 use App\Models\User;
+use App\Support\StaffScopeContext;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Permission\Models\Permission;
 use Tests\TestCase;
@@ -59,6 +63,7 @@ class StaffWorkScopeTest extends TestCase
             'الإشراف على المشاريع والكورسات',
             'إنشاء مشروع',
             'عرض تفاصيل الاستبيان',
+            'عرض كافة الطلاب',
         ] as $permission) {
             Permission::findOrCreate($permission, 'web');
         }
@@ -332,6 +337,215 @@ class StaffWorkScopeTest extends TestCase
             ->assertConflict()
             ->assertJsonPath('error_code', 'MOSQUE_HAS_SCOPED_RECORDS')
             ->assertJsonPath('data.staff_count', 1);
+    }
+
+    /**
+     * Records whose link back to the mosque runs through a nullable foreign key
+     * must still reach their own mosque's staff instead of vanishing.
+     */
+    public function test_records_with_optional_links_stay_visible_to_their_own_mosque(): void
+    {
+        $supervisor = $this->createStaff(
+            'optional-links@example.com',
+            StaffWorkScope::Mosque,
+            $this->othmanMosque
+        );
+
+        $ownStudent = $this->createStudent($this->othmanMosque, 'OTH-000001');
+        $otherStudent = $this->createStudent($this->otherMosque, 'OTH2-000001');
+
+        foreach ([$ownStudent, $otherStudent] as $student) {
+            Memorization::query()->create([
+                'student' => $student->id,
+                'giver' => $supervisor->id,
+                'page_number' => 3,
+                'name' => 'تسميع بلا حلقة',
+            ]);
+            SabrPartAchievement::query()->create([
+                'student_id' => $student->id,
+                'evaluation_candidate_id' => null,
+                'part_number' => 30,
+                'source_type' => 'internal',
+                'bonus_points' => 1,
+                'first_success_at' => now(),
+            ]);
+        }
+
+        app(StaffScopeContext::class)->activate($supervisor);
+
+        try {
+            $this->assertSame(
+                [$ownStudent->id],
+                Memorization::query()->pluck('student')->all(),
+                'التسميع بلا كورس أو حلقة يجب أن يبقى ظاهراً لمسجده'
+            );
+            $this->assertSame(
+                [$ownStudent->id],
+                SabrPartAchievement::query()->pluck('student_id')->all(),
+                'إنجاز السبر بلا مرشّح تقييم يجب أن يبقى ظاهراً لمسجده'
+            );
+        } finally {
+            app(StaffScopeContext::class)->clear();
+        }
+    }
+
+    public function test_survey_response_stays_visible_after_its_student_is_removed(): void
+    {
+        $supervisor = $this->createStaff(
+            'survey-responses@example.com',
+            StaffWorkScope::Mosque,
+            $this->othmanMosque
+        );
+
+        $ownResponse = $this->createSurveyResponse(
+            $this->othmanMosque,
+            $supervisor,
+            'own-mosque-survey'
+        );
+        $this->createSurveyResponse(
+            $this->otherMosque,
+            $supervisor,
+            'foreign-mosque-survey'
+        );
+
+        app(StaffScopeContext::class)->activate($supervisor);
+
+        try {
+            $this->assertSame(
+                [$ownResponse->id],
+                SurveyResponse::query()->pluck('id')->all(),
+                'الرد المجهول على استبيان المسجد يجب أن يبقى ظاهراً دون تسريب ردود مسجد آخر'
+            );
+        } finally {
+            app(StaffScopeContext::class)->clear();
+        }
+    }
+
+    /**
+     * موظفو المعهد لا يمرّون بفلترة المسجد إطلاقاً؛ يبقى وصولهم كاملاً لكل
+     * المساجد ولا تحدّه إلا صلاحيات دوره.
+     */
+    public function test_institute_staff_keep_full_cross_mosque_access(): void
+    {
+        $instituteStaff = $this->createStaff(
+            'institute-wide@example.com',
+            StaffWorkScope::Institute
+        );
+        $instituteStaff->givePermissionTo([
+            'عرض كافة المساجد',
+            'عرض كافة الطلاب',
+        ]);
+
+        $ownStudent = $this->createStudent($this->othmanMosque, 'OTH-000002');
+        $otherStudent = $this->createStudent($this->otherMosque, 'OTH2-000002');
+
+        foreach ([$ownStudent, $otherStudent] as $student) {
+            Memorization::query()->create([
+                'student' => $student->id,
+                'giver' => $instituteStaff->id,
+                'page_number' => 5,
+                'name' => 'تسميع بلا حلقة',
+            ]);
+            SabrPartAchievement::query()->create([
+                'student_id' => $student->id,
+                'evaluation_candidate_id' => null,
+                'part_number' => 29,
+                'source_type' => 'internal',
+                'bonus_points' => 1,
+                'first_success_at' => now(),
+            ]);
+        }
+
+        $this->createSurveyResponse(
+            $this->othmanMosque,
+            $instituteStaff,
+            'institute-own-survey'
+        );
+        $this->createSurveyResponse(
+            $this->otherMosque,
+            $instituteStaff,
+            'institute-other-survey'
+        );
+
+        // المسار الحقيقي عبر HTTP: يجب ألا تُفعَّل الفلترة أصلاً لهذا الحساب.
+        $this->actingAs($instituteStaff)
+            ->getJson('/api/mosque/getAllMosques')
+            ->assertOk()
+            ->assertJsonCount(2, 'data');
+
+        $this->actingAs($instituteStaff)
+            ->getJson('/api/student/getAllStudents')
+            ->assertOk();
+
+        $this->assertNull(
+            app(StaffScopeContext::class)->staff(),
+            'يجب ألا يُسجَّل موظف المعهد في سياق فلترة المسجد'
+        );
+
+        $this->assertEqualsCanonicalizing(
+            [$ownStudent->id, $otherStudent->id],
+            Student::query()->pluck('id')->all()
+        );
+        $this->assertEqualsCanonicalizing(
+            [$ownStudent->id, $otherStudent->id],
+            Memorization::query()->pluck('student')->all()
+        );
+        $this->assertEqualsCanonicalizing(
+            [$ownStudent->id, $otherStudent->id],
+            SabrPartAchievement::query()->pluck('student_id')->all()
+        );
+        $this->assertCount(2, SurveyResponse::query()->get());
+        $this->assertCount(2, Mosque::query()->get());
+    }
+
+    private function createStudent(Mosque $mosque, string $selfnumber): Student
+    {
+        return Student::query()->create([
+            'mosque_id' => $mosque->id,
+            'selfnumber' => $selfnumber,
+            'first_name' => 'طالب',
+            'last_name' => 'الاختبار',
+            'username' => 'student-'.strtolower($selfnumber),
+            'birth_date' => '2012-01-01',
+            'academic_class' => 'السابع',
+            'reading_level' => 'level_1',
+            'father_name' => 'والد الطالب',
+            'parent_social_state' => 'married',
+            'father_phone' => '09'.str_pad(
+                (string) (Student::query()->withoutGlobalScopes()->count() + 10),
+                8,
+                '0',
+                STR_PAD_LEFT
+            ),
+            'password' => 'password123',
+        ]);
+    }
+
+    private function createSurveyResponse(
+        Mosque $mosque,
+        User $creator,
+        string $token
+    ): SurveyResponse {
+        $survey = Survey::query()->create([
+            'public_token' => $token,
+            'name' => 'استبيان '.$mosque->name,
+            'status' => Survey::STATUS_PUBLISHED,
+            'allow_multiple_responses' => true,
+            'created_by' => $creator->id,
+            'mosque_id' => $mosque->id,
+            'published_at' => now(),
+        ]);
+
+        return SurveyResponse::query()->create([
+            'response_token' => (string) \Illuminate\Support\Str::uuid(),
+            'survey_id' => $survey->id,
+            // The student row is gone, so the FK was nulled by nullOnDelete().
+            'student_id' => null,
+            'student_selfnumber_snapshot' => 'DELETED-0001',
+            'survey_snapshot' => [],
+            'student_data_snapshot' => [],
+            'submitted_at' => now(),
+        ]);
     }
 
     private function createStaff(

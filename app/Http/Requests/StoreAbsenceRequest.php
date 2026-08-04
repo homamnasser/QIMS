@@ -22,6 +22,9 @@ class StoreAbsenceRequest extends FormRequest
             'note'    => 'nullable|string|max:255',
             'type'    => 'required|in:present,full,first_period,second_period',
             'date'    => 'required|date',
+            // معيار الحضور يزن الغياب المعذور بنصف وزن غير المعذور،
+            // ولم يكن هناك سبيل لتسجيله من الويب إطلاقاً قبل هذا الحقل.
+            'is_excused' => 'sometimes|boolean',
         ];
     }
 
@@ -44,6 +47,8 @@ class StoreAbsenceRequest extends FormRequest
 
             'date.required' => 'حقل التاريخ مطلوب.',
             'date.date'     => 'التاريخ ليس بصيغة تاريخ صالحة.',
+
+            'is_excused.boolean' => 'حقل العذر يجب أن يكون صحيحاً أو خطأً.',
         ];
     }
 

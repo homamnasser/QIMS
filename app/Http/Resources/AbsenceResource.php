@@ -12,6 +12,9 @@ class AbsenceResource extends JsonResource
         return [
             'id' => $this->id,
             'type' => $this->type,
+            // يُعاد ليتمكن التعديل من إعادة عرض الحالة كما حُفظت؛ الغياب المعذور
+            // يُحتسب بنصف وزن غير المعذور في معيار الحضور.
+            'is_excused' => (bool) $this->is_excused,
             'note' => $this->note,
             'date' => $this->date ? $this->date->format('Y-m-d') : null,
 

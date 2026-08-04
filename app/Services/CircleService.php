@@ -39,6 +39,7 @@ class CircleService implements ICircleService
     public function getAllCircles(array $filters)
     {
         $query = Circle::with(['teacher', 'course.mosque'])
+            ->withCount('students')
             ->filter($filters);
 
         return isset($filters['limit']) ? $query->paginate($filters['limit']) : $query->get();

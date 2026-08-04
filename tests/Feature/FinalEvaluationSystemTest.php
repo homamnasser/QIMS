@@ -544,6 +544,42 @@ class FinalEvaluationSystemTest extends TestCase
         $this->assertSame('exams', $criterion['rule_trace']['source']);
     }
 
+    public function test_exam_correction_after_the_data_cutoff_stays_in_the_calculation(): void
+    {
+        $context = $this->context();
+        $subject = Subject::create([
+            'name' => 'تجويد',
+            'description' => 'اختبار نافذة المصدر',
+            'min_marks' => 0,
+            'max_marks' => 100,
+            'course_id' => $context['course']->id,
+        ]);
+        $exam = Exam::create([
+            'student' => $context['student']->id,
+            'subject' => $subject->id,
+            'course' => $context['course']->id,
+            'mark' => 40,
+        ]);
+
+        // الدورة أُغلقت، ثم صحّح الموظف العلامة بعد الإغلاق. النافذة على updated_at
+        // كانت تدفع السجل خارج المدى فتختفي العلامة ويسقط المعيار إلى صفر.
+        $cutoff = $context['candidate']->cycle->end_date->copy()->endOfDay();
+        $context['candidate']->cycle->update(['data_cutoff_at' => $cutoff]);
+        $exam->forceFill([
+            'mark' => 90,
+            'updated_at' => $cutoff->copy()->addWeek(),
+        ])->save();
+
+        $criterion = app(TheoreticalExamCalculator::class)->calculate(
+            $context['candidate']->fresh(['cycle', 'enrollments']),
+            config('evaluation.default_policy')
+        );
+
+        $this->assertSame('ready', $criterion['readiness_status']);
+        $this->assertSame(90.0, $criterion['inputs']['subjects'][0]['score']);
+        $this->assertSame($exam->id, $criterion['inputs']['subjects'][0]['source_record_id']);
+    }
+
     public function test_administration_score_is_loaded_from_warning_deductions(): void
     {
         $context = $this->context();
