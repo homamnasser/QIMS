@@ -17,6 +17,7 @@ class NoteService implements INoteService
             'user_id'     => $userId, // حقن الأيدي من الـ Auth
             'title'       => $data['title'],
             'description' => $data['description'],
+            'occurred_at' => $data['occurred_at'] ?? null,
         ]);
     }
 

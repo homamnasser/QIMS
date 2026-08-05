@@ -14,6 +14,7 @@ use App\Models\Student;
 use App\Models\StudentCourseAbsence;
 use App\Models\TeacherPeriodEvaluation;
 use App\Models\User;
+use App\Models\Warning;
 use App\Services\Evaluation\EvaluationCalculator;
 use App\Services\Evaluation\EvaluationCandidateSyncService;
 use App\Services\Evaluation\EvaluationCycleService;
@@ -49,7 +50,12 @@ class JulyEvaluationSeederTest extends TestCase
         $this->assertDatabaseMissing('quran_period_assessments', [
             'below_minimum' => true,
         ]);
-        $this->assertDatabaseCount('administration_behavior_observations', 4);
+        // حسم السلوك الشهري صار إنذاراً بعد حذف جدول ملاحظات السلوك. العدّ مقصور
+        // على إنذارات هذه البذرة، فبذور أخرى تكتب إنذاراتها أيضاً.
+        $this->assertSame(
+            4,
+            Warning::query()->where('title', 'ملاحظة سلوكية شهرية')->count()
+        );
         $this->assertDatabaseCount('evaluation_runs', 1);
         $this->assertDatabaseCount('evaluation_results', 4);
         $this->assertDatabaseCount('evaluation_criterion_results', 28);

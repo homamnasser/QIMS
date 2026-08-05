@@ -49,6 +49,8 @@ class ExamResource extends JsonResource
                 'name' => $this->courseDetails ? $this->courseDetails->name : null,
             ],
 
+            // تاريخ الاختبار كما وقع؛ هو ما تُقارَن به نافذة التقييم.
+            'occurred_at' => ($this->occurred_at ?? $this->created_at)?->format('Y-m-d'),
             'created_at' => $this->created_at ? $this->created_at->toDateTimeString() : null,
         ];
     }

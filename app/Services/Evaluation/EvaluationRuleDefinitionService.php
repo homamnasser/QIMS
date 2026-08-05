@@ -173,7 +173,6 @@ class EvaluationRuleDefinitionService
                     'variables' => [
                         $this->numberVariable('inputs.total_deductions', 'إجمالي الحسم'),
                         $this->numberVariable('inputs.warning_count', 'عدد الإنذارات'),
-                        $this->numberVariable('inputs.observation_count', 'عدد الملاحظات'),
                     ],
                     'rules' => [],
                     'default_score' => $this->formulaOutcome([
@@ -200,6 +199,30 @@ class EvaluationRuleDefinitionService
                 ],
             ],
         ];
+    }
+
+    /**
+     * القالب نفسه محمّلاً بقواعد سياسة محفوظة، ليعرض المحرر ما هو مطبق فعلاً على
+     * الدورة لا القيم الافتراضية. المتغيرات تبقى من القالب لأن السياسة لا تحفظها.
+     */
+    public function templateFromRules(array $criteriaRules): array
+    {
+        $saved = collect($criteriaRules['criteria'] ?? []);
+        $template = $this->template();
+        $template['criteria'] = collect($template['criteria'])
+            ->map(function (array $criterion) use ($saved) {
+                $current = $saved->get($criterion['key']);
+
+                return is_array($current)
+                    ? array_replace($criterion, array_intersect_key(
+                        $current,
+                        array_flip(['enabled', 'maximum_score', 'rules', 'default_score'])
+                    ))
+                    : $criterion;
+            })
+            ->all();
+
+        return $template;
     }
 
     public function normalize(array $configuration): array

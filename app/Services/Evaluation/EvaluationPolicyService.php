@@ -4,6 +4,7 @@ namespace App\Services\Evaluation;
 
 use App\Models\EvaluationPolicy;
 use App\Models\User;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class EvaluationPolicyService
@@ -50,10 +51,44 @@ class EvaluationPolicyService
         int $projectId,
         User $actor
     ): EvaluationPolicy {
-        $rules = $this->ruleDefinitions->normalize($ruleConfiguration);
-        $name = "قواعد {$cycleName} — مشروع {$projectId}";
+        return $this->store("قواعد {$cycleName} — مشروع {$projectId}", $ruleConfiguration, 'approved', $actor);
+    }
 
-        return DB::transaction(function () use ($rules, $name, $actor) {
+    /**
+     * قالب قواعد قابل لإعادة الاستخدام: سياسة لا ترتبط بدورة، تميزها الحالة
+     * `template` فلا يلتقطها احتساب ولا تنشأ مع دورة. الحفظ باسم موجود ينتج
+     * نسخة أحدث منه بدل الاصطدام بقيد التفرد.
+     */
+    public function saveTemplate(string $name, array $ruleConfiguration, User $actor): EvaluationPolicy
+    {
+        return $this->store($name, $ruleConfiguration, 'template', $actor);
+    }
+
+    /**
+     * أحدث نسخة من كل قالب فقط: القالب يعرف باسمه، والنسخ الأقدم تاريخ لا خيار.
+     *
+     * ponytail: التجميع في الذاكرة يكفي لعدد القوالب المنسقة؛ إن كبر العدد فاستبدله
+     * باستعلام فرعي مرتبط يختار أكبر نسخة لكل اسم.
+     *
+     * @return Collection<int, EvaluationPolicy>
+     */
+    public function templates()
+    {
+        return EvaluationPolicy::query()
+            ->where('status', 'template')
+            ->orderByDesc('version')
+            ->get(['id', 'name', 'version', 'updated_at'])
+            ->groupBy('name')
+            ->map->first()
+            ->sortByDesc('updated_at')
+            ->values();
+    }
+
+    private function store(string $name, array $ruleConfiguration, string $status, User $actor): EvaluationPolicy
+    {
+        $rules = $this->ruleDefinitions->normalize($ruleConfiguration);
+
+        return DB::transaction(function () use ($rules, $name, $status, $actor) {
             $latestVersion = (int) EvaluationPolicy::query()
                 ->where('name', $name)
                 ->lockForUpdate()
@@ -68,7 +103,7 @@ class EvaluationPolicyService
             return EvaluationPolicy::create([
                 'name' => $name,
                 'version' => $latestVersion + 1,
-                'status' => 'approved',
+                'status' => $status,
                 'configuration' => $configuration,
                 'approved_by' => $actor->id,
                 'approved_at' => now(),

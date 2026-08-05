@@ -30,7 +30,7 @@ class CreateStudentRequest extends FormRequest
             'first_name' => 'required|string|max:50',
             'last_name' => 'required|string|max:50',
             'phone_number' => [
-                'required',
+                'nullable',
                 'string',
                 'regex:/^09[0-9]{8}$/',
                 'unique:students,phone_number',
@@ -46,7 +46,15 @@ class CreateStudentRequest extends FormRequest
                 'regex:/^09[0-9]{8}$/',
             ],
             'password' => 'required|min:8|confirmed',
-            'username' => 'nullable|string|unique:students,username',
+            'username' => [
+                'bail',
+                'required',
+                'string',
+                'min:3',
+                'max:30',
+                'regex:/\A[a-z0-9]+(?:[._-][a-z0-9]+)*\z/',
+                Rule::unique('students', 'username'),
+            ],
             'mosque_id' => [
                 'sometimes',
                 'nullable',
@@ -63,11 +71,11 @@ class CreateStudentRequest extends FormRequest
         ];
     }
 
-    protected function prepareForValidation()
+    protected function prepareForValidation(): void
     {
-        if ($this->first_name && $this->last_name) {
+        if ($this->has('username') && is_string($this->input('username'))) {
             $this->merge([
-                'username' => strtolower($this->first_name.'-'.$this->last_name),
+                'username' => strtolower($this->input('username')),
             ]);
         }
     }
@@ -77,7 +85,12 @@ class CreateStudentRequest extends FormRequest
         return [
             'first_name.required' => 'الاسم الأول مطلوب.',
             'last_name.required' => 'اسم العائلة مطلوب.',
-            'phone_number.required' => 'رقم هاتف الطالب مطلوب.',
+            'username.required' => 'اسم المستخدم مطلوب.',
+            'username.string' => 'اسم المستخدم يجب أن يكون نصاً.',
+            'username.min' => 'يجب ألا يقل اسم المستخدم عن 3 محارف.',
+            'username.max' => 'يجب ألا يزيد اسم المستخدم على 30 محرفاً.',
+            'username.regex' => 'اسم المستخدم يقبل الأحرف الإنجليزية والأرقام فقط، ويمكن استخدام النقطة أو الشرطة أو الشرطة السفلية بين أجزائه دون مسافات.',
+            'username.unique' => 'اسم المستخدم مستخدم مسبقاً.',
             'phone_number.regex' => 'رقم هاتف الطالب يجب أن يبدأ بـ 09 ويتكون من 10 أرقام.',
             'phone_number.unique' => 'رقم هاتف الطالب مستخدم مسبقاً.',
             'birth_date.required' => 'تاريخ الميلاد مطلوب.',

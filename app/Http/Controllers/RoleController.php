@@ -164,7 +164,7 @@ class RoleController extends Controller
     }
 
     /* جلب كافة الصلاحيات المتاحة */
-    public function getAllPermissions(): \Illuminate\Http\JsonResponse
+    public function getAllPermissions(): JsonResponse
     {
         $permissions = $this->roleService->getAllPermissions();
 
@@ -172,6 +172,9 @@ class RoleController extends Controller
             'code' => 200,
             'message' => 'تم جلب الصلاحيات بنجاح.',
             'data' => PermissionResource::collection($permissions),
+            'meta' => [
+                'family_permissions' => config('roles.family_permissions'),
+            ],
         ], 200);
     }
 }

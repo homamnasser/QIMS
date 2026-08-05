@@ -32,6 +32,8 @@ class ReadingImprovementResource extends JsonResource
             'type'         => $this->type,
             'type_label'   => $typeLabels[$this->type] ?? $this->type,
             'description'  => $this->description,
+            // تاريخ التقييم القرائي كما جرى؛ هو ما تُقارَن به نافذة الدورة.
+            'occurred_at'  => ($this->occurred_at ?? $this->created_at)?->format('Y-m-d'),
             'created_at'   => $this->created_at ? $this->created_at->format('Y-m-d H:i:s') : null,
             'updated_at'   => $this->updated_at ? $this->updated_at->format('Y-m-d H:i:s') : null,
         ];

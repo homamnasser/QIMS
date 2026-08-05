@@ -28,7 +28,7 @@ class UpdateStudentRequest extends FormRequest
             'last_name' => 'sometimes|required|string|max:50',
             'phone_number' => [
                 'sometimes',
-                'required',
+                'nullable',
                 'string',
                 'regex:/^09[0-9]{8}$/',
                 'unique:students,phone_number,'.$this->route('id'),
@@ -45,7 +45,16 @@ class UpdateStudentRequest extends FormRequest
                 'regex:/^09[0-9]{8}$/',
             ],
             'password' => 'sometimes|required|min:8|confirmed',
-            'username' => 'nullable|string|unique:students,username,'.$this->route('id'), // استثناء اليوزر نيم للطالب الحالي
+            'username' => [
+                'bail',
+                'sometimes',
+                'required',
+                'string',
+                'min:3',
+                'max:30',
+                'regex:/\A[a-z0-9]+(?:[._-][a-z0-9]+)*\z/',
+                Rule::unique('students', 'username')->ignore((int) $this->route('id')),
+            ],
             'mosque_id' => [
                 'sometimes',
                 'nullable',
@@ -63,19 +72,13 @@ class UpdateStudentRequest extends FormRequest
         ];
     }
 
-    /**
-     * إعداد البيانات قبل الـ Validation وتوليد الـ username الجديد إذا تعدلت الأسماء.
-     */
-    protected function prepareForValidation()
+    protected function prepareForValidation(): void
     {
-        // إذا قام الفرونت إند بإرسال الاسم الأول والأخير معاً للتعديل، نقوم بتحديث اليوزر نيم بناءً عليهما
-        if ($this->has('first_name') && $this->has('last_name')) {
+        if ($this->has('username') && is_string($this->input('username'))) {
             $this->merge([
-                'username' => strtolower($this->first_name.'.'.$this->last_name),
+                'username' => strtolower($this->input('username')),
             ]);
         }
-        // أما لو أرسل فقط الاسم الأول، نأخذ الاسم الأخير القديم من الموديل المخزن في السيرفر (إذا كان ممرراً عبر Route Model Binding)
-        // ولتجنب التعقيد، يفضل دائماً إخبار فريق الفرونت إند بإرسال الحقلين معاً في حال الرغبة بتغيير أحدهما ليتم توليد الـ username بشكل صحيح ومترابط.
     }
 
     public function messages()
@@ -83,7 +86,11 @@ class UpdateStudentRequest extends FormRequest
         return [
             'first_name.required' => 'الاسم الأول مطلوب.',
             'last_name.required' => 'اسم العائلة مطلوب.',
-            'phone_number.required' => 'رقم هاتف الطالب مطلوب.',
+            'username.required' => 'اسم المستخدم مطلوب.',
+            'username.string' => 'اسم المستخدم يجب أن يكون نصاً.',
+            'username.min' => 'يجب ألا يقل اسم المستخدم عن 3 محارف.',
+            'username.max' => 'يجب ألا يزيد اسم المستخدم على 30 محرفاً.',
+            'username.regex' => 'اسم المستخدم يقبل الأحرف الإنجليزية والأرقام فقط، ويمكن استخدام النقطة أو الشرطة أو الشرطة السفلية بين أجزائه دون مسافات.',
             'phone_number.regex' => 'رقم هاتف الطالب يجب أن يبدأ بـ 09 ويتكون من 10 أرقام.',
             'phone_number.unique' => 'رقم هاتف الطالب مستخدم مسبقاً.',
             'birth_date.required' => 'تاريخ الميلاد مطلوب.',
@@ -96,7 +103,7 @@ class UpdateStudentRequest extends FormRequest
             'password.required' => 'كلمة المرور مطلوبة.',
             'password.min' => 'كلمة المرور يجب أن تكون 8 أحرف على الأقل.',
             'password.confirmed' => 'تأكيد كلمة المرور غير متطابق.',
-            'username.unique' => 'اسم المستخدم مُستخدم مسبقاً.',
+            'username.unique' => 'اسم المستخدم مستخدم مسبقاً.',
             'mosque_id.exists' => 'المسجد المحدد غير موجود.',
             'image.image' => 'يجب أن يكون الملف صورة صالحة.',
             'image.mimes' => 'يجب أن تكون الصورة بصيغة JPG أو PNG أو WebP.',

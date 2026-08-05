@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\AdministrationBehaviorObservation;
 use App\Models\Course;
 use App\Models\CourseDate;
 use App\Models\EvaluationCandidate;
@@ -18,7 +17,6 @@ use App\Models\User;
 use App\Models\Warning;
 use App\Services\Evaluation\EvaluationCandidateSyncService;
 use App\Services\Evaluation\EvaluationCycleService;
-use App\Services\Evaluation\EvaluationInputService;
 use App\Services\Evaluation\EvaluationRunService;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Collection;
@@ -217,12 +215,7 @@ class JulyEvaluationSeeder extends Seeder
             $this->createExamRecords($student, $scenario);
             $this->createWarning($student, $scenario, $actor);
             $this->createSabrRecords($student, $scenario, $enrollment->teacher_id);
-            $this->createAdministrationObservation(
-                $candidate,
-                $scenario,
-                $periods->get(2)->id,
-                $actor
-            );
+            $this->createBehaviorWarning($student, $scenario, $actor);
         }
 
         $this->call(JulyEvaluationCriteriaSeeder::class);
@@ -461,24 +454,35 @@ class JulyEvaluationSeeder extends Seeder
         }
     }
 
-    private function createAdministrationObservation(
-        EvaluationCandidate $candidate,
+    /**
+     * حسم الملاحظة السلوكية الشهرية.
+     *
+     * كان يُسجَّل في `administration_behavior_observations`، وهو جدول حُذف بعد أن
+     * ثبت أن لا مسار كتابة له في التطبيق كله — كانت هذه البذرة كاتبه الوحيد.
+     * الحسم نفسه يُسجَّل الآن إنذاراً: المصدر الوحيد الذي يقرأه معيار الإدارة
+     * ويملك واجهة كاملة، والدرجة الناتجة لكل طالب لم تتغيّر.
+     */
+    private function createBehaviorWarning(
+        Student $student,
         array $scenario,
-        int $periodId,
         User $actor
     ): void {
-        $observation = AdministrationBehaviorObservation::create([
-            'evaluation_candidate_id' => $candidate->id,
-            'evaluation_period_id' => $periodId,
-            'context_type' => 'monthly_behavior',
+        if (empty($scenario['administration_deduction'])) {
+            return;
+        }
+
+        $occurredAt = '2026-07-25 17:30:00';
+        $warning = Warning::create([
+            'student' => $student->id,
+            'warner' => $actor->id,
+            'title' => 'ملاحظة سلوكية شهرية',
             'description' => 'ملاحظة إدارية تربوية معتمدة ضمن دورة تقييم تموز.',
             'deduction_points' => $scenario['administration_deduction'],
-            'occurred_at' => '2026-07-25 17:30:00',
-            'observed_by' => $actor->id,
-            'status' => 'pending',
+            'occurred_at' => $occurredAt,
         ]);
-
-        app(EvaluationInputService::class)
-            ->approveAdministrationObservation($observation, $actor);
+        DB::table('warnings')->where('id', $warning->id)->update([
+            'created_at' => $occurredAt,
+            'updated_at' => $occurredAt,
+        ]);
     }
 }

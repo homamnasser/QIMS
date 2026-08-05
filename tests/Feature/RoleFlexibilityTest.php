@@ -172,6 +172,47 @@ class RoleFlexibilityTest extends TestCase
         $this->assertTrue($role->hasPermissionTo($permission));
     }
 
+    public function test_teacher_family_selects_and_enforces_its_minimum_permissions(): void
+    {
+        $this->authenticateAsRoot();
+        $minimumPermissions = config('roles.family_permissions.'.RoleFamily::Teacher->value);
+
+        foreach ($minimumPermissions as $permissionName) {
+            Permission::findOrCreate($permissionName, 'web');
+        }
+
+        $extraPermission = Permission::findOrCreate('صلاحية معلم إضافية', 'web');
+
+        $this->postJson('/api/role/createRole', [
+            'name' => 'معلم فرع دمشق',
+            'role_family' => RoleFamily::Teacher->value,
+            'permissions' => [$extraPermission->id],
+        ])->assertCreated();
+
+        $role = Role::where('name', 'معلم فرع دمشق')->firstOrFail();
+
+        foreach ($minimumPermissions as $permissionName) {
+            $this->assertTrue(
+                $role->hasPermissionTo($permissionName),
+                "Missing required Teacher permission: {$permissionName}"
+            );
+        }
+
+        $this->assertTrue($role->hasPermissionTo($extraPermission));
+    }
+
+    public function test_permissions_catalogue_exposes_family_minimums(): void
+    {
+        $this->authenticateAsRoot();
+
+        $this->getJson('/api/role/getAllPermissions')
+            ->assertOk()
+            ->assertJsonPath(
+                'meta.family_permissions.'.RoleFamily::Teacher->value,
+                config('roles.family_permissions.'.RoleFamily::Teacher->value)
+            );
+    }
+
     public function test_misleading_name_stays_custom_and_cannot_grant_supervision_by_itself(): void
     {
         $this->authenticateAsRoot();

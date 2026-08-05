@@ -41,6 +41,7 @@ class NoteResource extends JsonResource
                 'last_name' => $this->author ? $this->author->last_name : null,
             ],
 
+            'occurred_at' => ($this->occurred_at ?? $this->created_at)?->format('Y-m-d'),
             'created_at' => $this->created_at ? $this->created_at->format('Y-m-d H:i:s') : null,
         ];
     }

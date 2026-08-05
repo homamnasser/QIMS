@@ -26,6 +26,8 @@ class CreateNoteRequest extends FormRequest
             'student_id'  => 'required|integer|exists:students,id',
             'title'       => 'required|string|max:255',
             'description' => 'required|string',
+            // تاريخ الملاحظة كما وقعت؛ شواهد المدرس تُجمع بالفترة لا بلحظة التدوين.
+            'occurred_at' => 'nullable|date',
         ];
     }
     public function messages(): array

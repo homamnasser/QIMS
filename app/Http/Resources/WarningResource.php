@@ -18,7 +18,8 @@ class WarningResource extends JsonResource
             'description' => $this->description,
             'deduction_points' => (float) ($this->deduction_points ?? 1),
 
-            'date' => $this->created_at ? $this->created_at->format('Y-m-d') : null,
+            // تاريخ المخالفة لا تاريخ تسجيلها — وهو ما تعرضه البطاقة للموظف.
+            'date' => ($this->occurred_at ?? $this->created_at)?->format('Y-m-d'),
 
             'student' => [
                 'id' => $this->student,
@@ -36,6 +37,7 @@ class WarningResource extends JsonResource
                 'last_name' => $this->warnerDetails ? $this->warnerDetails->last_name : null,
             ],
 
+            'occurred_at' => ($this->occurred_at ?? $this->created_at)?->format('Y-m-d'),
             'created_at' => $this->created_at ? $this->created_at->toDateTimeString() : null,
         ];
     }

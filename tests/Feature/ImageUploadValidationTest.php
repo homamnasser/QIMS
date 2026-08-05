@@ -26,6 +26,8 @@ class ImageUploadValidationTest extends TestCase
 
     private Role $studentRole;
 
+    private int $studentUsernameSequence = 0;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -194,9 +196,12 @@ class ImageUploadValidationTest extends TestCase
 
     private function studentPayload(array $overrides = []): array
     {
+        $this->studentUsernameSequence++;
+
         return [
             'first_name' => 'طالب',
             'last_name' => 'الصور',
+            'username' => 'image-student-'.$this->studentUsernameSequence,
             'phone_number' => '0951111111',
             'birth_date' => '2012-01-01',
             'academic_class' => 'السابع',

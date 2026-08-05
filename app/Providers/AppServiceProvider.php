@@ -14,6 +14,7 @@ use App\IService\IMobileAuthenticationService;
 use App\IService\IMosqueService;
 use App\IService\INoteService;
 use App\IService\IProjectService;
+use App\IService\IReadingImprovementService;
 use App\IService\IRoleService;
 use App\IService\ISabrService;
 use App\IService\IStaffService;
@@ -23,7 +24,6 @@ use App\IService\IStudentLearningService;
 use App\IService\IStudentService;
 use App\IService\ISubjectService;
 use App\IService\IWarningService;
-use App\Models\AdministrationBehaviorObservation;
 use App\Models\Certificate;
 use App\Models\Circle;
 use App\Models\Course;
@@ -81,6 +81,7 @@ use App\Services\MobileAuthenticationService;
 use App\Services\MosqueService;
 use App\Services\NoteService;
 use App\Services\ProjectService;
+use App\Services\ReadingImprovementService;
 use App\Services\RoleService;
 use App\Services\SabrService;
 use App\Services\StaffService;
@@ -105,6 +106,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(IStaffService::class, StaffService::class);
         $this->app->bind(IRoleService::class, RoleService::class);
         $this->app->bind(IProjectService::class, ProjectService::class);
+        $this->app->bind(IReadingImprovementService::class, ReadingImprovementService::class);
         $this->app->bind(IMosqueService::class, MosqueService::class);
         $this->app->bind(ICourseService::class, CourseService::class);
         $this->app->bind(ISubjectService::class, SubjectService::class);
@@ -132,7 +134,6 @@ class AppServiceProvider extends ServiceProvider
     {
         $scope = new StaffMosqueScope;
         $scopedModels = [
-            AdministrationBehaviorObservation::class,
             Certificate::class,
             Circle::class,
             Course::class,

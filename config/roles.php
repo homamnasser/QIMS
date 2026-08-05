@@ -17,6 +17,45 @@ $teacherAttendanceAndAbsencePermissions = array_values(array_diff(
     ['تعديل الغياب', 'حذف غياب']
 ));
 
+$teacherPermissions = [
+    'تسجيل الدخول',
+    'تسجيل الخروج',
+    'عرض كافة الكورسات',
+    'عرض تفاصيل الكورس',
+    'عرض كافة المواد',
+    'عرض تفاصيل المادة',
+    'عرض كافة الدروس',
+    'عرض تفاصيل الدرس',
+    'عرض تواريخ الكورس',
+    'عرض دروس التاريخ',
+    'عرض المنهج الدراسي للكورس',
+    'عرض منهج حلقتي',
+    'عرض تفاصيل الحلقة',
+    'عرض كافة الحلقات',
+    'عرض كافة الطلاب',
+    'عرض تفاصيل الطالب',
+    'عرض طلاب الحلقة',
+    'إنشاء ملاحظة',
+    'عرض ملاحظات الطالب',
+    'عرض ملاحظاتي',
+    'إنشاء سبر',
+    'عرض سبر الطالب',
+    'عرض سبري',
+    'تعديل نتيجة السبر',
+    'إنشاء تسميع',
+    'عرض تسميع الطالب',
+    'عرض تسميعاتي',
+    'إنشاء إنذار',
+    'عرض تفاصيل الإنذار',
+    'عرض إنذاراتي',
+    'إنشاء امتحان',
+    'عرض تفاصيل الامتحان',
+    'امتحاناتي',
+    ...$teacherAttendanceAndAbsencePermissions,
+    'إدخال تقييم المدرس',
+    'إدخال تقييم القرآن',
+];
+
 $studentCapabilities = [
     'mosque' => 'عرض مسجدي الدراسي',
     'circles' => 'عرض حلقاتي الدراسية',
@@ -99,6 +138,7 @@ return [
     ])),
     'attendance_and_absence_permissions' => $attendanceAndAbsencePermissions,
     'teacher_attendance_and_absence_permissions' => $teacherAttendanceAndAbsencePermissions,
+    'teacher_permissions' => $teacherPermissions,
 
     // Kept for staff-facing legacy endpoints. Student-family roles are migrated
     // away from these ambiguous names to the explicit capabilities above.
@@ -119,6 +159,7 @@ return [
             $fieldOperationsCapability,
             ...$fieldSupervisorPermissions,
         ])),
+        RoleFamily::Teacher->value => array_values(array_unique($teacherPermissions)),
         RoleFamily::Student->value => array_values($studentCapabilities),
     ],
 ];

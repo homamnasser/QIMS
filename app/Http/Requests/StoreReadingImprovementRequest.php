@@ -19,6 +19,7 @@ class StoreReadingImprovementRequest extends FormRequest
             'student'     => 'required|integer|exists:students,id',
             'course'      => 'required|integer|exists:courses,id',
             'type'        => 'required|in:significant_improvement,slight_improvement,no_improvement,decline',
+            'occurred_at' => 'nullable|date',
             'description' => 'nullable|string|max:1000',
         ];
     }

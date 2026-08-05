@@ -19,6 +19,7 @@ class UpdateExamRequest extends FormRequest
         return [
             // مطلوب فقط حقل العلامة للتعديل 🎯
             'mark' => 'required|numeric|min:0',
+            'occurred_at' => 'nullable|date',
         ];
     }
 
@@ -27,6 +28,7 @@ class UpdateExamRequest extends FormRequest
         return [
             'mark.required' => 'حقل علامة الامتحان مطلوب لتحديث الدرجة.',
             'mark.numeric'  => 'علامة الامتحان يجب أن تكون عدداً صحيحاً أو عشرياً صالحاً.',
+            'occurred_at.date' => 'تاريخ الاختبار ليس بصيغة تاريخ صالحة.',
             'mark.min'      => 'علامة الامتحان لا يمكن أن تكون أقل من صفر.',
         ];
     }

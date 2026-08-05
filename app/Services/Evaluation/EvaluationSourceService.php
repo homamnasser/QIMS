@@ -16,6 +16,14 @@ use Illuminate\Support\Collection;
 
 class EvaluationSourceService
 {
+    /**
+     * تعبير تاريخ الحدث: ما اختاره المستخدم، وإلا لحظة كتابة الصف.
+     *
+     * الصفوف السابقة للهجرة عُبّئت من `created_at`، وما يُكتب بلا تاريخ حدث يبقى
+     * محكوماً بالسلوك القديم نفسه — فالتحويل تراجعي بالكامل.
+     */
+    public const OCCURRED_AT = 'COALESCE(occurred_at, created_at)';
+
     public function quranSummary(
         EvaluationCandidate $candidate,
         EvaluationCandidateEnrollment $enrollment,
@@ -85,17 +93,111 @@ class EvaluationSourceService
     {
         [$start, $end] = $this->sourceWindow($candidate);
 
-        // النافذة على created_at لا updated_at: تصحيح علامة بعد data_cutoff_at كان
-        // يدفع updated_at خارج النافذة فتختفي العلامة من الحساب صامتاً وتنخفض درجة
-        // الطالب. وبالمقابل كانت علامة أقدم من الدورة تدخلها بمجرد تعديلها.
-        // بقية مصادر التقييم (الإنذارات، القراءة، الملاحظات) تستخدم created_at أصلاً.
+        // النافذة على تاريخ الاختبار لا على لحظة الكتابة: الرصد المتأخر (اختبار
+        // الخميس يُدخل الأحد) كان يسقط من الحساب صامتاً.
+        // وهي على created_at لا updated_at عند غياب تاريخ الحدث: تصحيح علامة بعد
+        // data_cutoff_at كان يدفع updated_at خارج النافذة فتختفي العلامة، وعلامة
+        // أقدم من الدورة كانت تدخلها بمجرد تعديلها.
         return Exam::query()
             ->with('subjectDetails:id,name,min_marks,max_marks,course_id,shared_with_subject_id')
             ->where('student', $candidate->student_id)
             ->whereIn('course', $candidate->enrollments->pluck('course_id')->unique())
-            ->whereBetween('created_at', [$start, $end])
+            ->whereRaw(self::OCCURRED_AT.' BETWEEN ? AND ?', [$start, $end])
             ->orderBy('subject')
             ->get();
+    }
+
+    /**
+     * السجلات المستبعدة من النافذة — لتسميتها في تحذيرات المعيار.
+     *
+     * غياب السجل وسقوطه خارج النافذة يعطيان الدرجة نفسها (صفر) ورسالة واحدة،
+     * وهو ما يجعل التشخيص تخميناً. هذه الدالة تفصل الحالتين.
+     *
+     * @return array{count: int, latest: ?string}
+     */
+    public function excludedExamResults(EvaluationCandidate $candidate): array
+    {
+        [$start, $end] = $this->sourceWindow($candidate);
+
+        return $this->excludedSummary(
+            Exam::query()
+                ->where('student', $candidate->student_id)
+                ->whereIn('course', $candidate->enrollments->pluck('course_id')->unique()),
+            $start,
+            $end
+        );
+    }
+
+    /** @return array{count: int, latest: ?string} */
+    public function excludedWarnings(EvaluationCandidate $candidate): array
+    {
+        [$start, $end] = $this->sourceWindow($candidate);
+
+        return $this->excludedSummary(
+            Warning::query()->where('student', $candidate->student_id),
+            $start,
+            $end
+        );
+    }
+
+    /** @return array{count: int, latest: ?string} */
+    public function excludedReadingRecords(EvaluationCandidate $candidate): array
+    {
+        [$start, $end] = $this->sourceWindow($candidate);
+
+        return $this->excludedSummary(
+            ReadingImprovement::query()
+                ->where('student', $candidate->student_id)
+                ->whereIn('course', $candidate->enrollments->pluck('course_id')->unique())
+                ->whereNull('evaluation_candidate_id'),
+            $start,
+            $end
+        );
+    }
+
+    /**
+     * @param  \Illuminate\Database\Eloquent\Builder<*>  $query
+     * @return array{count: int, latest: ?string}
+     */
+    private function excludedSummary($query, CarbonImmutable $start, CarbonImmutable $end): array
+    {
+        $excluded = (clone $query)
+            ->whereRaw('NOT ('.self::OCCURRED_AT.' BETWEEN ? AND ?)', [$start, $end])
+            ->selectRaw('COUNT(*) as total, MAX('.self::OCCURRED_AT.') as latest')
+            ->first();
+
+        return [
+            'count' => (int) ($excluded->total ?? 0),
+            'latest' => $excluded->latest
+                ? CarbonImmutable::parse($excluded->latest)->toDateString()
+                : null,
+        ];
+    }
+
+    /**
+     * جملة تحذير موحّدة لكل معيار يسقط منه سجل خارج النافذة.
+     *
+     * @param  array{count: int, latest: ?string}  $excluded
+     */
+    public function excludedWarningMessage(
+        EvaluationCandidate $candidate,
+        array $excluded,
+        string $noun
+    ): ?string {
+        if ($excluded['count'] < 1) {
+            return null;
+        }
+
+        [$start, $end] = $this->sourceWindow($candidate);
+
+        return sprintf(
+            'يوجد %d %s لهذا الطالب خارج نافذة الدورة (%s → %s)%s؛ راجع تاريخ التسجيل.',
+            $excluded['count'],
+            $noun,
+            $start->toDateString(),
+            $end->toDateString(),
+            $excluded['latest'] ? ' وأحدثها بتاريخ '.$excluded['latest'] : ''
+        );
     }
 
     public function readingRecords(EvaluationCandidate $candidate): Collection
@@ -109,7 +211,7 @@ class EvaluationSourceService
                 $query->where('evaluation_candidate_id', $candidate->id)
                     ->orWhere(function ($operational) use ($start, $end): void {
                         $operational->whereNull('evaluation_candidate_id')
-                            ->whereBetween('created_at', [$start, $end]);
+                            ->whereRaw(self::OCCURRED_AT.' BETWEEN ? AND ?', [$start, $end]);
                     });
             })
             ->latest('created_at')
@@ -123,8 +225,8 @@ class EvaluationSourceService
 
         return Warning::query()
             ->where('student', $candidate->student_id)
-            ->whereBetween('created_at', [$start, $end])
-            ->oldest('created_at')
+            ->whereRaw(self::OCCURRED_AT.' BETWEEN ? AND ?', [$start, $end])
+            ->orderByRaw(self::OCCURRED_AT)
             ->oldest('id')
             ->get();
     }
@@ -134,20 +236,18 @@ class EvaluationSourceService
         EvaluationCandidateEnrollment $enrollment,
         EvaluationPeriod $period
     ): array {
+        $periodWindow = [
+            $period->start_date->startOfDay(),
+            $period->end_date->endOfDay(),
+        ];
         $notes = Note::query()
             ->where('student_id', $candidate->student_id)
-            ->whereBetween('created_at', [
-                $period->start_date->startOfDay(),
-                $period->end_date->endOfDay(),
-            ])
-            ->get(['id', 'user_id', 'title', 'created_at']);
+            ->whereRaw(self::OCCURRED_AT.' BETWEEN ? AND ?', $periodWindow)
+            ->get(['id', 'user_id', 'title', 'occurred_at', 'created_at']);
         $warnings = Warning::query()
             ->where('student', $candidate->student_id)
-            ->whereBetween('created_at', [
-                $period->start_date->startOfDay(),
-                $period->end_date->endOfDay(),
-            ])
-            ->get(['id', 'warner', 'title', 'deduction_points', 'created_at']);
+            ->whereRaw(self::OCCURRED_AT.' BETWEEN ? AND ?', $periodWindow)
+            ->get(['id', 'warner', 'title', 'deduction_points', 'occurred_at', 'created_at']);
         $attendance = StudentCourseAbsence::query()
             ->where('student', $candidate->student_id)
             ->where('course', $enrollment->course_id)

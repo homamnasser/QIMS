@@ -39,6 +39,7 @@ use App\Services\Evaluation\EvaluationCalculator;
 use App\Services\Evaluation\EvaluationCandidateSyncService;
 use App\Services\Evaluation\EvaluationCycleService;
 use App\Services\Evaluation\EvaluationInputService;
+use App\Services\Evaluation\EvaluationPolicyService;
 use App\Services\Evaluation\EvaluationRuleDefinitionService;
 use App\Services\Evaluation\EvaluationRuleEngine;
 use App\Services\Evaluation\EvaluationRunService;
@@ -200,6 +201,214 @@ class FinalEvaluationSystemTest extends TestCase
 
         $this->assertSame('2026-01-01', $cycle->start_date->toDateString());
         $this->assertSame('2026-06-30', $cycle->end_date->toDateString());
+    }
+
+    public function test_cycle_definition_can_be_corrected_while_data_collection_is_open(): void
+    {
+        $context = $this->context();
+        $configuration = app(EvaluationRuleDefinitionService::class)->template();
+        $configuration['criteria'][0]['rules'] = [];
+        $configuration['criteria'][0]['default_score'] = ['type' => 'fixed', 'value' => 42];
+
+        $cycle = app(EvaluationCycleService::class)->update($context['cycle'], [
+            'name' => 'شتاء 2026 — مصحح',
+            'top_students_count' => 20,
+            'periods' => [
+                [
+                    'name' => 'الفترة الأولى المعدلة',
+                    'sequence' => 1,
+                    'start_date' => '2026-01-01',
+                    'end_date' => '2026-01-20',
+                ],
+                [
+                    'name' => 'الفترة الثانية',
+                    'sequence' => 2,
+                    'start_date' => '2026-01-21',
+                    'end_date' => '2026-02-05',
+                ],
+            ],
+            'rule_configuration' => $configuration,
+        ], $context['supervisor']);
+
+        $this->assertSame('شتاء 2026 — مصحح', $cycle->name);
+        $this->assertSame(20, (int) $cycle->top_students_count);
+        $this->assertSame('2026-02-05', $cycle->end_date->toDateString());
+        $this->assertSame('الفترة الأولى المعدلة', $cycle->periods->firstWhere('sequence', 1)->name);
+        $this->assertSame('2026-01-20', $cycle->periods->firstWhere('sequence', 1)->end_date->toDateString());
+
+        // القواعد تنتقل إلى نسخة سياسة جديدة بدل تعديل النسخة المرتبطة بنتائج محفوظة.
+        $this->assertNotSame($context['policy']->id, $cycle->policy_id);
+        $this->assertEquals(
+            42.0,
+            $cycle->policy->configuration['criteria_rules']['criteria']['attendance']['default_score']['value']
+        );
+        $this->assertDatabaseHas('evaluation_audit_events', [
+            'evaluation_cycle_id' => $cycle->id,
+            'event_type' => 'evaluation.cycle_updated',
+        ]);
+    }
+
+    public function test_rule_profile_is_saved_once_and_reused_by_later_cycles(): void
+    {
+        $context = $this->context();
+        $definitions = app(EvaluationRuleDefinitionService::class);
+        $policies = app(EvaluationPolicyService::class);
+        $configuration = $definitions->template();
+        $configuration['criteria'][0]['maximum_score'] = 111;
+
+        $profile = $policies->saveTemplate('قواعد المعهد القياسية', $configuration, $context['supervisor']);
+
+        $this->assertSame('template', $profile->status);
+        $this->assertSame(1, $profile->version);
+        $this->assertSame(
+            ['قواعد المعهد القياسية'],
+            $policies->templates()->pluck('name')->all()
+        );
+
+        // القالب يعاد إلى شكل المحرر، ثم تنشأ منه دورة جديدة بنسخة سياسة مستقلة.
+        $reloaded = $definitions->templateFromRules($profile->configuration['criteria_rules']);
+        $cycle = app(EvaluationCycleService::class)->create([
+            'project_id' => $context['project']->id,
+            'name' => 'دورة من قالب',
+            'course_ids' => [$context['course']->id],
+            'periods' => [[
+                'name' => 'فترة',
+                'sequence' => 1,
+                'start_date' => '2026-03-01',
+                'end_date' => '2026-03-31',
+            ]],
+            'rule_configuration' => $reloaded,
+        ], $context['supervisor']);
+
+        $this->assertNotSame($profile->id, $cycle->policy_id);
+        $this->assertSame('approved', $cycle->policy->status);
+        $this->assertEquals(
+            111.0,
+            $cycle->policy->configuration['criteria_rules']['criteria']['attendance']['maximum_score']
+        );
+
+        // إعادة الحفظ بالاسم نفسه تنتج نسخة أحدث بدل الاصطدام بقيد التفرد،
+        // ولا تظهر في القائمة إلا الأحدث.
+        $configuration['criteria'][0]['maximum_score'] = 122;
+        $second = $policies->saveTemplate('قواعد المعهد القياسية', $configuration, $context['supervisor']);
+        $this->assertSame(2, $second->version);
+        $this->assertSame([2], $policies->templates()->pluck('version')->all());
+    }
+
+    public function test_saved_cycle_rules_reload_into_the_editor_template_shape(): void
+    {
+        $context = $this->context();
+        $definitions = app(EvaluationRuleDefinitionService::class);
+        $configuration = $definitions->template();
+        $configuration['criteria'][0]['maximum_score'] = 120;
+        $configuration['criteria'][0]['rules'] = [];
+        $configuration['criteria'][0]['default_score'] = ['type' => 'fixed', 'value' => 42];
+
+        $cycle = app(EvaluationCycleService::class)->update($context['cycle'], [
+            'rule_configuration' => $configuration,
+        ], $context['supervisor']);
+
+        $reloaded = $definitions->templateFromRules($cycle->policy->configuration['criteria_rules']);
+        $attendance = collect($reloaded['criteria'])->firstWhere('key', 'attendance');
+
+        $this->assertSame([], $attendance['rules']);
+        $this->assertEquals(120.0, $attendance['maximum_score']);
+        $this->assertEquals(42.0, $attendance['default_score']['value']);
+        // المتغيرات تأتي من القالب: السياسة لا تحفظها، والمحرر لا يعمل بدونها.
+        $this->assertNotEmpty($attendance['variables']);
+        $this->assertSame(
+            $definitions->template()['criteria'][0]['variables'],
+            $attendance['variables']
+        );
+    }
+
+    public function test_period_dates_are_locked_once_the_period_has_received_inputs(): void
+    {
+        $context = $this->context();
+        TeacherPeriodEvaluation::create([
+            'evaluation_candidate_id' => $context['candidate']->id,
+            'evaluation_period_id' => $context['periods'][0]->id,
+            'circle_id' => $context['circle']->id,
+            'evaluator_id' => $context['teacher']->id,
+            'behavior_score' => 20,
+            'participation_score' => 20,
+            'teacher_opinion_score' => 10,
+            'total_score' => 50,
+            'status' => 'submitted',
+            'submitted_at' => now(),
+        ]);
+
+        // التسمية وحدها تمر، لأنها لا تغير نافذة أي مدخل.
+        $renamed = app(EvaluationCycleService::class)->update($context['cycle'], [
+            'periods' => [
+                ['name' => 'اسم جديد', 'sequence' => 1, 'start_date' => '2026-01-01', 'end_date' => '2026-01-15'],
+                ['name' => 'الفترة الثانية', 'sequence' => 2, 'start_date' => '2026-01-16', 'end_date' => '2026-01-31'],
+            ],
+        ], $context['supervisor']);
+        $this->assertSame('اسم جديد', $renamed->periods->firstWhere('sequence', 1)->name);
+
+        $this->expectException(ValidationException::class);
+        $this->expectExceptionMessage('بعد إدخال تقييمات مرتبطة بها');
+
+        app(EvaluationCycleService::class)->update($context['cycle']->fresh(), [
+            'periods' => [
+                ['name' => 'اسم جديد', 'sequence' => 1, 'start_date' => '2026-01-01', 'end_date' => '2026-01-10'],
+                ['name' => 'الفترة الثانية', 'sequence' => 2, 'start_date' => '2026-01-16', 'end_date' => '2026-01-31'],
+            ],
+        ], $context['supervisor']);
+    }
+
+    public function test_course_removal_is_rejected_after_inputs_and_excludes_orphan_candidates_before_them(): void
+    {
+        $context = $this->context();
+        $other = Course::create([
+            'name' => 'مقرر ثانٍ',
+            'description' => 'مقرر',
+            'mosque_id' => $context['mosque']->id,
+            'project_id' => $context['project']->id,
+            'supervisor_id' => $context['supervisor']->id,
+            'start_date' => '2026-01-01',
+            'end_date' => '2026-01-31',
+            'is_active' => true,
+        ]);
+        $context['cycle']->courses()->attach($other->id);
+        $evaluation = TeacherPeriodEvaluation::create([
+            'evaluation_candidate_id' => $context['candidate']->id,
+            'evaluation_period_id' => $context['periods'][0]->id,
+            'circle_id' => $context['circle']->id,
+            'evaluator_id' => $context['teacher']->id,
+            'behavior_score' => 20,
+            'participation_score' => 20,
+            'teacher_opinion_score' => 10,
+            'total_score' => 50,
+            'status' => 'submitted',
+            'submitted_at' => now(),
+        ]);
+
+        try {
+            app(EvaluationCycleService::class)->update($context['cycle'], [
+                'course_ids' => [$other->id],
+            ], $context['supervisor']);
+            $this->fail('إزالة مقرر له مدخلات يجب أن ترفض.');
+        } catch (ValidationException $exception) {
+            $this->assertStringContainsString(
+                'بعد إدخال تقييمات لطلابه',
+                $exception->validator->errors()->first('course_ids')
+            );
+        }
+        $this->assertCount(2, $context['cycle']->fresh()->courses);
+
+        $evaluation->delete();
+        $cycle = app(EvaluationCycleService::class)->update($context['cycle']->fresh(), [
+            'course_ids' => [$other->id],
+        ], $context['supervisor']);
+
+        $this->assertSame([$other->id], $cycle->courses->pluck('id')->all());
+        $this->assertDatabaseMissing('evaluation_candidate_enrollments', [
+            'evaluation_candidate_id' => $context['candidate']->id,
+            'course_id' => $context['course']->id,
+        ]);
+        $this->assertSame('excluded', $context['candidate']->fresh()->status);
     }
 
     public function test_evaluation_data_collection_cannot_start_before_the_last_period_ends(): void
@@ -598,7 +807,110 @@ class FinalEvaluationSystemTest extends TestCase
 
         $this->assertSame(46.0, $criterion['score']);
         $this->assertSame($warning->id, $criterion['inputs']['source_warnings'][0]['id']);
-        $this->assertSame('warnings', $criterion['rule_trace']['primary_source']);
+        // مصدر وحيد بعد حذف جدول ملاحظات السلوك: الإنذارات.
+        $this->assertSame('warnings', $criterion['rule_trace']['source']);
+        $this->assertArrayNotHasKey('legacy_observation_deductions', $criterion['rule_trace']);
+    }
+
+    public function test_late_entry_stays_in_the_cycle_when_it_carries_the_event_date(): void
+    {
+        $context = $this->context();
+        $subject = Subject::create([
+            'name' => 'تجويد',
+            'description' => 'اختبار الرصد المتأخر',
+            'min_marks' => 0,
+            'max_marks' => 100,
+            'course_id' => $context['course']->id,
+        ]);
+
+        // الرصد المتأخر هو الحالة الطبيعية: الاختبار يجري داخل الدورة وتُدخل
+        // علامته بعد إغلاقها. حين كانت النافذة على لحظة الكتابة كانت العلامة
+        // والحسم يسقطان من الحساب بلا أي أثر ظاهر للموظف.
+        $writtenAfterTheCycle = $context['candidate']->cycle->end_date->copy()->addWeek();
+        // الساعة تتقدّم إلى ما بعد إغلاق الدورة، فالحدّ الأعلى للنافذة يصبح
+        // نهاية الدورة لا اللحظة الراهنة.
+        Date::setTestNow($writtenAfterTheCycle);
+
+        $exam = Exam::create([
+            'student' => $context['student']->id,
+            'subject' => $subject->id,
+            'course' => $context['course']->id,
+            'mark' => 80,
+        ]);
+        $exam->forceFill([
+            'occurred_at' => $context['candidate']->cycle->end_date->copy()->subDay(),
+            'created_at' => $writtenAfterTheCycle,
+        ])->save();
+
+        $warning = Warning::create([
+            'student' => $context['student']->id,
+            'warner' => $context['teacher']->id,
+            'title' => 'مخالفة داخل الدورة رُصدت بعدها',
+            'deduction_points' => 4,
+        ]);
+        $warning->forceFill([
+            'occurred_at' => $context['candidate']->cycle->end_date->copy()->subDay(),
+            'created_at' => $writtenAfterTheCycle,
+        ])->save();
+
+        $candidate = $context['candidate']->fresh(['cycle', 'enrollments']);
+        $policy = config('evaluation.default_policy');
+
+        $exams = app(TheoreticalExamCalculator::class)->calculate($candidate, $policy);
+        $this->assertSame(80.0, $exams['score']);
+        $this->assertSame('ready', $exams['readiness_status']);
+
+        $administration = app(AdministrationEvaluationCalculator::class)->calculate($candidate, $policy);
+        $this->assertSame(46.0, $administration['score']);
+    }
+
+    public function test_records_outside_the_window_are_named_instead_of_vanishing(): void
+    {
+        $context = $this->context();
+        $subject = Subject::create([
+            'name' => 'تجويد',
+            'description' => 'اختبار التشخيص',
+            'min_marks' => 0,
+            'max_marks' => 100,
+            'course_id' => $context['course']->id,
+        ]);
+
+        // بتاريخ حدث بعد إغلاق الدورة: السجل خارج النافذة فعلاً،
+        // والمطلوب أن يُسمّى لا أن تتحول النتيجة إلى صفر صامت.
+        $outside = $context['candidate']->cycle->end_date->copy()->addWeek();
+        Date::setTestNow($outside);
+        Exam::create([
+            'student' => $context['student']->id,
+            'subject' => $subject->id,
+            'course' => $context['course']->id,
+            'mark' => 80,
+        ])->forceFill(['occurred_at' => $outside, 'created_at' => $outside])->save();
+
+        Warning::create([
+            'student' => $context['student']->id,
+            'warner' => $context['teacher']->id,
+            'title' => 'إنذار خارج النافذة',
+            'deduction_points' => 4,
+        ])->forceFill(['occurred_at' => $outside, 'created_at' => $outside])->save();
+
+        $candidate = $context['candidate']->fresh(['cycle', 'enrollments']);
+        $policy = config('evaluation.default_policy');
+
+        $exams = app(TheoreticalExamCalculator::class)->calculate($candidate, $policy);
+        $this->assertSame(0.0, $exams['score']);
+        $this->assertSame(1, $exams['inputs']['excluded_out_of_window_count']);
+        $this->assertTrue(
+            collect($exams['warnings'])->contains(fn ($warning) => str_contains($warning, 'خارج نافذة الدورة')),
+            'العلامة الساقطة يجب أن تُسمّى في تحذيرات المعيار لا أن تختفي.'
+        );
+
+        $administration = app(AdministrationEvaluationCalculator::class)->calculate($candidate, $policy);
+        $this->assertSame(50.0, $administration['score']);
+        $this->assertSame(1, $administration['inputs']['excluded_out_of_window_count']);
+        $this->assertTrue(
+            collect($administration['warnings'])->contains(fn ($warning) => str_contains($warning, 'خارج نافذة الدورة')),
+            'درجة إدارة كاملة مع وجود إنذار خارج النافذة يجب أن تُعلَّل.'
+        );
     }
 
     public function test_sabr_bonus_is_loaded_directly_and_awarded_once_per_student_part(): void

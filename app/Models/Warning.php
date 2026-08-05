@@ -16,10 +16,13 @@ class Warning extends Model
         'title',
         'description',
         'deduction_points',
+        // تاريخ المخالفة كما وقعت، لا لحظة تسجيلها.
+        'occurred_at',
     ];
 
     protected $casts = [
         'deduction_points' => 'decimal:2',
+        'occurred_at' => 'datetime',
     ];
 
     /**

@@ -16,6 +16,12 @@ class Exam extends Model
         'subject',
         'course',
         'mark',
+        // تاريخ الاختبار كما وقع، لا لحظة كتابة الصف: نافذة التقييم تُقارَن به.
+        'occurred_at',
+    ];
+
+    protected $casts = [
+        'occurred_at' => 'datetime',
     ];
 
     /**

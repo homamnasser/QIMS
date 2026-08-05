@@ -65,7 +65,11 @@ class ExamController extends Controller
             ], 404);
         }
 
-        $this->examService->updateExamMark($exam, $request->input('mark'));
+        $this->examService->updateExamMark(
+            $exam,
+            $request->input('mark'),
+            $request->input('occurred_at')
+        );
 
         $exam->load(['studentDetails', 'subjectDetails', 'courseDetails']);
 

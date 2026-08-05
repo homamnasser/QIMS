@@ -20,6 +20,8 @@ class ContactNumberValidationTest extends TestCase
 
     private Role $studentRole;
 
+    private int $studentUsernameSequence = 0;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -39,7 +41,7 @@ class ContactNumberValidationTest extends TestCase
             'role_family_reviewed_at' => now(),
         ]);
 
-        foreach (['إنشاء موظف', 'إنشاء طالب'] as $permission) {
+        foreach (['إنشاء موظف', 'إنشاء طالب', 'تعديل الطالب'] as $permission) {
             Permission::findOrCreate($permission, 'web');
         }
 
@@ -53,7 +55,7 @@ class ContactNumberValidationTest extends TestCase
             'work_scope' => StaffWorkScope::Institute->value,
         ]);
         $this->admin->syncRoles([$this->staffRole]);
-        $this->admin->givePermissionTo(['إنشاء موظف', 'إنشاء طالب']);
+        $this->admin->givePermissionTo(['إنشاء موظف', 'إنشاء طالب', 'تعديل الطالب']);
     }
 
     public function test_staff_phone_must_have_the_required_format_and_be_unique(): void
@@ -83,15 +85,34 @@ class ContactNumberValidationTest extends TestCase
             ->assertJsonPath('message.phone.0', 'رقم الهاتف مستخدم مسبقاً.');
     }
 
-    public function test_student_phone_is_required_formatted_and_unique(): void
+    public function test_student_phone_is_optional_but_formatted_and_unique_when_present(): void
     {
-        $missingPhone = $this->studentPayload();
+        $missingPhone = $this->studentPayload([
+            'first_name' => 'NoPhone',
+            'last_name' => 'Student',
+        ]);
         unset($missingPhone['phone_number']);
 
-        $this->actingAs($this->admin)
+        $createdWithoutPhone = $this->actingAs($this->admin)
             ->postJson('/api/student/createStudent', $missingPhone)
-            ->assertUnprocessable()
-            ->assertJsonPath('message.phone_number.0', 'رقم هاتف الطالب مطلوب.');
+            ->assertCreated();
+
+        $studentId = $createdWithoutPhone->json('data.id');
+        $this->assertDatabaseHas('students', [
+            'id' => $studentId,
+            'phone_number' => null,
+        ]);
+
+        $this->actingAs($this->admin)
+            ->postJson("/api/student/updateStudent/{$studentId}", [
+                'phone_number' => '',
+            ])
+            ->assertOk();
+
+        $this->assertDatabaseHas('students', [
+            'id' => $studentId,
+            'phone_number' => null,
+        ]);
 
         $this->actingAs($this->admin)
             ->postJson('/api/student/createStudent', $this->studentPayload([
@@ -162,9 +183,12 @@ class ContactNumberValidationTest extends TestCase
 
     private function studentPayload(array $overrides = []): array
     {
+        $this->studentUsernameSequence++;
+
         return [
             'first_name' => 'First',
             'last_name' => 'Student',
+            'username' => 'contact-student-'.$this->studentUsernameSequence,
             'phone_number' => '0944444444',
             'birth_date' => '2012-01-01',
             'academic_class' => 'السابع',

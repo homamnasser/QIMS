@@ -25,6 +25,9 @@ http:
       - name: last_name
         type: text
         value: naser
+      - name: username
+        type: text
+        value: adnan.naser-2026
       - name: phone_number
         type: text
         value: "0938316317"

@@ -24,6 +24,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SabrController;
 use App\Http\Controllers\StudentCircleController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\ReadingImprovementController;
 use App\Http\Controllers\StudentCourseAbsenceController;
 use App\Http\Controllers\StudentFinalResultController;
 use App\Http\Controllers\StudentLearningController;
@@ -257,8 +258,14 @@ Route::middleware($webAuthenticatedMiddleware)
             ->middleware('permission:إدارة دورات التقييم');
         Route::get('/rule-template', [EvaluationCycleController::class, 'ruleTemplate'])
             ->middleware('permission:إدارة دورات التقييم');
+        Route::get('/rule-profiles', [EvaluationCycleController::class, 'ruleProfiles'])
+            ->middleware('permission:إدارة دورات التقييم');
+        Route::post('/rule-profiles', [EvaluationCycleController::class, 'storeRuleProfile'])
+            ->middleware('permission:إدارة دورات التقييم');
         Route::get('/{cycle}', [EvaluationCycleController::class, 'show'])
             ->middleware('permission:عرض دورات التقييم');
+        Route::put('/{cycle}', [EvaluationCycleController::class, 'update'])
+            ->middleware('permission:إدارة دورات التقييم');
         Route::post('/{cycle}/sync-candidates', [EvaluationCycleController::class, 'syncCandidates'])
             ->middleware('permission:إدارة دورات التقييم');
         Route::get('/{cycle}/readiness', [EvaluationCycleController::class, 'readiness'])
@@ -333,14 +340,6 @@ Route::middleware($webAuthenticatedMiddleware)
         Route::post('/{batch}/publish', [RecognitionController::class, 'publish'])
             ->middleware('permission:إدارة التكريم النهائي');
     });
-
-Route::post(
-    '/administration-observations/{observation}/approve',
-    [EvaluationInputController::class, 'approveAdministration']
-)->middleware([
-    ...$webAuthenticatedMiddleware,
-    'permission:إدارة تقييم الإدارة',
-]);
 
 Route::group([
     'middleware' => $mobileStudentMiddleware,
@@ -451,6 +450,22 @@ Route::group([
     Route::delete('/deleteAbsence/{id}', [StudentCourseAbsenceController::class, 'deleteAbsence'])->middleware('permission:حذف غياب');
     Route::get('/getAllAbsences', [StudentCourseAbsenceController::class, 'getAllAbsence'])->middleware('permission:عرض كافة الغيابات');
 
+});
+
+/*
+ * تقييم التحسن في القراءة — أحد معايير التقييم النهائي الستة.
+ * المتحكّم كان مكتملاً بلا مسار، فكان المعيار يبقى «غير جاهز» بلا أي طريق
+ * لإنشاء سجله من الواجهة.
+ */
+Route::group([
+    'middleware' => $webAuthenticatedMiddleware,
+    'prefix' => 'reading-improvement',
+], function ($router) {
+    Route::get('/getAllReadingImprovements', [ReadingImprovementController::class, 'index'])->middleware('permission:عرض كافة تقييمات القراءة');
+    Route::post('/createReadingImprovement', [ReadingImprovementController::class, 'store'])->middleware('permission:إنشاء تقييم قراءة');
+    Route::get('/getReadingImprovementById/{id}', [ReadingImprovementController::class, 'show'])->middleware('permission:عرض تفاصيل تقييم القراءة');
+    Route::post('/updateReadingImprovement/{readingImprovement}', [ReadingImprovementController::class, 'update'])->middleware('permission:تعديل تقييم القراءة');
+    Route::delete('/deleteReadingImprovement/{readingImprovement}', [ReadingImprovementController::class, 'destroy'])->middleware('permission:حذف تقييم القراءة');
 });
 
 Route::middleware($mobileStaffMiddleware)
@@ -585,8 +600,14 @@ Route::middleware($mobileStaffMiddleware)
             ->middleware('permission:إدارة دورات التقييم');
         Route::get('/evaluation-cycles/rule-template', [EvaluationCycleController::class, 'ruleTemplate'])
             ->middleware('permission:إدارة دورات التقييم');
+        Route::get('/evaluation-cycles/rule-profiles', [EvaluationCycleController::class, 'ruleProfiles'])
+            ->middleware('permission:إدارة دورات التقييم');
+        Route::post('/evaluation-cycles/rule-profiles', [EvaluationCycleController::class, 'storeRuleProfile'])
+            ->middleware('permission:إدارة دورات التقييم');
         Route::get('/evaluation-cycles/{cycle}', [EvaluationCycleController::class, 'show'])
             ->middleware('permission:عرض دورات التقييم');
+        Route::put('/evaluation-cycles/{cycle}', [EvaluationCycleController::class, 'update'])
+            ->middleware('permission:إدارة دورات التقييم');
         Route::post('/evaluation-cycles/{cycle}/sync-candidates', [EvaluationCycleController::class, 'syncCandidates'])
             ->middleware('permission:إدارة دورات التقييم');
         Route::get('/evaluation-cycles/{cycle}/readiness', [EvaluationCycleController::class, 'readiness'])
@@ -627,10 +648,6 @@ Route::middleware($mobileStaffMiddleware)
             ->middleware('permission:إدارة التكريم النهائي');
         Route::post('/recognition-batches/{batch}/publish', [RecognitionController::class, 'publish'])
             ->middleware('permission:إدارة التكريم النهائي');
-        Route::post(
-            '/administration-observations/{observation}/approve',
-            [EvaluationInputController::class, 'approveAdministration']
-        )->middleware('permission:إدارة تقييم الإدارة');
     });
 
 Route::group([

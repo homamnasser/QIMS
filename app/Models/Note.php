@@ -15,6 +15,12 @@ class Note extends Model
         'user_id',
         'title',
         'description',
+        // تاريخ الملاحظة كما وقعت، لا لحظة تدوينها.
+        'occurred_at',
+    ];
+
+    protected $casts = [
+        'occurred_at' => 'datetime',
     ];
 
     public function student(): BelongsTo

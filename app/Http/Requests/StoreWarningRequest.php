@@ -38,6 +38,9 @@ class StoreWarningRequest extends FormRequest
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'deduction_points' => 'nullable|numeric|min:1|max:5',
+            // تاريخ المخالفة كما وقعت؛ معيار الإدارة يجمع الحسومات داخل نافذة
+            // الدورة، وبلا هذا الحقل كان الإنذار المسجَّل متأخراً لا يُحسم.
+            'occurred_at' => 'nullable|date',
         ];
     }
 

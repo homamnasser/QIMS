@@ -26,6 +26,7 @@ use App\Services\StudentCircleService;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use RuntimeException;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\PermissionRegistrar;
 
@@ -47,7 +48,6 @@ class TestDataSeeder extends Seeder
             'evaluation_criterion_results',
             'evaluation_results',
             'evaluation_runs',
-            'administration_behavior_observations',
             'evaluation_exam_results',
             'teacher_period_evaluations',
             'quran_period_assessments',
@@ -143,22 +143,7 @@ class TestDataSeeder extends Seeder
             Permission::whereIn('name', config('roles.field_supervisor_permissions'))->get()
         );
 
-        $teacherPerms = Permission::whereIn('name', [
-            'تسجيل الدخول', 'تسجيل الخروج',
-            'عرض كافة الكورسات', 'عرض تفاصيل الكورس',
-            'عرض كافة المواد', 'عرض تفاصيل المادة',
-            'عرض كافة الدروس', 'عرض تفاصيل الدرس',
-            'عرض تواريخ الكورس', 'عرض دروس التاريخ', 'عرض المنهج الدراسي للكورس',
-            'عرض منهج حلقتي', 'عرض تفاصيل الحلقة', 'عرض كافة الحلقات',
-            'عرض كافة الطلاب', 'عرض تفاصيل الطالب', 'عرض طلاب الحلقة',
-            'إنشاء ملاحظة', 'عرض ملاحظات الطالب', 'عرض ملاحظاتي',
-            'إنشاء سبر', 'عرض سبر الطالب', 'عرض سبري', 'تعديل نتيجة السبر',
-            'إنشاء تسميع', 'عرض تسميع الطالب', 'عرض تسميعاتي',
-            'إنشاء إنذار', 'عرض تفاصيل الإنذار', 'عرض إنذاراتي',
-            'إنشاء امتحان', 'عرض تفاصيل الامتحان', 'امتحاناتي',
-            ...config('roles.teacher_attendance_and_absence_permissions'),
-            'إدخال تقييم المدرس', 'إدخال تقييم القرآن',
-        ])->get();
+        $teacherPerms = Permission::whereIn('name', config('roles.teacher_permissions'))->get();
         $teacherRole->syncPermissions($teacherPerms);
 
         $studentPerms = Permission::whereIn('name', $studentSelfServicePermissions)->get();
@@ -405,7 +390,7 @@ class TestDataSeeder extends Seeder
         }
 
         // ══════════════════════════════════════════════
-        //  12. STUDENTS  (14 — Arabic names, Syrian phones)
+        //  12. STUDENTS  (Arabic display names, explicit English login usernames)
         // ══════════════════════════════════════════════
         $this->command->info('  ✅ إنشاء الطلاب...');
 
@@ -428,6 +413,14 @@ class TestDataSeeder extends Seeder
 
         $students = [];
         foreach ($studentsRaw as $d) {
+            if (
+                strlen($d['username']) < 3
+                || strlen($d['username']) > 30
+                || preg_match('/\A[a-z0-9]+(?:[._-][a-z0-9]+)*\z/', $d['username']) !== 1
+            ) {
+                throw new RuntimeException("اسم مستخدم الطالب التجريبي غير صالح: {$d['username']}");
+            }
+
             $d['password'] = 'student123';
             $s = Student::create($d);
             $s->assignRole($studentRole);

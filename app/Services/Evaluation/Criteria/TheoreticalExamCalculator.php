@@ -66,6 +66,12 @@ class TheoreticalExamCalculator
         if ($missingSubjectIds->isNotEmpty()) {
             $warnings[] = 'بعض المواد النظرية المطلوبة بلا نتيجة.';
         }
+        // «لا نتائج» و«نتائج خارج النافذة» يعطيان صفراً واحداً؛ بلا هذه الجملة
+        // يبحث الموظف عن علامات مفقودة وهي محفوظة أمامه في الجدول.
+        $excluded = $this->sources->excludedExamResults($candidate);
+        if ($message = $this->sources->excludedWarningMessage($candidate, $excluded, 'علامة')) {
+            $warnings[] = $message;
+        }
         if ($results->contains(fn ($result) => (float) ($result->subjectDetails?->max_marks ?? 0) <= 0)) {
             $warnings[] = 'توجد نتيجة امتحان بدرجة عظمى غير صالحة.';
         }
@@ -87,6 +93,8 @@ class TheoreticalExamCalculator
                 ])->values()->all(),
                 'subject_count' => $results->count(),
                 'missing_subject_ids' => $missingSubjectIds->all(),
+                'excluded_out_of_window_count' => $excluded['count'],
+                'excluded_out_of_window_latest' => $excluded['latest'],
                 'normalized_percentage' => round($normalized, 4),
             ],
             'rule_trace' => [

@@ -44,9 +44,16 @@ class ExamService implements IExamService
         return Exam::find($id);
     }
 
-    public function updateExamMark(Exam $exam, float $newMark): bool
+    /**
+     * تصحيح العلامة، ومعها تاريخ الاختبار إن أُرسل — فتصحيح تاريخ خاطئ يعيد
+     * العلامة إلى نافذة دورتها بدل أن تبقى ساقطة من الحساب.
+     */
+    public function updateExamMark(Exam $exam, float $newMark, ?string $occurredAt = null): bool
     {
-        return $exam->update(['mark' => $newMark]);
+        return $exam->update(array_filter(
+            ['mark' => $newMark, 'occurred_at' => $occurredAt],
+            fn ($value) => $value !== null
+        ));
     }
 
     public function deleteExam(Exam $exam): bool

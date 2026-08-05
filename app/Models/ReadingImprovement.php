@@ -27,9 +27,12 @@ class ReadingImprovement extends Model
         'status',
         'rule_trace',
         'description',
+        // تاريخ التقييم القرائي كما جرى، لا لحظة تسجيله.
+        'occurred_at',
     ];
 
     protected $casts = [
+        'occurred_at' => 'datetime',
         'baseline_score' => 'decimal:2',
         'final_score' => 'decimal:2',
         'difference' => 'decimal:2',

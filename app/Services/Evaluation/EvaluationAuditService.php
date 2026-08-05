@@ -2,7 +2,6 @@
 
 namespace App\Services\Evaluation;
 
-use App\Models\AdministrationBehaviorObservation;
 use App\Models\Certificate;
 use App\Models\EvaluationAuditEvent;
 use App\Models\EvaluationCandidate;
@@ -63,9 +62,6 @@ class EvaluationAuditService
                 : null,
             $auditable instanceof Certificate => $auditable->result
                 ? $auditable->result->run()->value('evaluation_cycle_id')
-                : null,
-            $auditable instanceof AdministrationBehaviorObservation => $auditable->candidate
-                ? $auditable->candidate->evaluation_cycle_id
                 : null,
             $auditable instanceof TeacherPeriodEvaluation,
             $auditable instanceof QuranPeriodAssessment,

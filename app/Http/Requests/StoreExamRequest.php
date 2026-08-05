@@ -24,6 +24,9 @@ class StoreExamRequest extends FormRequest
             'subject' => 'required|integer|exists:subjects,id',
             'course'  => 'required|integer|exists:courses,id',
             'mark'    => 'required|numeric|min:0',
+            // تاريخ الاختبار كما وقع؛ نافذة التقييم تُقارَن به لا بلحظة الإدخال،
+            // فيصبح الرصد المتأخر ممكناً بلا أن تسقط العلامة من الحساب.
+            'occurred_at' => 'nullable|date',
         ];
     }
 

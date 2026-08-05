@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\AdministrationBehaviorObservation;
 use App\Models\EvaluationCandidate;
 use App\Models\TeacherPeriodEvaluation;
 use App\Services\Evaluation\EvaluationAccessService;
@@ -201,26 +200,5 @@ class EvaluationInputController extends Controller
             $this->inputs->saveQuran($candidate, $data, $request->user()),
             'تم حفظ تأكيد حالة التسميع؛ أعداد الصفحات والمراجعة مستخرجة آليًا.'
         );
-    }
-
-    public function approveAdministration(
-        Request $request,
-        AdministrationBehaviorObservation $observation
-    ): JsonResponse {
-        $observation->loadMissing('candidate.cycle');
-        abort_unless(
-            $this->access->canManageCycle($request->user(), $observation->candidate->cycle),
-            403
-        );
-
-        return $this->saved(
-            $this->inputs->approveAdministrationObservation($observation, $request->user()),
-            'تم اعتماد الحسم الإداري.'
-        );
-    }
-
-    private function saved(mixed $data, string $message, int $status = 200): JsonResponse
-    {
-        return response()->json(['message' => $message, 'data' => $data], $status);
     }
 }

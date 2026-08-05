@@ -25,6 +25,7 @@ class UpdateReadingImprovementRequest extends FormRequest
     {
         return [
             'type'        => 'sometimes|required|in:significant_improvement,slight_improvement,no_improvement,decline',
+            'occurred_at' => 'nullable|date',
             'description' => 'nullable|string|max:1000',
         ];
     }

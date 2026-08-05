@@ -24,7 +24,16 @@ class ReadingCalculator
                 'inputs' => [],
                 'rule_trace' => ['points' => $settings['points']],
                 'readiness_status' => 'missing',
-                'warnings' => ['لا يوجد سجل تحسن قراءة في جدول reading_improvements ضمن دورة الطالب.'],
+                'warnings' => array_values(array_filter([
+                    'لا يوجد سجل تحسن قراءة في جدول reading_improvements ضمن دورة الطالب.',
+                    // السجل الموجود خارج النافذة يعطي الرسالة نفسها؛ تسميته توفّر
+                    // البحث عن سجل مفقود وهو محفوظ.
+                    $this->sources->excludedWarningMessage(
+                        $candidate,
+                        $this->sources->excludedReadingRecords($candidate),
+                        'سجل قراءة'
+                    ),
+                ])),
             ];
         }
 

@@ -106,7 +106,7 @@ class MobileAuthenticationService implements IMobileAuthenticationService
                 : null;
         }
 
-        return Student::query()->where('username', $login)->first();
+        return Student::query()->where('username', strtolower($login))->first();
     }
 
     private function issueTokenPair(

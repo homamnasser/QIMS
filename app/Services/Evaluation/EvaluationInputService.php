@@ -2,7 +2,6 @@
 
 namespace App\Services\Evaluation;
 
-use App\Models\AdministrationBehaviorObservation;
 use App\Models\EvaluationCandidate;
 use App\Models\EvaluationCandidateEnrollment;
 use App\Models\EvaluationPeriod;
@@ -131,33 +130,6 @@ class EvaluationInputService
             'evaluation.quran_saved',
             $actor
         );
-    }
-
-    public function approveAdministrationObservation(
-        AdministrationBehaviorObservation $observation,
-        User $actor
-    ): AdministrationBehaviorObservation {
-        if ($observation->status !== 'pending') {
-            throw ValidationException::withMessages([
-                'observation' => ['يمكن اعتماد ملاحظة معلقة فقط.'],
-            ]);
-        }
-
-        $before = $observation->toArray();
-        $observation->update([
-            'status' => 'approved',
-            'approved_by' => $actor->id,
-            'approved_at' => now(),
-        ]);
-        $this->audit->record(
-            'evaluation.administration_observation_approved',
-            $observation,
-            $actor,
-            $before,
-            $observation->toArray()
-        );
-
-        return $observation;
     }
 
     private function auditedUpsert(

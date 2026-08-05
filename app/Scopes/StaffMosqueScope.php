@@ -3,7 +3,6 @@
 namespace App\Scopes;
 
 use App\Enums\StaffWorkScope;
-use App\Models\AdministrationBehaviorObservation;
 use App\Models\Certificate;
 use App\Models\Circle;
 use App\Models\Course;
@@ -123,7 +122,6 @@ class StaffMosqueScope implements Scope
             EvaluationExamResult::class => ['candidate', 'subject'],
             TeacherPeriodEvaluation::class,
             QuranPeriodAssessment::class,
-            AdministrationBehaviorObservation::class => ['candidate'],
             // evaluation_candidate_id stays null until the part lands inside a
             // cycle, so only student_id is a reliable anchor.
             SabrPartAchievement::class => ['student'],
