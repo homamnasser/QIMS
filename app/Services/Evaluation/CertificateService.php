@@ -284,6 +284,7 @@ class CertificateService
             $process = new Process([
                 $chrome,
                 '--headless=new',
+                '--disable-crash-reporter',
                 '--no-sandbox',
                 '--disable-gpu',
                 '--allow-file-access-from-files',
