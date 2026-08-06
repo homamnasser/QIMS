@@ -1,6 +1,6 @@
 @php
     // مسارات أصول الهوية البصرية؛ يقرؤها Chrome عبر file:// أثناء التوليد.
-    $asset = fn (string $file) => 'file://'.resource_path('certificate/'.$file);
+    $asset = fn (string $file) => $assetRoot.'/'.$file;
 @endphp
 <!doctype html>
 <html lang="ar" dir="rtl">

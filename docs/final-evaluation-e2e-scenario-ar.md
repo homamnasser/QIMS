@@ -1092,12 +1092,18 @@ exit
 
 ```dotenv
 EVALUATION_CERTIFICATE_DISK=local
-EVALUATION_CHROME_BINARY=/usr/bin/google-chrome
+# اختياري إذا لم يكن Chrome في المسار القياسي:
+# Linux:
+# EVALUATION_CHROME_BINARY=/usr/bin/google-chrome
+# Windows:
+# EVALUATION_CHROME_BINARY="C:/Program Files/Google/Chrome/Application/chrome.exe"
 EVALUATION_VERIFICATION_URL=http://localhost:8000/api/public/certificates/verify
 EVALUATION_CERTIFICATE_ISSUER="إدارة البرنامج التعليمي"
 ```
 
-يجب أن يكون Chrome أو Chromium موجودًا وقابلًا للتنفيذ من مستخدم PHP.
+يختار النظام مسار Chrome القياسي تلقائيًا على Linux وWindows. استخدم
+`EVALUATION_CHROME_BINARY` فقط إذا كان التثبيت في مسار مختلف. يجب أن يكون Chrome
+قابلًا للتنفيذ من مستخدم PHP.
 إذا كان backend يعمل على مضيف أو منفذ مختلف، عدّل بداية رابط التحقق فقط مع إبقاء المسار
 `/api/public/certificates/verify`. وبعد تعديل `.env` نفّذ:
 

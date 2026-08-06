@@ -744,12 +744,20 @@ QIMS-{year}-{cycle_id padded}-{result_id padded}-V{version}
 
 ```dotenv
 EVALUATION_CERTIFICATE_DISK=local
-EVALUATION_CHROME_BINARY=/usr/bin/google-chrome
+# اختياري إذا لم يكن Chrome في المسار القياسي:
+# Linux:
+# EVALUATION_CHROME_BINARY=/usr/bin/google-chrome
+# Windows:
+# EVALUATION_CHROME_BINARY="C:/Program Files/Google/Chrome/Application/chrome.exe"
 EVALUATION_VERIFICATION_URL=https://example.org/api/public/certificates/verify
 EVALUATION_CERTIFICATE_ISSUER="إدارة البرنامج التعليمي"
 ```
 
-يجب أن يكون Chrome/Chromium موجودًا وقابلًا للتنفيذ لدى عامل PHP، وأن يكون قرص التخزين الخاص غير متاح مباشرة من الويب. التنزيل يمر عبر Controller بعد التحقق من الصلاحية والملكية والبصمة.
+يختار النظام مسار Chrome القياسي تلقائيًا على Linux وWindows. استخدم
+`EVALUATION_CHROME_BINARY` فقط إذا كان التثبيت في مسار مختلف، ثم نفّذ
+`php artisan config:clear`. يجب أن يكون Chrome قابلًا للتنفيذ لدى عامل PHP، وأن يكون
+قرص التخزين الخاص غير متاح مباشرة من الويب. التنزيل يمر عبر Controller بعد التحقق من
+الصلاحية والملكية والبصمة.
 
 ## 14. سجل التدقيق والتاريخ
 

@@ -1,5 +1,9 @@
 <?php
 
+$defaultChromeBinary = PHP_OS_FAMILY === 'Windows'
+    ? rtrim(getenv('ProgramFiles') ?: 'C:\\Program Files', '\\/').'\\Google\\Chrome\\Application\\chrome.exe'
+    : '/usr/bin/google-chrome';
+
 return [
     'default_policy_name' => 'سياسة التقييم النهائية',
 
@@ -119,7 +123,7 @@ return [
 
     'certificate' => [
         'disk' => env('EVALUATION_CERTIFICATE_DISK', 'local'),
-        'chrome_binary' => env('EVALUATION_CHROME_BINARY', '/usr/bin/google-chrome'),
+        'chrome_binary' => env('EVALUATION_CHROME_BINARY', $defaultChromeBinary),
         'public_verification_url' => env(
             'EVALUATION_VERIFICATION_URL',
             rtrim((string) env('APP_URL', 'http://localhost'), '/').'/api/public/certificates/verify'

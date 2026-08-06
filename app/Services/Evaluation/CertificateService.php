@@ -278,6 +278,7 @@ class CertificateService
             File::put($htmlPath, view('certificates.final-result', [
                 'certificate' => $snapshot,
                 'qrSvg' => $qrSvg,
+                'assetRoot' => $this->localFileUrl(resource_path('certificate')),
             ])->render());
 
             $process = new Process([
@@ -288,7 +289,7 @@ class CertificateService
                 '--allow-file-access-from-files',
                 '--no-pdf-header-footer',
                 '--print-to-pdf='.$pdfPath,
-                'file://'.$htmlPath,
+                $this->localFileUrl($htmlPath),
             ]);
             $process->setTimeout(45);
             $process->run();
@@ -308,5 +309,13 @@ class CertificateService
         } finally {
             File::delete([$htmlPath, $pdfPath]);
         }
+    }
+
+    protected function localFileUrl(string $path): string
+    {
+        $segments = array_map('rawurlencode', explode('/', ltrim(str_replace('\\', '/', $path), '/')));
+        $encodedPath = preg_replace('/^([A-Za-z])%3A/', '$1:', implode('/', $segments));
+
+        return 'file:///'.(string) $encodedPath;
     }
 }
