@@ -59,7 +59,9 @@ class MobileStaffAuthorizationTest extends TestCase
                 'data.user.role_family',
                 RoleFamily::FieldSupervisor->value
             )
-            ->assertJsonPath('data.user.has_full_field_operations_access', true);
+            // المشرف الميداني محصور بالحضور، فلا يحمل قدرة الإشراف الكامل التي
+            // تتخطى حصر السجلات التشغيلية بأصحابها.
+            ->assertJsonPath('data.user.has_full_field_operations_access', false);
 
         $adminRole = $this->createRole('mobile-staff-admin', RoleFamily::Admin);
         $admin = $this->createUser('mobile-admin@example.com', '0992000003');
@@ -195,7 +197,11 @@ class MobileStaffAuthorizationTest extends TestCase
             ->assertJsonPath('data.0.id', $ownExam->id);
     }
 
-    public function test_field_supervisor_can_manage_records_created_by_other_staff(): void
+    /**
+     * دور المشرف الميداني مسؤوليته رصد حضور جلسات حلقاته؛ وكل ما عداه من
+     * السجلات التشغيلية خارج نطاقه ولو كان يخص طلاب مسجده نفسه.
+     */
+    public function test_field_supervisor_is_confined_to_attendance_and_its_associations(): void
     {
         $fieldSupervisor = $this->createFieldSupervisor(
             'records-field-supervisor@example.com',
@@ -209,13 +215,13 @@ class MobileStaffAuthorizationTest extends TestCase
             'student_id' => $student->id,
             'user_id' => $author->id,
             'title' => 'ملاحظة كتبها موظف آخر',
-            'description' => 'يجب أن يستطيع المشرف الميداني إدارتها.',
+            'description' => 'خارج نطاق المشرف الميداني.',
         ]);
         $warning = Warning::create([
             'student' => $student->id,
             'warner' => $author->id,
             'title' => 'إنذار كتبه موظف آخر',
-            'description' => 'سجل تشغيلي تحت الإشراف الميداني.',
+            'description' => 'خارج نطاق المشرف الميداني.',
         ]);
         $sabr = Sabr::create([
             'student' => $student->id,
@@ -230,38 +236,55 @@ class MobileStaffAuthorizationTest extends TestCase
 
         $token = $this->accessToken($fieldSupervisor);
 
-        $this->withFreshBearer($token)
-            ->deleteJson("/api/mobile/staff/notes/{$note->id}")
-            ->assertOk();
-        $this->withFreshBearer($token)
-            ->deleteJson("/api/mobile/staff/warnings/{$warning->id}")
-            ->assertOk();
+        foreach ([
+            ['delete', "/api/mobile/staff/notes/{$note->id}"],
+            ['delete', "/api/mobile/staff/warnings/{$warning->id}"],
+            ['get', '/api/mobile/staff/memorizations'],
+            ['get', '/api/mobile/staff/exams'],
+            ['get', '/api/mobile/staff/evaluation-cycles'],
+        ] as [$method, $uri]) {
+            $this->withFreshBearer($token)
+                ->{$method.'Json'}($uri)
+                ->assertForbidden();
+        }
+
         $this->withFreshBearer($token)
             ->putJson("/api/mobile/staff/sabrs/{$sabr->id}", [
                 'value' => 'ممتاز',
-                'note' => 'تمت المراجعة ميدانياً',
             ])
-            ->assertOk();
+            ->assertForbidden();
 
-        $this->assertDatabaseMissing('notes', ['id' => $note->id]);
-        $this->assertDatabaseMissing('warnings', ['id' => $warning->id]);
-        $this->assertDatabaseHas('sabrs', [
-            'id' => $sabr->id,
-            'value' => 'ممتاز',
-            'note' => 'تمت المراجعة ميدانياً',
-        ]);
+        $this->assertDatabaseHas('notes', ['id' => $note->id]);
+        $this->assertDatabaseHas('warnings', ['id' => $warning->id]);
+        $this->assertDatabaseHas('sabrs', ['id' => $sabr->id, 'value' => 'جيد']);
+
+        // ما يلزم الرصد يبقى مفتوحاً: الحلقات وطلابها وجلسات الكورس والحضور.
+        foreach ([
+            '/api/mobile/staff/circles',
+            '/api/mobile/staff/students',
+            "/api/mobile/staff/courses/{$course->id}/dates",
+            '/api/mobile/staff/attendance',
+        ] as $uri) {
+            $this->withFreshBearer($token)->getJson($uri)->assertOk();
+        }
     }
 
-    public function test_field_supervisor_sees_all_evaluation_candidates_while_teacher_remains_scoped(): void
+    public function test_evaluation_candidates_are_scoped_to_the_assigned_teacher_and_closed_to_field_supervision(): void
     {
         $fieldSupervisor = $this->createFieldSupervisor(
             'evaluation-field-supervisor@example.com',
             '0992000030'
         );
+        $assignedTeacherRole = $this->createRole(
+            'assigned-evaluation-teacher-role',
+            RoleFamily::Teacher
+        );
+        $assignedTeacherRole->givePermissionTo('إدخال تقييم المدرس');
         $assignedTeacher = $this->createUser(
             'assigned-evaluation-teacher@example.com',
             '0992000031'
         );
+        $assignedTeacher->syncRoles([$assignedTeacherRole]);
         $unassignedTeacherRole = $this->createRole(
             'unassigned-evaluation-teacher',
             RoleFamily::Teacher
@@ -316,6 +339,10 @@ class MobileStaffAuthorizationTest extends TestCase
         ]);
 
         $this->withFreshBearer($this->accessToken($fieldSupervisor))
+            ->getJson('/api/mobile/staff/evaluation-candidates')
+            ->assertForbidden();
+
+        $this->withFreshBearer($this->accessToken($assignedTeacher))
             ->getJson('/api/mobile/staff/evaluation-candidates')
             ->assertOk()
             ->assertJsonPath('meta.total', 1)

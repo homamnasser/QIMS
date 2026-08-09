@@ -48,6 +48,11 @@ Generated from `php artisan route:list --json`.
 | DELETE | `/api/mobile/staff/memorizations/{id}` | Memorizations |
 | GET | `/api/mobile/staff/memorizations/{id}` | Memorizations |
 | GET | `/api/mobile/staff/memorizations/mine` | Memorizations |
+| GET | `/api/mobile/staff/reading-improvements` | Reading Improvements |
+| POST | `/api/mobile/staff/reading-improvements` | Reading Improvements |
+| DELETE | `/api/mobile/staff/reading-improvements/{readingImprovement}` | Reading Improvements |
+| GET | `/api/mobile/staff/reading-improvements/{id}` | Reading Improvements |
+| PUT | `/api/mobile/staff/reading-improvements/{readingImprovement}` | Reading Improvements |
 | GET | `/api/mobile/staff/exams` | Exams |
 | POST | `/api/mobile/staff/exams` | Exams |
 | DELETE | `/api/mobile/staff/exams/{id}` | Exams |

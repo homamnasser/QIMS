@@ -5,5 +5,5 @@ Generated and verified against `php artisan route:list --json`.
 | Area | Requests |
 |---|---:|
 | Mobile authentication | 4 |
-| Student-owned data | 12 |
-| **Total** | **16** |
+| Student-owned data | 13 |
+| **Total** | **17** |

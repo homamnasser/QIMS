@@ -26,4 +26,6 @@ interface IStudentLearningService
     public function getWarnings(Student $student): Collection;
 
     public function getExams(Student $student): Collection;
+
+    public function getReadingImprovements(Student $student): Collection;
 }

@@ -129,6 +129,11 @@ class Student extends Authenticatable
         return $this->hasMany(Exam::class, 'student', 'id');
     }
 
+    public function readingImprovements(): HasMany
+    {
+        return $this->hasMany(ReadingImprovement::class, 'student');
+    }
+
     public function absences(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(StudentCourseAbsence::class, 'student', 'id');

@@ -97,6 +97,14 @@ class StudentLearningService implements IStudentLearningService
             ->get();
     }
 
+    public function getReadingImprovements(Student $student): Collection
+    {
+        return $student->readingImprovements()
+            ->with(['studentDetails', 'courseDetails'])
+            ->latest()
+            ->get();
+    }
+
     public function getWarnings(Student $student): Collection
     {
         return $student->warnings()

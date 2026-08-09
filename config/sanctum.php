@@ -22,7 +22,7 @@ return [
         'trim',
         explode(',', env(
             'SANCTUM_STATEFUL_DOMAINS',
-            'localhost:5173,127.0.0.1:5173,'.Sanctum::currentApplicationUrlWithPort()
+            'localhost:5173,127.0.0.1:5173,192.168.1.169:5173,'.Sanctum::currentApplicationUrlWithPort()
         ))
     ))),
 

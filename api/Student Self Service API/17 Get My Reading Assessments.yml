@@ -1,0 +1,35 @@
+info:
+  name: 17 Get My Reading Assessments
+  type: http
+  seq: 17
+
+http:
+  method: GET
+  url: "{{baseUrl}}/api/mobile/student/me/reading-improvements"
+  headers:
+    - name: Accept
+      value: application/json
+  auth:
+    type: bearer
+    token: "{{studentToken}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("returns only the authenticated student's reading assessments", function() {
+          expect(res.status).to.equal(200);
+          expect(res.body.data).to.be.an("array");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: |-
+  Returns reading improvement records whose student foreign key matches the
+  authenticated Student model. It never treats a staff User ID as a student ID.
+
+  Required permission: `عرض تقييمات قراءتي كطالب`.

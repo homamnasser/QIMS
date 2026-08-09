@@ -146,7 +146,7 @@ class TestDataSeeder extends Seeder
         $teacherPerms = Permission::whereIn('name', config('roles.teacher_permissions'))->get();
         $teacherRole->syncPermissions($teacherPerms);
 
-        $studentPerms = Permission::whereIn('name', $studentSelfServicePermissions)->get();
+        $studentPerms = Permission::whereIn('name', config('roles.student_permissions'))->get();
         $studentRole->syncPermissions($studentPerms);
 
         // ══════════════════════════════════════════════

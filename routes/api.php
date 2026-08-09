@@ -364,6 +364,8 @@ Route::group([
         ->middleware('permission:'.config('roles.student_capabilities.warnings'));
     Route::get('/exams', [StudentLearningController::class, 'exams'])
         ->middleware('permission:'.config('roles.student_capabilities.exams'));
+    Route::get('/reading-improvements', [StudentLearningController::class, 'readingImprovements'])
+        ->middleware('permission:'.config('roles.student_capabilities.reading_improvements'));
     Route::get('/final-results', [StudentFinalResultController::class, 'index'])
         ->middleware('permission:'.config('roles.student_capabilities.final_results'));
     Route::get('/final-results/{resultId}', [StudentFinalResultController::class, 'show'])
@@ -577,6 +579,21 @@ Route::middleware($mobileStaffMiddleware)
         Route::delete('/memorizations/{id}', [MemorizationController::class, 'deleteMemorization'])
             ->whereNumber('id')
             ->middleware('permission:حذف تسميع');
+
+        // نفس متحكّم الويب ونفس أسماء الصلاحيات؛ ما يتغيّر هو قناة المصادقة فقط.
+        Route::get('/reading-improvements', [ReadingImprovementController::class, 'index'])
+            ->middleware('permission:عرض كافة تقييمات القراءة');
+        Route::post('/reading-improvements', [ReadingImprovementController::class, 'store'])
+            ->middleware('permission:إنشاء تقييم قراءة');
+        Route::get('/reading-improvements/{id}', [ReadingImprovementController::class, 'show'])
+            ->whereNumber('id')
+            ->middleware('permission:عرض تفاصيل تقييم القراءة');
+        Route::put('/reading-improvements/{readingImprovement}', [ReadingImprovementController::class, 'update'])
+            ->whereNumber('readingImprovement')
+            ->middleware('permission:تعديل تقييم القراءة');
+        Route::delete('/reading-improvements/{readingImprovement}', [ReadingImprovementController::class, 'destroy'])
+            ->whereNumber('readingImprovement')
+            ->middleware('permission:حذف تقييم القراءة');
 
         Route::get('/exams', [ExamController::class, 'getAllExams'])
             ->middleware('permission:عرض كافة الامتحانات');

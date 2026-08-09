@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\ExamResource;
 use App\Http\Resources\MemorizationResource;
 use App\Http\Resources\NoteResource;
+use App\Http\Resources\ReadingImprovementResource;
 use App\Http\Resources\SabrResource;
 use App\Http\Resources\StudentCourseScheduleResource;
 use App\Http\Resources\StudentLearningCircleResource;
@@ -171,6 +172,22 @@ class StudentLearningController extends Controller
             'message' => 'تم جلب امتحانات الطالب بنجاح.',
             'data' => ExamResource::collection(
                 $this->studentLearningService->getExams($student)
+            ),
+        ]);
+    }
+
+    public function readingImprovements(Request $request): JsonResponse
+    {
+        $student = $this->authenticatedStudent($request);
+        if (! $student) {
+            return $this->studentOnlyResponse();
+        }
+
+        return response()->json([
+            'code' => 200,
+            'message' => 'تم جلب تقييمات قراءة الطالب بنجاح.',
+            'data' => ReadingImprovementResource::collection(
+                $this->studentLearningService->getReadingImprovements($student)
             ),
         ]);
     }
