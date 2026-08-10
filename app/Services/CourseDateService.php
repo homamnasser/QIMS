@@ -28,8 +28,11 @@ class CourseDateService implements ICourseDateService
     $datesToInsert = [];
 
     // جلب التواريخ الموجودة مسبقاً (Optimized: استخدام Set للبحث الأسرع)
+    // pluck يعيد كائنات Carbon، وقلبها يُسقط كل القيم ويترك المصفوفة فارغة،
+    // فتُعاد إضافة تواريخ موجودة وتفشل على قيد التفرد؛ لذلك تُنسّق أولًا.
     $existingDates = CourseDate::where('course_id', $courseId)
         ->pluck('session_date')
+        ->map(fn ($sessionDate) => $sessionDate->format('Y-m-d'))
         ->flip() // قلب المصفوفة يجعل البحث عن القيم (keys) أسرع بكثير
         ->toArray();
 

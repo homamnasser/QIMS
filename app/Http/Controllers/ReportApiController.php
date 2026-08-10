@@ -21,10 +21,13 @@ class ReportApiController extends Controller
                 ->values()
                 ->toArray();
 
+            // pluck يطبّق الـ cast فيعيد كائنات Carbon، وترميزها إلى JSON ينتج
+            // طابعًا زمنيًا كاملًا؛ لذلك تُنسّق صراحةً كبقية التواريخ في هذا الملف.
             $courseDays = \App\Models\CourseDate::where('course_id', $course->id)
                 ->orderBy('session_date')
                 ->pluck('session_date')
-                ->toArray();
+                ->map(fn ($sessionDate) => $sessionDate->format('Y-m-d'))
+                ->all();
             
             $data[] = [
                 'course_id' => $course->id,
