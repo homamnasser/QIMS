@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Enums\RoleFamily;
 use App\Models\Circle;
 use App\Models\Course;
+use App\Models\CourseDate;
 use App\Models\EvaluationCandidate;
 use App\Models\EvaluationCandidateEnrollment;
 use App\Models\EvaluationCycle;
@@ -23,9 +24,11 @@ use RuntimeException;
 use Tests\TestCase;
 
 /**
- * يحرس عقد استجابات الخطأ في نظام التقييم النهائي:
+ * يحرس عقد استجابات نظام التقييم النهائي:
  * شكل موحد، رسالة عربية واحدة قصيرة، ورمز حالة HTTP صحيح،
  * ومنع تسرب أسماء الموديلات أو جمل SQL أو أثر الاستدعاء إلى الواجهة.
+ * ويغطي كذلك مسار النجاح لأن الحفظ يُثبَّت في قاعدة البيانات قبل
+ * بناء الاستجابة، فأي خطأ في طبقة الاستجابة يُنتج حفظًا ناجحًا مع 500.
  */
 class EvaluationErrorResponseTest extends TestCase
 {
@@ -109,6 +112,135 @@ class EvaluationErrorResponseTest extends TestCase
             'درجة السلوك',
             $response->json('errors.behavior_score.0')
         );
+    }
+
+    public function test_teacher_evaluation_save_returns_the_success_envelope_and_persists(): void
+    {
+        $context = $this->context();
+        $this->authenticateTeacher($context);
+
+        $response = $this->putJson(
+            "/api/mobile/teacher/evaluation-candidates/{$context['candidate']->id}/teacher-evaluation",
+            [
+                'evaluation_period_id' => $context['periods'][0]->id,
+                'circle_id' => $context['circle']->id,
+                'behavior_score' => 8,
+                'participation_score' => 9,
+                'teacher_opinion_score' => 7,
+                'comments' => 'مسودة أولى',
+                'status' => 'draft',
+            ]
+        )->assertOk()
+            ->assertJsonStructure(['message', 'data' => ['id', 'status', 'total_score']]);
+
+        $this->assertArabic($response->json('message'));
+        $this->assertSame('draft', $response->json('data.status'));
+        $this->assertNull($response->json('data.submitted_at'));
+
+        $this->assertDatabaseHas('teacher_period_evaluations', [
+            'evaluation_candidate_id' => $context['candidate']->id,
+            'evaluation_period_id' => $context['periods'][0]->id,
+            'circle_id' => $context['circle']->id,
+            'evaluator_id' => $context['teacher']->id,
+            'behavior_score' => 8,
+            'participation_score' => 9,
+            'teacher_opinion_score' => 7,
+            'total_score' => 24,
+            'status' => 'draft',
+        ]);
+    }
+
+    public function test_teacher_evaluation_update_returns_success_instead_of_a_server_error(): void
+    {
+        $context = $this->context();
+        $this->authenticateTeacher($context);
+        $url = "/api/mobile/teacher/evaluation-candidates/{$context['candidate']->id}/teacher-evaluation";
+        $payload = [
+            'evaluation_period_id' => $context['periods'][0]->id,
+            'circle_id' => $context['circle']->id,
+            'behavior_score' => 8,
+            'participation_score' => 9,
+            'teacher_opinion_score' => 7,
+            'status' => 'draft',
+        ];
+
+        $this->putJson($url, $payload)->assertOk();
+
+        // نفس المفتاح مع قيمة جديدة: هنا كان الحفظ ينجح ثم تُرجع 500.
+        $response = $this->putJson($url, [
+            ...$payload,
+            'participation_score' => 10,
+            'status' => 'submitted',
+        ])->assertOk();
+
+        $this->assertSame('submitted', $response->json('data.status'));
+        $this->assertNotNull($response->json('data.submitted_at'));
+
+        $this->assertDatabaseCount('teacher_period_evaluations', 1);
+        $this->assertDatabaseHas('teacher_period_evaluations', [
+            'participation_score' => 10,
+            'total_score' => 25,
+            'status' => 'submitted',
+        ]);
+    }
+
+    public function test_quran_assessment_save_returns_the_success_envelope_and_persists(): void
+    {
+        $context = $this->context();
+        $this->authenticateTeacher($context);
+        $enrollment = $context['candidate']->enrollments()->firstOrFail();
+        $context['circle']->update(['quran_mode' => 'recitation']);
+        $enrollment->update(['quran_mode_snapshot' => 'recitation']);
+        foreach (['2026-01-02', '2026-01-03', '2026-01-04', '2026-01-05'] as $date) {
+            CourseDate::create([
+                'course_id' => $enrollment->course_id,
+                'session_date' => $date,
+                'status' => 'held',
+                'counts_for_attendance' => true,
+            ]);
+        }
+
+        $response = $this->putJson(
+            "/api/mobile/teacher/evaluation-candidates/{$context['candidate']->id}/quran-assessment",
+            [
+                'evaluation_period_id' => $context['periods'][0]->id,
+                'circle_id' => $context['circle']->id,
+                'below_minimum' => true,
+                'notes' => 'دون الحد الأدنى',
+            ]
+        )->assertOk()
+            ->assertJsonStructure(['message', 'data' => ['id', 'status', 'below_minimum']]);
+
+        $this->assertArabic($response->json('message'));
+        $this->assertDatabaseHas('quran_period_assessments', [
+            'evaluation_candidate_id' => $context['candidate']->id,
+            'evaluation_period_id' => $context['periods'][0]->id,
+            'circle_id' => $context['circle']->id,
+            'below_minimum' => true,
+            'assessed_by' => $context['teacher']->id,
+            'status' => 'submitted',
+        ]);
+    }
+
+    public function test_locked_cycle_still_rejects_the_teacher_evaluation_save(): void
+    {
+        $context = $this->context();
+        $this->authenticateTeacher($context);
+        $context['cycle']->update(['status' => 'ready']);
+
+        $this->putJson(
+            "/api/mobile/teacher/evaluation-candidates/{$context['candidate']->id}/teacher-evaluation",
+            [
+                'evaluation_period_id' => $context['periods'][0]->id,
+                'circle_id' => $context['circle']->id,
+                'behavior_score' => 8,
+                'participation_score' => 9,
+                'teacher_opinion_score' => 7,
+                'status' => 'draft',
+            ]
+        )->assertStatus(422)->assertJsonPath('error_code', 'VALIDATION_FAILED');
+
+        $this->assertDatabaseCount('teacher_period_evaluations', 0);
     }
 
     public function test_database_failure_is_logged_but_never_returned_to_the_client(): void

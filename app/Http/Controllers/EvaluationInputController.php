@@ -177,10 +177,10 @@ class EvaluationInputController extends Controller
             403
         );
 
-        return $this->saved(
-            $this->inputs->saveTeacher($candidate, $data, $request->user()),
-            'تم حفظ تقييم المدرس.'
-        );
+        return response()->json([
+            'message' => 'تم حفظ تقييم المدرس.',
+            'data' => $this->inputs->saveTeacher($candidate, $data, $request->user()),
+        ]);
     }
 
     public function quran(Request $request, EvaluationCandidate $candidate): JsonResponse
@@ -196,9 +196,9 @@ class EvaluationInputController extends Controller
             403
         );
 
-        return $this->saved(
-            $this->inputs->saveQuran($candidate, $data, $request->user()),
-            'تم حفظ تأكيد حالة التسميع؛ أعداد الصفحات والمراجعة مستخرجة آليًا.'
-        );
+        return response()->json([
+            'message' => 'تم حفظ تأكيد حالة التسميع؛ أعداد الصفحات والمراجعة مستخرجة آليًا.',
+            'data' => $this->inputs->saveQuran($candidate, $data, $request->user()),
+        ]);
     }
 }
