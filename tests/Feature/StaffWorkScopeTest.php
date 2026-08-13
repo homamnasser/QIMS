@@ -16,6 +16,7 @@ use App\Models\SurveyResponse;
 use App\Models\User;
 use App\Support\StaffScopeContext;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use Spatie\Permission\Models\Permission;
 use Tests\TestCase;
 
@@ -537,7 +538,7 @@ class StaffWorkScopeTest extends TestCase
         ]);
 
         return SurveyResponse::query()->create([
-            'response_token' => (string) \Illuminate\Support\Str::uuid(),
+            'response_token' => (string) Str::uuid(),
             'survey_id' => $survey->id,
             // The student row is gone, so the FK was nulled by nullOnDelete().
             'student_id' => null,

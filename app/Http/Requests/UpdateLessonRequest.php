@@ -2,8 +2,9 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
 class UpdateLessonRequest extends FormRequest
@@ -19,7 +20,7 @@ class UpdateLessonRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
@@ -31,6 +32,7 @@ class UpdateLessonRequest extends FormRequest
             'subject_id' => 'sometimes|exists:subjects,id',
         ];
     }
+
     public function messages(): array
     {
         return [
@@ -49,11 +51,12 @@ class UpdateLessonRequest extends FormRequest
 
         ];
     }
+
     protected function failedValidation(Validator $validator): void
     {
         throw new HttpResponseException(response()->json([
-            'code'    => 422,
-            'message' =>  $validator->errors(),
+            'code' => 422,
+            'message' => $validator->errors(),
         ], 422));
     }
 }

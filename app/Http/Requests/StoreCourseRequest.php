@@ -2,11 +2,12 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
+use App\Models\Project;
+use App\Models\User;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Validation\Rule;
-use App\Models\User;
 
 class StoreCourseRequest extends FormRequest
 {
@@ -31,8 +32,8 @@ class StoreCourseRequest extends FormRequest
                 'required',
                 'exists:projects,id',
                 function ($attribute, $value, $fail) {
-                    $project = \App\Models\Project::find($value);
-                    if ($project && !$project->is_active) {
+                    $project = Project::find($value);
+                    if ($project && ! $project->is_active) {
                         $fail('المشروع المحدد غير فعّال.');
                     }
                 },
@@ -43,7 +44,7 @@ class StoreCourseRequest extends FormRequest
                 function ($attribute, $value, $fail) {
                     $user = User::find($value);
 
-                    if ($user && !$user->canSupervise()) {
+                    if ($user && ! $user->canSupervise()) {
                         $fail('المستخدم المحدد يجب أن يملك صلاحية الإشراف.');
                     }
                 },
@@ -93,7 +94,7 @@ class StoreCourseRequest extends FormRequest
     protected function failedValidation(Validator $validator): void
     {
         throw new HttpResponseException(response()->json([
-            'code'    => 422,
+            'code' => 422,
             'message' => $validator->errors(),
         ], 422));
     }

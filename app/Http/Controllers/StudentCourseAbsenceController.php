@@ -28,9 +28,9 @@ class StudentCourseAbsenceController extends Controller
         $absences = $this->absenceService->getAllAbsences($filters);
 
         return response()->json([
-            'code'   => 200,
+            'code' => 200,
             'status' => 'success',
-            'data'   => AbsenceResource::collection($absences)
+            'data' => AbsenceResource::collection($absences),
         ], 200);
     }
 
@@ -46,9 +46,9 @@ class StudentCourseAbsenceController extends Controller
         $absence->load(['studentDetails', 'courseDetails']);
 
         return response()->json([
-            'code'    => 201,
+            'code' => 201,
             'message' => 'تم تسجيل الغياب بنجاح.',
-            'data'    => new AbsenceResource($absence)
+            'data' => new AbsenceResource($absence),
         ], 201);
     }
 
@@ -59,20 +59,20 @@ class StudentCourseAbsenceController extends Controller
     {
         $absence = $this->absenceService->getAbsenceById($id);
 
-        if (!$absence) {
+        if (! $absence) {
             return response()->json([
-                'code'    => 404,
-                'status'  => 'error',
-                'message' => 'سجل الغياب غير موجود.'
+                'code' => 404,
+                'status' => 'error',
+                'message' => 'سجل الغياب غير موجود.',
             ], 404);
         }
 
         $absence->load(['studentDetails', 'courseDetails']);
 
         return response()->json([
-            'code'   => 200,
+            'code' => 200,
             'message' => 'تم جلب سجل الغياب بنجاح.',
-            'data'   => new AbsenceResource($absence)
+            'data' => new AbsenceResource($absence),
         ], 200);
     }
 
@@ -83,10 +83,10 @@ class StudentCourseAbsenceController extends Controller
     {
         $absence = $this->absenceService->getAbsenceById($id);
 
-        if (!$absence) {
+        if (! $absence) {
             return response()->json([
-                'code'    => 404,
-                'message' => 'سجل الغياب غير موجود.'
+                'code' => 404,
+                'message' => 'سجل الغياب غير موجود.',
             ], 404);
         }
 
@@ -97,9 +97,9 @@ class StudentCourseAbsenceController extends Controller
         $absence->load(['studentDetails', 'courseDetails']);
 
         return response()->json([
-            'code'    => 200,
+            'code' => 200,
             'message' => 'تم تحديث سجل الغياب بنجاح.',
-            'data'    => new AbsenceResource($absence)
+            'data' => new AbsenceResource($absence),
         ], 200);
     }
 
@@ -128,18 +128,18 @@ class StudentCourseAbsenceController extends Controller
     {
         $absence = $this->absenceService->getAbsenceById($id);
 
-        if (!$absence) {
+        if (! $absence) {
             return response()->json([
-                'code'    => 404,
-                'message' => 'سجل الغياب غير موجود.'
+                'code' => 404,
+                'message' => 'سجل الغياب غير موجود.',
             ], 404);
         }
 
         $this->absenceService->deleteAbsence($absence);
 
         return response()->json([
-            'code'    => 200,
-            'message' => 'تم حذف سجل الغياب بنجاح.'
+            'code' => 200,
+            'message' => 'تم حذف سجل الغياب بنجاح.',
         ], 200);
     }
 }

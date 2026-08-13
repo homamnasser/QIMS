@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Facades\DB;
 
@@ -18,10 +18,10 @@ class StoreAbsenceRequest extends FormRequest
     {
         return [
             'student' => 'required|integer|exists:students,id',
-            'course'  => 'required|integer|exists:courses,id',
-            'note'    => 'nullable|string|max:255',
-            'type'    => 'required|in:present,full,first_period,second_period',
-            'date'    => 'required|date',
+            'course' => 'required|integer|exists:courses,id',
+            'note' => 'nullable|string|max:255',
+            'type' => 'required|in:present,full,first_period,second_period',
+            'date' => 'required|date',
             // معيار الحضور يزن الغياب المعذور بنصف وزن غير المعذور،
             // ولم يكن هناك سبيل لتسجيله من الويب إطلاقاً قبل هذا الحقل.
             'is_excused' => 'sometimes|boolean',
@@ -32,21 +32,21 @@ class StoreAbsenceRequest extends FormRequest
     {
         return [
             'student.required' => 'حقل الطالب مطلوب.',
-            'student.integer'  => 'حقل الطالب يجب أن يكون عدداً صحيحاً.',
-            'student.exists'   => 'الطالب المحدد غير موجود.',
+            'student.integer' => 'حقل الطالب يجب أن يكون عدداً صحيحاً.',
+            'student.exists' => 'الطالب المحدد غير موجود.',
 
             'course.required' => 'حقل الكورس مطلوب.',
-            'course.integer'  => 'حقل الكورس يجب أن يكون عدداً صحيحاً.',
-            'course.exists'   => 'الكورس المحدد غير موجود.',
+            'course.integer' => 'حقل الكورس يجب أن يكون عدداً صحيحاً.',
+            'course.exists' => 'الكورس المحدد غير موجود.',
 
             'note.string' => 'الملاحظة يجب أن تكون نصاً.',
-            'note.max'    => 'الملاحظة يجب ألا تتجاوز 255 حرفاً.',
+            'note.max' => 'الملاحظة يجب ألا تتجاوز 255 حرفاً.',
 
             'type.required' => 'حقل النوع مطلوب.',
-            'type.in'       => 'القيمة المحددة لحقل ... غير صالحة.',
+            'type.in' => 'القيمة المحددة لحقل ... غير صالحة.',
 
             'date.required' => 'حقل التاريخ مطلوب.',
-            'date.date'     => 'التاريخ ليس بصيغة تاريخ صالحة.',
+            'date.date' => 'التاريخ ليس بصيغة تاريخ صالحة.',
 
             'is_excused.boolean' => 'حقل العذر يجب أن يكون صحيحاً أو خطأً.',
         ];
@@ -56,10 +56,10 @@ class StoreAbsenceRequest extends FormRequest
     {
         $validator->after(function ($validator) {
             $studentId = $this->input('student');
-            $courseId  = $this->input('course');
-            $date      = $this->input('date');
+            $courseId = $this->input('course');
+            $date = $this->input('date');
 
-            if (!$studentId || !$courseId || !$date) {
+            if (! $studentId || ! $courseId || ! $date) {
                 return;
             }
 
@@ -69,7 +69,7 @@ class StoreAbsenceRequest extends FormRequest
                 ->where('circles.course_id', $courseId)
                 ->exists();
 
-            if (!$studentInCourse) {
+            if (! $studentInCourse) {
                 $validator->errors()->add('student', 'الطالب المحدد غير مسجّل في أي حلقة تابعة لهذا الكورس.');
             }
 
@@ -78,7 +78,7 @@ class StoreAbsenceRequest extends FormRequest
                 ->where('session_date', $date)
                 ->exists();
 
-            if (!$isValidDate) {
+            if (! $isValidDate) {
                 $validator->errors()->add('date', 'التاريخ المحدد ليس تاريخ جلسة صالحاً لهذا الكورس.');
             }
 
@@ -97,7 +97,7 @@ class StoreAbsenceRequest extends FormRequest
     protected function failedValidation(Validator $validator): void
     {
         throw new HttpResponseException(response()->json([
-            'code'    => 422,
+            'code' => 422,
             'message' => $validator->errors(),
         ], 422));
     }

@@ -5,6 +5,7 @@ namespace App\Services;
 use App\IService\IMemorizationService;
 use App\Models\Memorization;
 use Illuminate\Support\Collection;
+
 class MemorizationService implements IMemorizationService
 {
     public function createMemorization(array $data): Memorization
@@ -36,7 +37,7 @@ class MemorizationService implements IMemorizationService
     {
         return Memorization::query()
             ->with(['studentDetails', 'giverDetails'])
-            ->filter($filters) // 
+            ->filter($filters) //
             ->orderBy('created_at', 'desc')
             ->get();
     }

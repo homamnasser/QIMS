@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Facades\DB;
 
@@ -22,8 +22,8 @@ class StoreExamRequest extends FormRequest
         return [
             'student' => 'required|integer|exists:students,id',
             'subject' => 'required|integer|exists:subjects,id',
-            'course'  => 'required|integer|exists:courses,id',
-            'mark'    => 'required|numeric|min:0',
+            'course' => 'required|integer|exists:courses,id',
+            'mark' => 'required|numeric|min:0',
             // تاريخ الاختبار كما وقع؛ نافذة التقييم تُقارَن به لا بلحظة الإدخال،
             // فيصبح الرصد المتأخر ممكناً بلا أن تسقط العلامة من الحساب.
             'occurred_at' => 'nullable|date',
@@ -37,17 +37,17 @@ class StoreExamRequest extends FormRequest
     {
         return [
             'student.required' => 'حقل الطالب مطلوب.',
-            'student.exists'   => 'سجل الطالب المحدد غير موجود في النظام.',
+            'student.exists' => 'سجل الطالب المحدد غير موجود في النظام.',
 
             'subject.required' => 'حقل المادة مطلوب.',
-            'subject.exists'   => 'سجل المادة المحدد غير موجود في النظام.',
+            'subject.exists' => 'سجل المادة المحدد غير موجود في النظام.',
 
-            'course.required'  => 'حقل الكورس مطلوب.',
-            'course.exists'    => 'سجل الكورس المحدد غير موجود في النظام.',
+            'course.required' => 'حقل الكورس مطلوب.',
+            'course.exists' => 'سجل الكورس المحدد غير موجود في النظام.',
 
-            'mark.required'    => 'حقل علامة الامتحان مطلوب لتسجيل الدرجة.',
-            'mark.numeric'     => 'علامة الامتحان يجب أن تكون عدداً صحيحاً أو عشرياً صالحاً.',
-            'mark.min'         => 'علامة الامتحان لا يمكن أن تكون أقل من صفر.',
+            'mark.required' => 'حقل علامة الامتحان مطلوب لتسجيل الدرجة.',
+            'mark.numeric' => 'علامة الامتحان يجب أن تكون عدداً صحيحاً أو عشرياً صالحاً.',
+            'mark.min' => 'علامة الامتحان لا يمكن أن تكون أقل من صفر.',
         ];
     }
 
@@ -59,10 +59,10 @@ class StoreExamRequest extends FormRequest
         $validator->after(function ($validator) {
             $studentId = $this->input('student');
             $subjectId = $this->input('subject');
-            $courseId  = $this->input('course');
-            $mark      = $this->input('mark');
+            $courseId = $this->input('course');
+            $mark = $this->input('mark');
 
-            if (!$studentId || !$subjectId || !$courseId || $mark === null) {
+            if (! $studentId || ! $subjectId || ! $courseId || $mark === null) {
                 return;
             }
 
@@ -72,7 +72,7 @@ class StoreExamRequest extends FormRequest
                 ->where('course_id', $courseId) // تأكد من اسم حقل الكورس في جدول المواد
                 ->exists();
 
-            if (!$subjectInCourse) {
+            if (! $subjectInCourse) {
                 $validator->errors()->add('subject', 'المادة المحددة لا تنتمي لهذا الكورس.');
             }
 
@@ -83,7 +83,7 @@ class StoreExamRequest extends FormRequest
                 ->where('circles.course_id', $courseId) // 👈 تم التعديل إلى course_id ليطابق جدولك تماماً
                 ->exists();
 
-            if (!$studentInCourse) {
+            if (! $studentInCourse) {
                 $validator->errors()->add('student', 'الطالب المحدد غير مسجّل في أي حلقة تابعة لهذا الكورس.');
             }
 
@@ -109,11 +109,10 @@ class StoreExamRequest extends FormRequest
         });
     }
 
-
     protected function failedValidation(Validator $validator): void
     {
         throw new HttpResponseException(response()->json([
-            'code'    => 422,
+            'code' => 422,
             'message' => $validator->errors(),
         ], 422));
     }

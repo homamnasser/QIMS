@@ -22,7 +22,6 @@ return new class extends Migration
 
             $table->date('date')->nullable();
 
-
             $table->unique(['student', 'course', 'date'], 'unique_student_course_date_absence');
             $table->timestamps();
         });

@@ -5,9 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
 class StudentMark extends Model
 {
     use HasFactory;
+
     protected $fillable = [
         'teacher',
         'student',
@@ -25,7 +27,7 @@ class StudentMark extends Model
 
     /**
      * 👨‍🏫 المدرس صاحب صحيفة العلامات
-     */ 
+     */
     public function teacherDetails(): BelongsTo
     {
         return $this->belongsTo(User::class, 'teacher', 'id');
@@ -55,4 +57,3 @@ class StudentMark extends Model
         return $this->belongsTo(Circle::class, 'circle', 'id');
     }
 }
-

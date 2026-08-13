@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Http\Requests\StoreReadingImprovementRequest;
 use App\Http\Requests\UpdateReadingImprovementRequest;
 use App\Http\Resources\ReadingImprovementResource;
 use App\IService\IReadingImprovementService;
 use App\Models\ReadingImprovement;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+
 class ReadingImprovementController extends Controller
 {
     protected IReadingImprovementService $readingImprovementService;
@@ -26,10 +27,10 @@ class ReadingImprovementController extends Controller
         $records = $this->readingImprovementService->getAll($request->all());
 
         return response()->json([
-            'code'    => 200,
-            'status'  => 'success',
+            'code' => 200,
+            'status' => 'success',
             'message' => 'Reading improvement records retrieved successfully.',
-            'data'    => ReadingImprovementResource::collection($records)
+            'data' => ReadingImprovementResource::collection($records),
         ], 200);
     }
 
@@ -41,10 +42,10 @@ class ReadingImprovementController extends Controller
         $record = $this->readingImprovementService->create($request->validated());
 
         return response()->json([
-            'code'    => 201,
-            'status'  => 'success',
+            'code' => 201,
+            'status' => 'success',
             'message' => 'Reading improvement record created successfully.',
-            'data'    => new ReadingImprovementResource($record)
+            'data' => new ReadingImprovementResource($record),
         ], 201);
     }
 
@@ -55,19 +56,19 @@ class ReadingImprovementController extends Controller
     {
         $record = $this->readingImprovementService->getById($id);
 
-        if (!$record) {
+        if (! $record) {
             return response()->json([
-                'code'    => 404,
-                'status'  => 'error',
-                'message' => 'Reading improvement record not found.'
+                'code' => 404,
+                'status' => 'error',
+                'message' => 'Reading improvement record not found.',
             ], 404);
         }
 
         return response()->json([
-            'code'    => 200,
-            'status'  => 'success',
+            'code' => 200,
+            'status' => 'success',
             'message' => 'Reading improvement record retrieved successfully.',
-            'data'    => new ReadingImprovementResource($record)
+            'data' => new ReadingImprovementResource($record),
         ], 200);
     }
 
@@ -82,10 +83,10 @@ class ReadingImprovementController extends Controller
         $readingImprovement->load(['studentDetails', 'courseDetails']);
 
         return response()->json([
-            'code'    => 200,
-            'status'  => 'success',
+            'code' => 200,
+            'status' => 'success',
             'message' => 'Reading improvement record updated successfully.',
-            'data'    => new ReadingImprovementResource($readingImprovement)
+            'data' => new ReadingImprovementResource($readingImprovement),
         ], 200);
     }
 
@@ -97,9 +98,9 @@ class ReadingImprovementController extends Controller
         $this->readingImprovementService->delete($readingImprovement);
 
         return response()->json([
-            'code'    => 200,
-            'status'  => 'success',
-            'message' => 'Reading improvement record deleted successfully.'
+            'code' => 200,
+            'status' => 'success',
+            'message' => 'Reading improvement record deleted successfully.',
         ], 200);
     }
 }

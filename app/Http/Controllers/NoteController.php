@@ -1,15 +1,18 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Http\Requests\CreateNoteRequest;
 use App\Http\Resources\NoteResource;
 use App\IService\INoteService;
 use App\IService\IStudentService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+
 class NoteController extends Controller
 {
     protected $noteService;
+
     protected $studentService;
 
     // حقن الخدمات عبر الـ Interfaces للحفاظ على بنية الـ Clean Architecture
@@ -37,10 +40,10 @@ class NoteController extends Controller
         $note->load(['student', 'author']);
 
         return response()->json([
-            'code'    => 201,
-            'status'  => 'success',
+            'code' => 201,
+            'status' => 'success',
             'message' => 'تم إنشاء ملاحظة الطالب بنجاح.',
-            'data'    => new NoteResource($note)
+            'data' => new NoteResource($note),
         ], 201);
     }
 
@@ -52,11 +55,11 @@ class NoteController extends Controller
         // الاستفادة من سيرفس الطلاب للتأكد من وجود الطالب أولاً (404)
         $student = $this->studentService->getStudentById($studentId);
 
-        if (!$student) {
+        if (! $student) {
             return response()->json([
-                'code'    => 404,
+                'code' => 404,
                 'message' => 'الطالب غير موجود.',
-                'data'    => null
+                'data' => null,
             ], 404);
         }
 
@@ -64,10 +67,10 @@ class NoteController extends Controller
         $notes = $this->noteService->getNotesByStudentId($student->id);
 
         return response()->json([
-            'code'    => 200,
-            'status'  => 'success',
+            'code' => 200,
+            'status' => 'success',
             'message' => 'تم جلب ملاحظات الطالب بنجاح.',
-            'data'    => NoteResource::collection($notes)
+            'data' => NoteResource::collection($notes),
         ], 200);
     }
 
@@ -79,10 +82,10 @@ class NoteController extends Controller
         $filters = $request->only(['student_id', 'student_ids', 'circle_id']);
 
         return response()->json([
-            'code'    => 200,
-            'status'  => 'success',
+            'code' => 200,
+            'status' => 'success',
             'message' => 'تم جلب الملاحظات بنجاح.',
-            'data'    => NoteResource::collection($this->noteService->getAllNotes($filters))
+            'data' => NoteResource::collection($this->noteService->getAllNotes($filters)),
         ], 200);
     }
 
@@ -102,16 +105,16 @@ class NoteController extends Controller
             $user->hasFullFieldOperationsAccess()
         );
 
-        if (!$deleted) {
+        if (! $deleted) {
             return response()->json([
-                'code'    => 403,
+                'code' => 403,
                 'message' => 'غير مصرّح أو الملاحظة غير موجودة.',
-                'data'    => null
+                'data' => null,
             ], 403);
         }
 
         return response()->json([
-            'code'    => 200,
+            'code' => 200,
             'message' => 'تم حذف الملاحظة بنجاح.',
         ], 200);
     }
@@ -128,12 +131,12 @@ class NoteController extends Controller
             $studentId = $request->query('student_id');
             $student = $this->studentService->getStudentById($studentId);
 
-            if (!$student) {
+            if (! $student) {
                 return response()->json([
-                    'code'    => 404,
-                    'status'  => 'error',
+                    'code' => 404,
+                    'status' => 'error',
                     'message' => 'الطالب غير موجود.',
-                    'data'    => null
+                    'data' => null,
                 ], 404);
             }
 
@@ -147,10 +150,10 @@ class NoteController extends Controller
             : 'Your created notes retrieved successfully.';
 
         return response()->json([
-            'code'    => 200,
-            'status'  => 'success',
+            'code' => 200,
+            'status' => 'success',
             'message' => $message,
-            'data'    => NoteResource::collection($notes)
+            'data' => NoteResource::collection($notes),
         ], 200);
     }
 }

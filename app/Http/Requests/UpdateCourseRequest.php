@@ -2,11 +2,13 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
+use App\Models\Project;
+use App\Models\User;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Validation\Rule;
-use App\Models\User;
 
 class UpdateCourseRequest extends FormRequest
 {
@@ -21,7 +23,7 @@ class UpdateCourseRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
@@ -33,9 +35,9 @@ class UpdateCourseRequest extends FormRequest
                 'sometimes',
                 'exists:projects,id',
                 function ($attribute, $value, $fail) {
-                    $project = \App\Models\Project::find($value);
+                    $project = Project::find($value);
 
-                    if ($project && !$project->is_active) {
+                    if ($project && ! $project->is_active) {
                         $fail('المشروع المحدد غير فعّال.');
                     }
                 },
@@ -46,7 +48,7 @@ class UpdateCourseRequest extends FormRequest
                 function ($attribute, $value, $fail) {
                     $user = User::find($value);
 
-                    if ($user && !$user->canSupervise()) {
+                    if ($user && ! $user->canSupervise()) {
                         $fail('المستخدم المحدد يجب أن يملك صلاحية الإشراف.');
                     }
                 },
@@ -56,6 +58,7 @@ class UpdateCourseRequest extends FormRequest
             'parent_course_id' => 'nullable|exists:courses,id',
         ];
     }
+
     public function messages(): array
     {
         return [
@@ -63,7 +66,6 @@ class UpdateCourseRequest extends FormRequest
             'name.max' => 'اسم الكورس يجب ألا يتجاوز 255 حرفاً.',
 
             'description.string' => 'وصف الكورس يجب أن يكون نصاً.',
-
 
             'mosque_id.exists' => 'المسجد المحدد غير موجود.',
 
@@ -76,15 +78,15 @@ class UpdateCourseRequest extends FormRequest
             'end_date.date' => 'تاريخ الانتهاء يجب أن يكون تاريخاً صالحاً.',
             'end_date.after_or_equal' => 'تاريخ الانتهاء يجب أن يكون بعد أو مساوياً لتاريخ البدء.',
 
-
             'parent_course_id.exists' => 'الكورس الأب المحدد غير موجود.',
         ];
     }
+
     protected function failedValidation(Validator $validator): void
     {
         throw new HttpResponseException(response()->json([
-            'code'    => 422,
-            'message' =>  $validator->errors(),
+            'code' => 422,
+            'message' => $validator->errors(),
         ], 422));
     }
 }

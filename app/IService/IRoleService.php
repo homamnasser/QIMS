@@ -10,7 +10,7 @@ interface IRoleService
     /**
      * Get all roles.
      *
-     * @return \Illuminate\Database\Eloquent\Collection<int, \Spatie\Permission\Models\Role>
+     * @return Collection<int, \Spatie\Permission\Models\Role>
      */
     public function getAllRoles(): Collection;
 

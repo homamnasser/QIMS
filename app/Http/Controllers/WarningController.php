@@ -5,9 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreWarningRequest;
 use App\Http\Resources\WarningResource;
 use App\IService\IWarningService;
+use App\Models\Student;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Models\Student;
 
 class WarningController extends Controller
 {
@@ -17,6 +17,7 @@ class WarningController extends Controller
     {
         $this->warningService = $warningService;
     }
+
     public function createWarning(StoreWarningRequest $request): JsonResponse
     {
         $warning = $this->warningService->createWarning($request->validated());
@@ -24,9 +25,9 @@ class WarningController extends Controller
         $warning->load(['studentDetails', 'warnerDetails']);
 
         return response()->json([
-            'code'    => 201,
+            'code' => 201,
             'message' => 'تم تسجيل الإنذار بنجاح.',
-            'data'    => new WarningResource($warning)
+            'data' => new WarningResource($warning),
         ], 201);
     }
 
@@ -37,22 +38,21 @@ class WarningController extends Controller
     {
         $warning = $this->warningService->getWarningById($id);
 
-        if (!$warning) {
+        if (! $warning) {
             return response()->json([
-                'code'    => 404,
-                'message' => 'سجل الإنذار غير موجود.'
+                'code' => 404,
+                'message' => 'سجل الإنذار غير موجود.',
             ], 404);
         }
 
         $warning->load(['studentDetails', 'warnerDetails']);
 
         return response()->json([
-            'code'    => 200,
+            'code' => 200,
             'message' => 'تم جلب بيانات الإنذار بنجاح.',
-            'data'    => new WarningResource($warning)
+            'data' => new WarningResource($warning),
         ], 200);
     }
-
 
     public function getAllWarnings(Request $request): JsonResponse
     {
@@ -61,15 +61,15 @@ class WarningController extends Controller
 
         if ($warnings->isEmpty()) {
             return response()->json([
-                'code'    => 200,
+                'code' => 200,
                 'message' => 'لم يتم العثور على سجلات إنذارات.',
             ], 200);
         }
 
         return response()->json([
-            'code'    => 200,
+            'code' => 200,
             'message' => 'تم جلب قائمة الإنذارات بنجاح.',
-            'data'    => WarningResource::collection($warnings)
+            'data' => WarningResource::collection($warnings),
         ], 200);
     }
 
@@ -77,10 +77,10 @@ class WarningController extends Controller
     {
         $warning = $this->warningService->getWarningById($id);
 
-        if (!$warning) {
+        if (! $warning) {
             return response()->json([
-                'code'    => 404,
-                'message' => 'سجل الإنذار غير موجود.'
+                'code' => 404,
+                'message' => 'سجل الإنذار غير موجود.',
             ], 404);
         }
 
@@ -90,16 +90,16 @@ class WarningController extends Controller
             && ! $user->hasFullFieldOperationsAccess()
         ) {
             return response()->json([
-                'code'    => 403,
-                'message' => 'غير مصرّح! يمكنك فقط حذف الإنذارات التي أنشأتها بنفسك.'
+                'code' => 403,
+                'message' => 'غير مصرّح! يمكنك فقط حذف الإنذارات التي أنشأتها بنفسك.',
             ], 403);
         }
 
         $this->warningService->deleteWarning($warning);
 
         return response()->json([
-            'code'    => 200,
-            'message' => 'تم حذف سجل الإنذار بنجاح.'
+            'code' => 200,
+            'message' => 'تم حذف سجل الإنذار بنجاح.',
         ], 200);
     }
 
@@ -113,17 +113,17 @@ class WarningController extends Controller
 
         if ($warnings->isEmpty()) {
             return response()->json([
-                'code'    => 200,
-                'status'  => 'success',
+                'code' => 200,
+                'status' => 'success',
                 'message' => 'لم يتم العثور على إنذارات لحسابك.',
-                'data'    => []
+                'data' => [],
             ], 200);
         }
 
         return response()->json([
-            'code'    => 200,
-            'status'  => 'success',
-            'data'    => WarningResource::collection($warnings)
+            'code' => 200,
+            'status' => 'success',
+            'data' => WarningResource::collection($warnings),
         ], 200);
     }
 }

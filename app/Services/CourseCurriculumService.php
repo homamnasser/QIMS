@@ -27,12 +27,16 @@ class CourseCurriculumService implements ICourseCurriculumService
     {
         try {
             $courseDate = CourseDate::find($courseDateId);
-            if (!$courseDate) return false;
+            if (! $courseDate) {
+                return false;
+            }
 
             $courseDate->lessons()->detach();
+
             return true;
         } catch (\Exception $e) {
-            Log::error("Error in detachAllLessons: " . $e->getMessage());
+            Log::error('Error in detachAllLessons: '.$e->getMessage());
+
             return false;
         }
     }

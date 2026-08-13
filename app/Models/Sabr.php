@@ -26,7 +26,7 @@ class Sabr extends Model
      */
     protected $casts = [
         'parts' => 'array',
-        'date'  => 'date',
+        'date' => 'date',
     ];
 
     /**
@@ -52,6 +52,7 @@ class Sabr extends Model
     {
         return $this->belongsTo(Course::class, 'course');
     }
+
     /**
      * سكووب التصفية الديناميكية لبيانات السبر
      */

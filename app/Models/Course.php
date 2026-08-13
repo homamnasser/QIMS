@@ -4,11 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Course extends Model
 {
     use HasFactory;
+
     protected $fillable = [
         'name',
         'description',
@@ -20,6 +21,7 @@ class Course extends Model
         'parent_course_id',
         'supervisor_id',
     ];
+
     protected $casts = [
         'is_active' => 'boolean',
         'start_date' => 'date',
@@ -51,7 +53,7 @@ class Course extends Model
         return $this->belongsTo(User::class, 'supervisor_id');
     }
 
-    public function sabrs(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function sabrs(): HasMany
     {
         return $this->hasMany(Sabr::class, 'course');
     }
@@ -59,7 +61,7 @@ class Course extends Model
     public function scopeFilter($query, array $filters)
     {
         $query->when($filters['name'] ?? null, function ($q, $name) {
-            $q->where('name', 'like', '%' . $name . '%');
+            $q->where('name', 'like', '%'.$name.'%');
         })
             ->when($filters['mosque_id'] ?? null, function ($q, $mosqueId) {
                 $q->where('mosque_id', $mosqueId);
@@ -69,28 +71,32 @@ class Course extends Model
             })
             ->when($filters['mosque_name'] ?? null, function ($q, $mosqueName) {
                 $q->whereHas('mosque', function ($q) use ($mosqueName) {
-                    $q->where('name', 'like', '%' . $mosqueName . '%');
+                    $q->where('name', 'like', '%'.$mosqueName.'%');
                 });
             })
             ->when($filters['project_name'] ?? null, function ($q, $projectName) {
                 $q->whereHas('project', function ($q) use ($projectName) {
-                    $q->where('name', 'like', '%' . $projectName . '%');
+                    $q->where('name', 'like', '%'.$projectName.'%');
                 });
             });
     }
-    public function exams(): \Illuminate\Database\Eloquent\Relations\HasMany
+
+    public function exams(): HasMany
     {
         return $this->hasMany(Exam::class, 'course', 'id');
     }
-    public function absences(): \Illuminate\Database\Eloquent\Relations\HasMany
+
+    public function absences(): HasMany
     {
         return $this->hasMany(StudentCourseAbsence::class, 'course', 'id');
     }
-    public function studentsMarks(): \Illuminate\Database\Eloquent\Relations\HasMany
+
+    public function studentsMarks(): HasMany
     {
         return $this->hasMany(StudentMark::class, 'course', 'id');
     }
-    public function courseDates(): \Illuminate\Database\Eloquent\Relations\HasMany
+
+    public function courseDates(): HasMany
     {
         return $this->hasMany(CourseDate::class, 'course_id', 'id');
     }

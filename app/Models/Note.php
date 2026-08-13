@@ -28,7 +28,6 @@ class Note extends Model
         return $this->belongsTo(Student::class, 'student_id');
     }
 
-
     public function author(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');

@@ -18,7 +18,7 @@ return new class extends Migration
 
             // بيانات التسميع (رقم الصفحة)
             $table->integer('page_number');
-            $table->string('name')->nullable(); 
+            $table->string('name')->nullable();
             $table->timestamps();
             $table->unique(['student', 'page_number']);
         });

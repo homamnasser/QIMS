@@ -1,9 +1,11 @@
 <?php
 
 namespace App\Services;
+
 use App\IService\IReadingImprovementService;
 use App\Models\ReadingImprovement;
 use Illuminate\Support\Collection;
+
 class ReadingImprovementService implements IReadingImprovementService
 {
     /**
@@ -55,5 +57,4 @@ class ReadingImprovementService implements IReadingImprovementService
     {
         return $readingImprovement->delete();
     }
-
 }

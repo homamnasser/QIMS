@@ -79,11 +79,11 @@ class ReadingImprovement extends Model
         $query->when($filters['student_id'] ?? null, function ($q, $studentId) {
             $q->where('student', $studentId);
         })
-        ->when($filters['course_id'] ?? null, function ($q, $courseId) {
-            $q->where('course', $courseId);
-        })
-        ->when($filters['type'] ?? null, function ($q, $type) {
-            $q->where('type', $type);
-        });
+            ->when($filters['course_id'] ?? null, function ($q, $courseId) {
+                $q->where('course', $courseId);
+            })
+            ->when($filters['type'] ?? null, function ($q, $type) {
+                $q->where('type', $type);
+            });
     }
 }

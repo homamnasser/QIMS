@@ -10,5 +10,6 @@ class CourseDateLesson extends Pivot
     use HasFactory;
 
     protected $table = 'course_date_lesson';
+
     public $incrementing = true;
 }

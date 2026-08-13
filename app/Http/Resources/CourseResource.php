@@ -2,42 +2,42 @@
 
 namespace App\Http\Resources;
 
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-
-
 
 class CourseResource extends JsonResource
 {
     /**
-     * @param  \Illuminate\Http\Request  $request
+     * @param  Request  $request
      * @return array
      */
     public function toArray($request)
     {
         return [
-            'id'          => $this->id,
-            'name'        => $this->name,
+            'id' => $this->id,
+            'name' => $this->name,
             'description' => $this->description,
             'is_active' => (bool) $this->is_active,
             'dates' => [
-                'start_date' => $this->start_date instanceof \Carbon\Carbon ? $this->start_date->format('Y-m-d') : $this->start_date,
-                'end_date'   => $this->end_date instanceof \Carbon\Carbon ? $this->end_date->format('Y-m-d') : $this->end_date,
+                'start_date' => $this->start_date instanceof Carbon ? $this->start_date->format('Y-m-d') : $this->start_date,
+                'end_date' => $this->end_date instanceof Carbon ? $this->end_date->format('Y-m-d') : $this->end_date,
                 'is_expired' => now()->gt($this->end_date),
             ],
 
-            'mosque'      => $this->mosque?->name,
-            'mosque_id'   => $this->mosque_id,
+            'mosque' => $this->mosque?->name,
+            'mosque_id' => $this->mosque_id,
 
-            'project'     => $this->project?->name,
-            'project_id'  => $this->project_id,
-            
-            'supervisor'  => $this->supervisor?->first_name . ' ' . $this->supervisor?->last_name,
+            'project' => $this->project?->name,
+            'project_id' => $this->project_id,
+
+            'supervisor' => $this->supervisor?->first_name.' '.$this->supervisor?->last_name,
             'supervisor_id' => $this->supervisor_id,
 
             'parent' => $this->parentCourse?->name,
             'parent_course_id' => $this->parent_course_id,
 
-            'created_at'  => $this->created_at->format('Y-m-d H:i:s'),
+            'created_at' => $this->created_at->format('Y-m-d H:i:s'),
 
         ];
     }

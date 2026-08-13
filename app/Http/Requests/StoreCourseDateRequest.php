@@ -3,8 +3,8 @@
 namespace App\Http\Requests;
 
 use App\Models\Course;
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
 class StoreCourseDateRequest extends FormRequest
@@ -13,6 +13,7 @@ class StoreCourseDateRequest extends FormRequest
      * الحقلين سيتوفران للاستخدام في الكنترولر بعد التحقق
      */
     public $course_start_date;
+
     public $course_end_date;
 
     public function authorize(): bool
@@ -34,10 +35,10 @@ class StoreCourseDateRequest extends FormRequest
         }
 
         return [
-            'course_id'  => 'required|exists:courses,id',
-            'days'       => 'required|array|min:1',
-            'days.*'     => 'string|in:Saturday,Sunday,Monday,Tuesday,Wednesday,Thursday,Friday',
-            'excluded_dates'   => 'nullable|array',
+            'course_id' => 'required|exists:courses,id',
+            'days' => 'required|array|min:1',
+            'days.*' => 'string|in:Saturday,Sunday,Monday,Tuesday,Wednesday,Thursday,Friday',
+            'excluded_dates' => 'nullable|array',
             'excluded_dates.*' => [
                 'date',
                 'date_format:Y-m-d',
@@ -47,7 +48,7 @@ class StoreCourseDateRequest extends FormRequest
                             $fail("التاريخ المستبعد $value يجب أن يكون بين تواريخ الكورس ({$course->start_date} و {$course->end_date}).");
                         }
                     }
-                }
+                },
             ],
         ];
     }
@@ -66,7 +67,7 @@ class StoreCourseDateRequest extends FormRequest
     protected function failedValidation(Validator $validator): void
     {
         throw new HttpResponseException(response()->json([
-            'code'    => 422,
+            'code' => 422,
             'message' => $validator->errors(),
         ], 422));
     }

@@ -2,8 +2,9 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
 class UpdateReadingImprovementRequest extends FormRequest
@@ -19,12 +20,12 @@ class UpdateReadingImprovementRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
         return [
-            'type'        => 'sometimes|required|in:significant_improvement,slight_improvement,no_improvement,decline',
+            'type' => 'sometimes|required|in:significant_improvement,slight_improvement,no_improvement,decline',
             'occurred_at' => 'nullable|date',
             'description' => 'nullable|string|max:1000',
         ];
@@ -47,8 +48,8 @@ class UpdateReadingImprovementRequest extends FormRequest
     protected function failedValidation(Validator $validator): void
     {
         throw new HttpResponseException(response()->json([
-            'code'    => 422,
-            'status'  => 'error',
+            'code' => 422,
+            'status' => 'error',
             'message' => $validator->errors(),
         ], 422));
     }

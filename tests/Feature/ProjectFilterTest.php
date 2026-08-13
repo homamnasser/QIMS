@@ -13,7 +13,9 @@ class ProjectFilterTest extends TestCase
     use RefreshDatabase;
 
     protected User $admin;
+
     protected User $supervisor1;
+
     protected User $supervisor2;
 
     protected function setUp(): void
@@ -88,7 +90,7 @@ class ProjectFilterTest extends TestCase
     public function test_can_filter_projects_by_supervisor(): void
     {
         $response = $this->actingAs($this->admin)
-            ->getJson('/api/project/getAllProjects?supervisor=' . $this->supervisor2->id);
+            ->getJson('/api/project/getAllProjects?supervisor='.$this->supervisor2->id);
 
         $response->assertStatus(200)
             ->assertJsonCount(2, 'data');
@@ -97,7 +99,7 @@ class ProjectFilterTest extends TestCase
     public function test_can_filter_projects_by_audience(): void
     {
         $response = $this->actingAs($this->admin)
-            ->getJson('/api/project/getAllProjects?audience=' . urlencode('الطلاب الجدد'));
+            ->getJson('/api/project/getAllProjects?audience='.urlencode('الطلاب الجدد'));
 
         $response->assertStatus(200)
             ->assertJsonCount(2, 'data');
@@ -106,7 +108,7 @@ class ProjectFilterTest extends TestCase
     public function test_can_combine_name_supervisor_and_audience_filters(): void
     {
         $response = $this->actingAs($this->admin)
-            ->getJson('/api/project/getAllProjects?supervisor=' . $this->supervisor2->id . '&audience=' . urlencode('الطلاب الجدد'));
+            ->getJson('/api/project/getAllProjects?supervisor='.$this->supervisor2->id.'&audience='.urlencode('الطلاب الجدد'));
 
         $response->assertStatus(200)
             ->assertJsonCount(1, 'data')

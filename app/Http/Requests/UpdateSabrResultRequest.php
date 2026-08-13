@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
 class UpdateSabrResultRequest extends FormRequest
@@ -17,7 +17,7 @@ class UpdateSabrResultRequest extends FormRequest
     {
         return [
             'value' => 'required|string|max:100',
-            'note'  => 'required|string',
+            'note' => 'required|string',
         ];
     }
 
@@ -25,18 +25,18 @@ class UpdateSabrResultRequest extends FormRequest
     {
         return [
             'value.required' => 'حقل النتيجة مطلوب.',
-            'value.string'   => 'حقل النتيجة يجب أن يكون نصاً.',
-            'value.max'      => 'حقل النتيجة يجب ألا يتجاوز 100 حرف.',
-            'note.required'  => 'حقل الملاحظة مطلوب.',
-            'note.string'    => 'حقل الملاحظة يجب أن يكون نصاً.',
+            'value.string' => 'حقل النتيجة يجب أن يكون نصاً.',
+            'value.max' => 'حقل النتيجة يجب ألا يتجاوز 100 حرف.',
+            'note.required' => 'حقل الملاحظة مطلوب.',
+            'note.string' => 'حقل الملاحظة يجب أن يكون نصاً.',
         ];
     }
 
     protected function failedValidation(Validator $validator): void
     {
         throw new HttpResponseException(response()->json([
-            'code'    => 422,
-            'errors'  => $validator->errors()
+            'code' => 422,
+            'errors' => $validator->errors(),
         ], 422));
     }
 }

@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Http\Resources\LessonResource;
 use App\Http\Requests\StoreLessonRequest;
 use App\Http\Requests\UpdateLessonRequest;
+use App\Http\Resources\LessonResource;
 use App\IService\ILessonService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class LessonController extends Controller
@@ -27,15 +27,15 @@ class LessonController extends Controller
         $filters = $request->only(['name', 'subject_id', 'subject_name', 'limit']);
 
         $lessons = $this->lessonService->getAllLessons($filters);
-        
+
         $resource = LessonResource::collection($lessons)->response()->getData(true);
 
         return response()->json([
-            'code'    => 200,
+            'code' => 200,
             'message' => 'تم جلب قائمة الدروس بنجاح.',
-            'data'    => $resource['data'],
-            'meta'    => $resource['meta'] ?? null,
-            'links'   => $resource['links'] ?? null
+            'data' => $resource['data'],
+            'meta' => $resource['meta'] ?? null,
+            'links' => $resource['links'] ?? null,
         ], 200);
     }
 
@@ -46,17 +46,17 @@ class LessonController extends Controller
     {
         $lesson = $this->lessonService->getLessonById($id);
 
-        if (!$lesson) {
+        if (! $lesson) {
             return response()->json([
-                'code'    => 404,
+                'code' => 404,
                 'message' => 'الدرس غير موجود.',
             ], 404);
         }
 
         return response()->json([
-            'code'    => 200,
+            'code' => 200,
             'message' => 'تم جلب بيانات الدرس بنجاح.',
-            'data'    => new LessonResource($lesson)
+            'data' => new LessonResource($lesson),
         ], 200);
     }
 
@@ -68,12 +68,11 @@ class LessonController extends Controller
         $lesson = $this->lessonService->createLesson($request->validated());
 
         return response()->json([
-            'code'    => 201,
+            'code' => 201,
             'message' => 'تم إنشاء الدرس بنجاح.',
-            'data'    => new LessonResource($lesson)
+            'data' => new LessonResource($lesson),
         ], 201);
     }
-
 
     /**
      * تحديث درس
@@ -82,9 +81,9 @@ class LessonController extends Controller
     {
         $lesson = $this->lessonService->getLessonById($id);
 
-        if (!$lesson) {
+        if (! $lesson) {
             return response()->json([
-                'code'    => 404,
+                'code' => 404,
                 'message' => 'الدرس غير موجود.',
             ], 404);
         }
@@ -95,17 +94,17 @@ class LessonController extends Controller
 
         if ($validator->fails()) {
             return response()->json([
-                'code'    => 422,
-                'message' => $validator->errors()
+                'code' => 422,
+                'message' => $validator->errors(),
             ], 422);
         }
 
         $updatedLesson = $this->lessonService->updateLesson($lesson, $validator->validated());
 
         return response()->json([
-            'code'    => 200,
+            'code' => 200,
             'message' => 'تم تحديث بيانات الدرس بنجاح.',
-            'data'    => new LessonResource($updatedLesson)
+            'data' => new LessonResource($updatedLesson),
         ], 200);
     }
 
@@ -116,9 +115,9 @@ class LessonController extends Controller
     {
         $lesson = $this->lessonService->getLessonById($id);
 
-        if (!$lesson) {
+        if (! $lesson) {
             return response()->json([
-                'code'    => 404,
+                'code' => 404,
                 'message' => 'الدرس غير موجود.',
             ], 404);
         }
@@ -126,7 +125,7 @@ class LessonController extends Controller
         $this->lessonService->deleteLesson($lesson);
 
         return response()->json([
-            'code'    => 200,
+            'code' => 200,
             'message' => 'تم حذف الدرس بنجاح.',
         ], 200);
     }

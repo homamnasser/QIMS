@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\IService\ISabrService;
 use App\Http\Requests\StoreSabrRequest;
-use App\Http\Resources\SabrResource;
-use Illuminate\Http\JsonResponse;
 use App\Http\Requests\UpdateSabrResultRequest;
-use Illuminate\Http\Request;
+use App\Http\Resources\SabrResource;
+use App\IService\ISabrService;
 use App\Models\Student;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+
 class SabrController extends Controller
 {
     protected $sabrService;
@@ -26,9 +27,9 @@ class SabrController extends Controller
         $sabr = $this->sabrService->createSabr($request->validated());
 
         return response()->json([
-            'code'    => 201,
+            'code' => 201,
             'message' => 'تم إنشاء سجل السبر بنجاح.',
-            'data'    => new SabrResource($sabr)
+            'data' => new SabrResource($sabr),
         ], 201);
     }
 
@@ -36,13 +37,12 @@ class SabrController extends Controller
     {
         $sabr = $this->sabrService->getSabrById($id);
 
-        if (!$sabr) {
+        if (! $sabr) {
             return response()->json([
-                'code'    => 404,
-                'message' => 'سجل السبر المطلوب غير موجود.'
+                'code' => 404,
+                'message' => 'سجل السبر المطلوب غير موجود.',
             ], 404);
         }
-
 
         $user = auth()->user();
         if (
@@ -50,20 +50,20 @@ class SabrController extends Controller
             && ! $user->hasFullFieldOperationsAccess()
         ) {
             return response()->json([
-                'code'    => 403,
-                'message' => 'غير مصرّح لك بتحديث هذا السجل لأنه يعود لمعلم آخر.'
+                'code' => 403,
+                'message' => 'غير مصرّح لك بتحديث هذا السجل لأنه يعود لمعلم آخر.',
             ], 403);
         }
 
         $sabr->update([
             'value' => $request->validated()['value'],
-            'note'  => $request->validated()['note'] ?? $sabr->note,
+            'note' => $request->validated()['note'] ?? $sabr->note,
         ]);
 
         return response()->json([
-            'code'    => 200,
+            'code' => 200,
             'message' => 'تم تحديث نتيجة وملاحظة السبر بنجاح.',
-            'data'    => new SabrResource($sabr)
+            'data' => new SabrResource($sabr),
         ], 200);
     }
 
@@ -71,17 +71,17 @@ class SabrController extends Controller
     {
         $sabr = $this->sabrService->getSabrById($id);
 
-        if (!$sabr) {
+        if (! $sabr) {
             return response()->json([
-                'code'    => 404,
-                'message' => 'السبر غير موجود.'
+                'code' => 404,
+                'message' => 'السبر غير موجود.',
             ], 404);
         }
 
         return response()->json([
-            'code'    => 200,
+            'code' => 200,
             'message' => 'تم جلب بيانات السبر بنجاح.',
-            'data'    => new SabrResource($sabr)
+            'data' => new SabrResource($sabr),
         ], 200);
     }
 
@@ -92,9 +92,9 @@ class SabrController extends Controller
         $sabrs = $this->sabrService->getAllSabrs($filters);
 
         return response()->json([
-            'code'    => 200,
+            'code' => 200,
             'message' => 'تم جلب قائمة السبور بنجاح.',
-            'data'    => SabrResource::collection($sabrs)
+            'data' => SabrResource::collection($sabrs),
         ], 200);
     }
 
@@ -102,26 +102,25 @@ class SabrController extends Controller
     {
         $sabr = $this->sabrService->getSabrById($id);
 
-        if (!$sabr) {
+        if (! $sabr) {
             return response()->json([
-                'code'    => 404,
-                'message' => 'سجل السبر المطلوب غير موجود.'
+                'code' => 404,
+                'message' => 'سجل السبر المطلوب غير موجود.',
             ], 404);
         }
 
-
-        if (!is_null($sabr->value)) {
+        if (! is_null($sabr->value)) {
             return response()->json([
-                'code'    => 400,
-                'message' => 'لا يمكن حذف هذا السجل لأنه تم إسناد درجة/نتيجة إليه مسبقاً.'
+                'code' => 400,
+                'message' => 'لا يمكن حذف هذا السجل لأنه تم إسناد درجة/نتيجة إليه مسبقاً.',
             ], 400);
         }
 
         $this->sabrService->deleteSabr($sabr);
 
         return response()->json([
-            'code'    => 200,
-            'message' => 'تم حذف سجل السبر بنجاح.'
+            'code' => 200,
+            'message' => 'تم حذف سجل السبر بنجاح.',
         ], 200);
     }
 
@@ -139,9 +138,9 @@ class SabrController extends Controller
         $sabrs = $this->sabrService->getAllSabrs($filters);
 
         return response()->json([
-            'code'    => 200,
+            'code' => 200,
             'message' => 'تم جلب قائمة السبور بنجاح.',
-            'data'    => SabrResource::collection($sabrs)
+            'data' => SabrResource::collection($sabrs),
         ], 200);
     }
 }

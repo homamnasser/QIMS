@@ -2,12 +2,12 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Contracts\Validation\Validator;
-use Illuminate\Http\Exceptions\HttpResponseException;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
 use App\Enums\RoleFamily;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class StoreStudentMarkRequest extends FormRequest
 {
@@ -22,23 +22,23 @@ class StoreStudentMarkRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'student'                   => 'required|integer|exists:students,id',
-            'course'                    => 'required|integer|exists:courses,id',
-            'circle'                    => 'required|integer|exists:circles,id',
-            'attendance_marks'          => 'required|numeric|min:0',
-            'memorization_marks'        => 'required|numeric|min:0',
+            'student' => 'required|integer|exists:students,id',
+            'course' => 'required|integer|exists:courses,id',
+            'circle' => 'required|integer|exists:circles,id',
+            'attendance_marks' => 'required|numeric|min:0',
+            'memorization_marks' => 'required|numeric|min:0',
             'reading_improvement_marks' => 'required|numeric|min:0',
-            'exams_marks'               => 'required|numeric|min:0',
-            'behavior_teacher_marks'    => 'required|numeric|min:0',
+            'exams_marks' => 'required|numeric|min:0',
+            'behavior_teacher_marks' => 'required|numeric|min:0',
         ];
 
         $user = Auth::user();
 
         // 🎯 إذا كان المستخدم مشرفاً أو أدمن، نلزمه بإدخال حقوله الإدارية أيضاً ليصبح المجموع كاملاً
-        if ($user && !$user->hasRoleFamily(RoleFamily::Teacher)) {
+        if ($user && ! $user->hasRoleFamily(RoleFamily::Teacher)) {
             $rules['behavior_admin_marks'] = 'required|numeric|min:0';
-            $rules['sabr_bonus']           = 'required|numeric|min:0';
-            $rules['attendance_marks']     = 'required|numeric|min:0';
+            $rules['sabr_bonus'] = 'required|numeric|min:0';
+            $rules['attendance_marks'] = 'required|numeric|min:0';
         }
 
         return $rules;
@@ -51,11 +51,11 @@ class StoreStudentMarkRequest extends FormRequest
     {
         $validator->after(function ($validator) {
             $studentId = $this->input('student');
-            $courseId  = $this->input('course');
-            $circleId  = $this->input('circle');
+            $courseId = $this->input('course');
+            $circleId = $this->input('circle');
             $currentUserId = Auth::id();
 
-            if (!$studentId || !$courseId || !$circleId) {
+            if (! $studentId || ! $courseId || ! $circleId) {
                 return;
             }
 
@@ -65,7 +65,7 @@ class StoreStudentMarkRequest extends FormRequest
                 ->where('course_id', $courseId)
                 ->exists();
 
-            if (!$circleInCourse) {
+            if (! $circleInCourse) {
                 $validator->errors()->add('circle', 'الحلقة المحددة لا تنتمي لهذا الكورس.');
             }
 
@@ -75,7 +75,7 @@ class StoreStudentMarkRequest extends FormRequest
                 ->where('circle', $circleId)
                 ->exists();
 
-            if (!$studentInCircle) {
+            if (! $studentInCircle) {
                 $validator->errors()->add('student', 'الطالب المحدد غير مسجّل في هذه الحلقة.');
             }
 
@@ -86,7 +86,7 @@ class StoreStudentMarkRequest extends FormRequest
                     ->where('teacher_id', $currentUserId)
                     ->exists();
 
-                if (!$isActualTeacher) {
+                if (! $isActualTeacher) {
                     $validator->errors()->add('circle', 'غير مصرّح! أنت لست المعلم المُسنَد لهذه الحلقة.');
                 }
             }
@@ -107,7 +107,7 @@ class StoreStudentMarkRequest extends FormRequest
     protected function failedValidation(Validator $validator): void
     {
         throw new HttpResponseException(response()->json([
-            'code'    => 422,
+            'code' => 422,
             'message' => $validator->errors(),
         ], 422));
     }

@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Facades\DB;
 
@@ -27,9 +27,9 @@ class UpdateExamRequest extends FormRequest
     {
         return [
             'mark.required' => 'حقل علامة الامتحان مطلوب لتحديث الدرجة.',
-            'mark.numeric'  => 'علامة الامتحان يجب أن تكون عدداً صحيحاً أو عشرياً صالحاً.',
+            'mark.numeric' => 'علامة الامتحان يجب أن تكون عدداً صحيحاً أو عشرياً صالحاً.',
             'occurred_at.date' => 'تاريخ الاختبار ليس بصيغة تاريخ صالحة.',
-            'mark.min'      => 'علامة الامتحان لا يمكن أن تكون أقل من صفر.',
+            'mark.min' => 'علامة الامتحان لا يمكن أن تكون أقل من صفر.',
         ];
     }
 
@@ -40,7 +40,7 @@ class UpdateExamRequest extends FormRequest
 
             $examId = $this->route('id');
 
-            if ($mark === null || !$examId) {
+            if ($mark === null || ! $examId) {
                 return;
             }
 
@@ -50,7 +50,7 @@ class UpdateExamRequest extends FormRequest
                 $subject = DB::table('subjects')->where('id', $exam->subject)->first();
 
                 if ($subject && isset($subject->max_marks)) {
-                    if ((float)$mark > (float)$subject->max_marks) {
+                    if ((float) $mark > (float) $subject->max_marks) {
                         $validator->errors()->add('mark', "علامة الامتحان المحدّثة لا يمكن أن تتجاوز الحد الأقصى لعلامة المادة ({$subject->max_marks}).");
                     }
                 }
@@ -61,7 +61,7 @@ class UpdateExamRequest extends FormRequest
     protected function failedValidation(Validator $validator): void
     {
         throw new HttpResponseException(response()->json([
-            'code'    => 422,
+            'code' => 422,
             'message' => $validator->errors(),
         ], 422));
     }

@@ -10,10 +10,9 @@ class StudentCircle extends Model
 {
     use HasFactory;
 
-
     protected $fillable = [
         'student',
-        'circle'
+        'circle',
     ];
 
     public function studentDetails(): BelongsTo

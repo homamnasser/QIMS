@@ -22,7 +22,7 @@ class LessonResource extends JsonResource
                 'end' => $this->end_page,
                 'total' => ($this->end_page && $this->start_page) ? ($this->end_page - $this->start_page + 1) : 0,
             ],
-            'subject' =>  $this->subject?->name,
+            'subject' => $this->subject?->name,
             'subject_id' => $this->subject_id,
         ];
     }

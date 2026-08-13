@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Traits\HasRoleFamilies;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -89,7 +90,7 @@ class Student extends Authenticatable
         return $this->hasMany(StudentCircle::class, 'student');
     }
 
-    public function mosque(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function mosque(): BelongsTo
     {
         return $this->belongsTo(Mosque::class);
     }
@@ -109,7 +110,7 @@ class Student extends Authenticatable
         return $this->hasMany(Note::class, 'student_id');
     }
 
-    public function sabrs(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function sabrs(): HasMany
     {
         return $this->hasMany(Sabr::class, 'student');
     }
@@ -119,12 +120,12 @@ class Student extends Authenticatable
         return $this->hasMany(Memorization::class, 'student');
     }
 
-    public function warnings(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function warnings(): HasMany
     {
         return $this->hasMany(Warning::class, 'student');
     }
 
-    public function exams(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function exams(): HasMany
     {
         return $this->hasMany(Exam::class, 'student', 'id');
     }
@@ -134,12 +135,12 @@ class Student extends Authenticatable
         return $this->hasMany(ReadingImprovement::class, 'student');
     }
 
-    public function absences(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function absences(): HasMany
     {
         return $this->hasMany(StudentCourseAbsence::class, 'student', 'id');
     }
 
-    public function marksRecords(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function marksRecords(): HasMany
     {
         return $this->hasMany(StudentMark::class, 'student', 'id');
     }

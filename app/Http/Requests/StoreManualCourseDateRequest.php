@@ -2,8 +2,9 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Validation\Rule;
 
@@ -20,12 +21,12 @@ class StoreManualCourseDateRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
         return [
-            'course_id'    => 'required|exists:courses,id',
+            'course_id' => 'required|exists:courses,id',
             'session_date' => [
                 'required',
                 'date',
@@ -35,6 +36,7 @@ class StoreManualCourseDateRequest extends FormRequest
             ],
         ];
     }
+
     public function messages(): array
     {
         return [
@@ -46,11 +48,12 @@ class StoreManualCourseDateRequest extends FormRequest
             'session_date.unique' => 'تاريخ الجلسة لهذا الكورس موجود مسبقاً.',
         ];
     }
+
     protected function failedValidation(Validator $validator): void
     {
         throw new HttpResponseException(response()->json([
-            'code'    => 422,
-            'message' =>  $validator->errors(),
+            'code' => 422,
+            'message' => $validator->errors(),
         ], 422));
     }
 }

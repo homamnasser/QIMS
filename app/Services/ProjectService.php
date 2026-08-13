@@ -8,6 +8,7 @@ use App\Models\Course;
 use App\Models\Project;
 use App\Traits\FileTrait;
 use Illuminate\Database\QueryException;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 
@@ -18,7 +19,7 @@ class ProjectService implements IProjectService
     public function createProject(array $data): Project
     {
 
-        if (isset($data['logo']) && $data['logo'] instanceof \Illuminate\Http\UploadedFile) {
+        if (isset($data['logo']) && $data['logo'] instanceof UploadedFile) {
             $data['logo'] = $this->saveFile($data['logo'], 'projects/logos');
         }
 
@@ -27,7 +28,7 @@ class ProjectService implements IProjectService
 
     public function updateProject(Project $project, array $data): Project
     {
-        if (isset($data['logo']) && $data['logo'] instanceof \Illuminate\Http\UploadedFile) {
+        if (isset($data['logo']) && $data['logo'] instanceof UploadedFile) {
 
             if ($project->logo) {
                 $this->deleteFile($project->logo);

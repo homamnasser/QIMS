@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Subject extends Model
 {
     use HasFactory;
+
     protected $fillable = [
         'name',
         'description',
@@ -15,7 +17,7 @@ class Subject extends Model
         'max_marks',
         'course_id',
         'shared_with_subject_id',
-        'pdf_path'
+        'pdf_path',
     ];
 
     public function course()
@@ -27,21 +29,23 @@ class Subject extends Model
     {
         return $this->belongsTo(Subject::class, 'shared_with_subject_id');
     }
+
     public function scopeFilter($query, array $filters)
     {
         $query->when($filters['name'] ?? null, function ($q, $name) {
-            $q->where('name', 'like', '%' . $name . '%');
+            $q->where('name', 'like', '%'.$name.'%');
         })
             ->when($filters['course_id'] ?? null, function ($q, $courseId) {
                 $q->where('course_id', $courseId);
             })
             ->when($filters['course_name'] ?? null, function ($q, $courseName) {
                 $q->whereHas('course', function ($q) use ($courseName) {
-                    $q->where('name', 'like', '%' . $courseName . '%');
+                    $q->where('name', 'like', '%'.$courseName.'%');
                 });
             });
     }
-    public function exams(): \Illuminate\Database\Eloquent\Relations\HasMany
+
+    public function exams(): HasMany
     {
         return $this->hasMany(Exam::class, 'subject', 'id');
     }

@@ -2,9 +2,11 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
+
 class CreateNoteRequest extends FormRequest
 {
     /**
@@ -18,37 +20,39 @@ class CreateNoteRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
         return [
-            'student_id'  => 'required|integer|exists:students,id',
-            'title'       => 'required|string|max:255',
+            'student_id' => 'required|integer|exists:students,id',
+            'title' => 'required|string|max:255',
             'description' => 'required|string',
             // تاريخ الملاحظة كما وقعت؛ شواهد المدرس تُجمع بالفترة لا بلحظة التدوين.
             'occurred_at' => 'nullable|date',
         ];
     }
+
     public function messages(): array
     {
         return [
-            'student_id.required' => "معرّف الطالب مطلوب.",
-            'student_id.integer'  => "معرّف الطالب يجب أن يكون عدداً صحيحاً.",
-            'student_id.exists'   => "الطالب المحدد غير موجود.",
-            'title.required'      => "عنوان الملاحظة مطلوب.",
-            'title.string'        => "عنوان الملاحظة يجب أن يكون نصاً.",
-            'title.max'           => "عنوان الملاحظة يجب ألا يتجاوز 255 حرفاً.",
-            'description.required' => "وصف الملاحظة مطلوب.",
-            'description.string'   => "وصف الملاحظة يجب أن يكون نصاً.",
+            'student_id.required' => 'معرّف الطالب مطلوب.',
+            'student_id.integer' => 'معرّف الطالب يجب أن يكون عدداً صحيحاً.',
+            'student_id.exists' => 'الطالب المحدد غير موجود.',
+            'title.required' => 'عنوان الملاحظة مطلوب.',
+            'title.string' => 'عنوان الملاحظة يجب أن يكون نصاً.',
+            'title.max' => 'عنوان الملاحظة يجب ألا يتجاوز 255 حرفاً.',
+            'description.required' => 'وصف الملاحظة مطلوب.',
+            'description.string' => 'وصف الملاحظة يجب أن يكون نصاً.',
         ];
     }
+
     protected function failedValidation(Validator $validator): void
     {
         throw new HttpResponseException(response()->json([
-            'code'    => 422,
-            'status'  => 'error',
-            'errors'  => $validator->errors()
+            'code' => 422,
+            'status' => 'error',
+            'errors' => $validator->errors(),
         ], 422));
     }
 }

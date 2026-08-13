@@ -20,7 +20,7 @@ return new class extends Migration
                 'significant_improvement', // تحسن معتبر
                 'slight_improvement',      // تحسن بسيط
                 'no_improvement',          // عدم تحسن
-                'decline'                  // تراجع
+                'decline',                  // تراجع
             ]);
 
             $table->text('description')->nullable();

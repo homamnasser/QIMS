@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Facades\DB;
 
@@ -23,28 +23,30 @@ class UpdateAbsenceRequest extends FormRequest
             'is_excused' => 'sometimes|boolean',
         ];
     }
- public function messages(): array
+
+    public function messages(): array
     {
         return [
             'type.required' => 'حقل النوع مطلوب.',
-            'type.in'       => 'القيمة المحددة لحقل ... غير صالحة.',
+            'type.in' => 'القيمة المحددة لحقل ... غير صالحة.',
 
             'note.string' => 'الملاحظة يجب أن تكون نصاً.',
-            'note.max'    => 'الملاحظة يجب ألا تتجاوز 255 حرفاً.',
+            'note.max' => 'الملاحظة يجب ألا تتجاوز 255 حرفاً.',
 
             'date.required' => 'حقل التاريخ مطلوب.',
-            'date.date'     => 'التاريخ ليس بصيغة تاريخ صالحة.',
+            'date.date' => 'التاريخ ليس بصيغة تاريخ صالحة.',
 
             'is_excused.boolean' => 'حقل العذر يجب أن يكون صحيحاً أو خطأً.',
         ];
     }
+
     public function withValidator(Validator $validator)
     {
         $validator->after(function ($validator) {
-            $date      = $this->input('date');
+            $date = $this->input('date');
             $absenceId = $this->route('id');
 
-            if (!$date || !$absenceId) {
+            if (! $date || ! $absenceId) {
                 return;
             }
 
@@ -56,7 +58,7 @@ class UpdateAbsenceRequest extends FormRequest
                     ->where('session_date', $date)
                     ->exists();
 
-                if (!$isValidDate) {
+                if (! $isValidDate) {
                     $validator->errors()->add('date', 'التاريخ المحدد ليس تاريخ جلسة صالحاً لهذا الكورس.');
                 }
 
@@ -77,8 +79,8 @@ class UpdateAbsenceRequest extends FormRequest
     protected function failedValidation(Validator $validator): void
     {
         throw new HttpResponseException(response()->json([
-            'code'    => 422,
-            'status'  => 'error',
+            'code' => 422,
+            'status' => 'error',
             'message' => $validator->errors(),
         ], 422));
     }

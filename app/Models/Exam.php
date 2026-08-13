@@ -32,21 +32,21 @@ class Exam extends Model
         $query->when($filters['student_id'] ?? null, function ($q, $studentId) {
             $q->where('student', $studentId);
         })
-        ->when($filters['subject_id'] ?? null, function ($q, $subjectId) {
-            $q->where('subject', $subjectId);
-        })
-        ->when($filters['course_id'] ?? null, function ($q, $courseId) {
-            $q->where('course', $courseId);
-        })
+            ->when($filters['subject_id'] ?? null, function ($q, $subjectId) {
+                $q->where('subject', $subjectId);
+            })
+            ->when($filters['course_id'] ?? null, function ($q, $courseId) {
+                $q->where('course', $courseId);
+            })
         // قراءة جماعية لحلقة كاملة في طلب واحد بدل طلب لكل طالب.
-        ->when($filters['student_ids'] ?? null, function ($q, $studentIds) {
-            $q->whereIn('student', (array) $studentIds);
-        })
-        ->when($filters['circle_id'] ?? null, function ($q, $circleId) {
-            $q->whereIn('student', StudentCircle::query()
-                ->where('circle', $circleId)
-                ->select('student'));
-        });
+            ->when($filters['student_ids'] ?? null, function ($q, $studentIds) {
+                $q->whereIn('student', (array) $studentIds);
+            })
+            ->when($filters['circle_id'] ?? null, function ($q, $circleId) {
+                $q->whereIn('student', StudentCircle::query()
+                    ->where('circle', $circleId)
+                    ->select('student'));
+            });
     }
 
     // =========================================================================

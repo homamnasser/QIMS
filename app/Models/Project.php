@@ -19,6 +19,7 @@ class Project extends Model
         'supervisor',
         'is_active',
     ];
+
     protected $casts = [
         'is_active' => 'boolean',
     ];
@@ -26,17 +27,17 @@ class Project extends Model
     public function scopeFilter($query, array $filters)
     {
         $query->when($filters['name'] ?? null, function ($q, $name) {
-            $q->where('name', 'like', '%' . $name . '%');
+            $q->where('name', 'like', '%'.$name.'%');
         })
-        ->when($filters['supervisor'] ?? null, function ($q, $supervisor) {
-            $q->where('supervisor', $supervisor);
-        })
-        ->when($filters['audience'] ?? null, function ($q, $audience) {
-            $q->where('audience', 'like', '%' . $audience . '%');
-        })
-        ->when(isset($filters['active']) && !is_null($filters['active']), function ($q) use ($filters) {
-            $q->where('is_active', (bool) $filters['active']);
-        });
+            ->when($filters['supervisor'] ?? null, function ($q, $supervisor) {
+                $q->where('supervisor', $supervisor);
+            })
+            ->when($filters['audience'] ?? null, function ($q, $audience) {
+                $q->where('audience', 'like', '%'.$audience.'%');
+            })
+            ->when(isset($filters['active']) && ! is_null($filters['active']), function ($q) use ($filters) {
+                $q->where('is_active', (bool) $filters['active']);
+            });
     }
 
     public function supervisorUser(): BelongsTo

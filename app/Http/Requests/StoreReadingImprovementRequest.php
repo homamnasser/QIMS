@@ -2,10 +2,11 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Facades\DB;
+
 class StoreReadingImprovementRequest extends FormRequest
 {
     public function authorize(): bool
@@ -16,9 +17,9 @@ class StoreReadingImprovementRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'student'     => 'required|integer|exists:students,id',
-            'course'      => 'required|integer|exists:courses,id',
-            'type'        => 'required|in:significant_improvement,slight_improvement,no_improvement,decline',
+            'student' => 'required|integer|exists:students,id',
+            'course' => 'required|integer|exists:courses,id',
+            'type' => 'required|in:significant_improvement,slight_improvement,no_improvement,decline',
             'occurred_at' => 'nullable|date',
             'description' => 'nullable|string|max:1000',
         ];
@@ -31,9 +32,9 @@ class StoreReadingImprovementRequest extends FormRequest
     {
         $validator->after(function ($validator) {
             $studentId = $this->input('student');
-            $courseId  = $this->input('course');
+            $courseId = $this->input('course');
 
-            if (!$studentId || !$courseId) {
+            if (! $studentId || ! $courseId) {
                 return;
             }
 
@@ -43,13 +44,13 @@ class StoreReadingImprovementRequest extends FormRequest
                 ->where('circles.course_id', $courseId)
                 ->exists();
 
-            if (!$isEnrolledInCourse) {
+            if (! $isEnrolledInCourse) {
                 $validator->errors()->add('student', 'The selected student is not registered in any circle within this course.');
             }
         });
     }
 
-      public function messages()
+    public function messages()
     {
         return [
             'student.required' => 'حقل الطالب مطلوب.',
@@ -68,7 +69,7 @@ class StoreReadingImprovementRequest extends FormRequest
     protected function failedValidation(Validator $validator): void
     {
         throw new HttpResponseException(response()->json([
-            'code'    => 422,
+            'code' => 422,
             'message' => $validator->errors(),
         ], 422));
     }

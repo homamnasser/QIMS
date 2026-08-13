@@ -8,12 +8,10 @@ use Illuminate\Database\Eloquent\Collection;
 
 class WarningService implements IWarningService
 {
-
     public function createWarning(array $data): Warning
     {
         return Warning::create($data);
     }
-
 
     public function getWarningById(int $id): ?Warning
     {
@@ -37,7 +35,7 @@ class WarningService implements IWarningService
     /**
      * 🔔 جلب الإنذارات الخاصة بالمستخدم الحالي بناءً على دوره (طالب أو موجه)
      */
-   /**
+    /**
      * 🔔 جلب الإنذارات الخاصة بالمستخدم بناءً على فحص السباتي
      */
     public function getUserWarnings(int $userId, bool $isStudent): Collection

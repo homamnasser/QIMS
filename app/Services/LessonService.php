@@ -12,7 +12,7 @@ class LessonService implements ILessonService
         $query = Lesson::with('subject')
             ->filter($filters)
             ->latest();
-            
+
         return isset($filters['limit']) ? $query->paginate($filters['limit']) : $query->get();
     }
 
@@ -29,6 +29,7 @@ class LessonService implements ILessonService
     public function updateLesson(Lesson $lesson, array $data): Lesson
     {
         $lesson->update($data);
+
         return $lesson->fresh();
     }
 

@@ -5,6 +5,7 @@ namespace App\Services;
 use App\IService\INoteService;
 use App\Models\Note;
 use Illuminate\Support\Collection;
+
 class NoteService implements INoteService
 {
     /**
@@ -13,9 +14,9 @@ class NoteService implements INoteService
     public function createNote(array $data, int $userId)
     {
         return Note::create([
-            'student_id'  => $data['student_id'],
-            'user_id'     => $userId, // حقن الأيدي من الـ Auth
-            'title'       => $data['title'],
+            'student_id' => $data['student_id'],
+            'user_id' => $userId, // حقن الأيدي من الـ Auth
+            'title' => $data['title'],
             'description' => $data['description'],
             'occurred_at' => $data['occurred_at'] ?? null,
         ]);
@@ -50,17 +51,17 @@ class NoteService implements INoteService
      */
     public function deleteNote(int $noteId, int $userId, bool $mayDeleteAny = false): bool
     {
-       return (bool) Note::query()
-           ->whereKey($noteId)
-           ->when(! $mayDeleteAny, fn ($query) => $query->where('user_id', $userId))
-           ->delete();
+        return (bool) Note::query()
+            ->whereKey($noteId)
+            ->when(! $mayDeleteAny, fn ($query) => $query->where('user_id', $userId))
+            ->delete();
     }
 
     public function getNotesByTeacher(int $teacherId, array $filters = []): Collection
-{
-    return Note::where('user_id', $teacherId)
-        ->filter($filters)
-        ->latest()
-        ->get();
-}
+    {
+        return Note::where('user_id', $teacherId)
+            ->filter($filters)
+            ->latest()
+            ->get();
+    }
 }

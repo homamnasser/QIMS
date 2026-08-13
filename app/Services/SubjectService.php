@@ -12,7 +12,7 @@ class SubjectService implements ISubjectService
         $query = Subject::with(['course', 'sharedSubject'])
             ->filter($filters)
             ->latest();
-            
+
         return isset($filters['limit']) ? $query->paginate($filters['limit']) : $query->get();
     }
 
@@ -29,6 +29,7 @@ class SubjectService implements ISubjectService
     public function updateSubject(Subject $subject, array $data): Subject
     {
         $subject->update($data);
+
         return $subject->fresh();
     }
 
@@ -36,5 +37,4 @@ class SubjectService implements ISubjectService
     {
         return $subject->delete();
     }
-    
 }

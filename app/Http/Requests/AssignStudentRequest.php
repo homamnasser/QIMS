@@ -2,9 +2,11 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
+
 class AssignStudentRequest extends FormRequest
 {
     /**
@@ -18,13 +20,13 @@ class AssignStudentRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
         return [
-            'circle_id'     => 'required|integer|exists:circles,id',
-            'student_ids'   => 'required|array',
+            'circle_id' => 'required|integer|exists:circles,id',
+            'student_ids' => 'required|array',
             'student_ids.*' => 'integer|exists:students,id',
         ];
     }
@@ -45,9 +47,9 @@ class AssignStudentRequest extends FormRequest
     protected function failedValidation(Validator $validator): void
     {
         throw new HttpResponseException(response()->json([
-            'code'    => 422,
-            'status'  => 'error',
-            'errors'  => $validator->errors()
+            'code' => 422,
+            'status' => 'error',
+            'errors' => $validator->errors(),
         ], 422));
     }
 }

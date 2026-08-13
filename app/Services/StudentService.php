@@ -7,6 +7,7 @@ use App\IService\IStudentService;
 use App\Models\Role;
 use App\Models\Student;
 use App\Traits\FileTrait;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
 
 class StudentService implements IStudentService
@@ -18,7 +19,7 @@ class StudentService implements IStudentService
         $roleId = $data['role_id'] ?? null;
         unset($data['role_id']);
 
-        if (isset($data['image']) && $data['image'] instanceof \Illuminate\Http\UploadedFile) {
+        if (isset($data['image']) && $data['image'] instanceof UploadedFile) {
             $data['image'] = $this->saveFile($data['image'], 'students/images');
         }
 
@@ -51,7 +52,7 @@ class StudentService implements IStudentService
         $roleId = $data['role_id'] ?? null;
         unset($data['role_id']);
 
-        if (isset($data['image']) && $data['image'] instanceof \Illuminate\Http\UploadedFile) {
+        if (isset($data['image']) && $data['image'] instanceof UploadedFile) {
             if ($student->image) {
                 $this->deleteFile($student->image);
             }

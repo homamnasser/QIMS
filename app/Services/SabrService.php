@@ -5,6 +5,7 @@ namespace App\Services;
 use App\IService\ISabrService;
 use App\Models\Sabr;
 use Illuminate\Support\Collection;
+
 class SabrService implements ISabrService
 {
     /**
@@ -25,7 +26,7 @@ class SabrService implements ISabrService
 
         $sabr->update([
             'value' => $data['value'],
-            'note'  => $data['note'] ?? $sabr->note,
+            'note' => $data['note'] ?? $sabr->note,
         ]);
 
         $sabr->load(['studentDetails', 'giverDetails', 'courseDetails']);
@@ -45,6 +46,7 @@ class SabrService implements ISabrService
             ->latest()
             ->get();
     }
+
     public function deleteSabr(Sabr $sabr): bool
     {
         return $sabr->delete();

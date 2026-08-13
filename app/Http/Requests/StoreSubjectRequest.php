@@ -2,8 +2,9 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
 class StoreSubjectRequest extends FormRequest
@@ -19,7 +20,7 @@ class StoreSubjectRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
@@ -30,7 +31,7 @@ class StoreSubjectRequest extends FormRequest
             'min_marks' => 'required|integer|min:0|max:100',
             'max_marks' => 'required|integer|min:0|max:100|gt:min_marks',
             'shared_with_subject_id' => 'nullable|exists:subjects,id',
-            'pdf' => 'nullable|file|mimes:pdf'
+            'pdf' => 'nullable|file|mimes:pdf',
         ];
     }
 
@@ -66,8 +67,8 @@ class StoreSubjectRequest extends FormRequest
     protected function failedValidation(Validator $validator)
     {
         throw new HttpResponseException(response()->json([
-            'code'    => 422,
-            'message'  => $validator->errors()
+            'code' => 422,
+            'message' => $validator->errors(),
         ], 422));
     }
 }

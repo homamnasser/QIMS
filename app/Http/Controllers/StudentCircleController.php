@@ -2,19 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\IService\IStudentCircleService;
-use App\IService\ICircleService;
-use App\Http\Resources\StudentCircleResource;
-use App\Models\StudentCircle;
 use App\Http\Requests\AssignStudentRequest;
-use Illuminate\Http\JsonResponse;
 use App\Http\Requests\RemoveStudentRequest;
+use App\Http\Resources\StudentCircleResource;
+use App\IService\ICircleService;
+use App\IService\IStudentCircleService;
 use App\IService\IStudentService;
+use App\Models\StudentCircle;
+use Illuminate\Http\JsonResponse;
 
 class StudentCircleController extends Controller
 {
     protected $studentCircleService;
+
     protected $circleService;
+
     protected $studentService;
 
     // حقن الخدمات عبر الـ Interfaces لضمان الـ Loose Coupling
@@ -34,26 +36,26 @@ class StudentCircleController extends Controller
     public function addStudents(AssignStudentRequest $request): JsonResponse
     {
         // التحقق من وجود الحلقة أولاً (404)
-        $circle = $this->circleService->getCircleById((int)$request->circle_id);
+        $circle = $this->circleService->getCircleById((int) $request->circle_id);
 
-        if (!$circle) {
+        if (! $circle) {
             return response()->json([
-                'code'    => 404,
+                'code' => 404,
                 'message' => 'الحلقة الدراسية غير موجودة.',
-                'data'    => null
+                'data' => null,
             ], 404);
         }
 
         $result = $this->studentCircleService->addStudentsToCircle($circle->id, $request->student_ids);
 
         // في حال تم رفض جميع الطلاب بسبب تعارض المسجد أو تكرار الكورس
-        if ($result['students']->isEmpty() && !empty($result['conflicts'])) {
+        if ($result['students']->isEmpty() && ! empty($result['conflicts'])) {
             return response()->json([
-                'code'      => 422,
-                'status'    => 'error',
-                'message'   => implode(' ', $result['conflicts']),
+                'code' => 422,
+                'status' => 'error',
+                'message' => implode(' ', $result['conflicts']),
                 'conflicts' => $result['conflicts'],
-                'data'      => null
+                'data' => null,
             ], 422);
         }
 
@@ -64,15 +66,15 @@ class StudentCircleController extends Controller
 
         $addedCount = $result['students']->count();
         $message = "تم إلحاق {$addedCount} من الطلاب المحددين بالحلقة بنجاح.";
-        if (!empty($result['conflicts'])) {
-            $message .= " تعذر إلحاق بعض الطلاب: " . implode(' ', $result['conflicts']);
+        if (! empty($result['conflicts'])) {
+            $message .= ' تعذر إلحاق بعض الطلاب: '.implode(' ', $result['conflicts']);
         }
 
         return response()->json([
-            'code'     => 200,
-            'message'  => $message,
+            'code' => 200,
+            'message' => $message,
             'warnings' => $result['conflicts'],
-            'data'     => StudentCircleResource::collection($newRecords)
+            'data' => StudentCircleResource::collection($newRecords),
         ], 200);
     }
 
@@ -82,36 +84,36 @@ class StudentCircleController extends Controller
     public function removeStudent(RemoveStudentRequest $request): JsonResponse
     {
 
-        $circle = $this->circleService->getCircleById((int)$request->circle_id);
-        if (!$circle) {
+        $circle = $this->circleService->getCircleById((int) $request->circle_id);
+        if (! $circle) {
             return response()->json([
-                'code'    => 404,
+                'code' => 404,
                 'message' => 'الحلقة الدراسية غير موجودة.',
-                'data'    => null
+                'data' => null,
             ], 404);
         }
 
-        $student = $this->studentService->getStudentById((int)$request->student_id);
-        if (!$student) {
+        $student = $this->studentService->getStudentById((int) $request->student_id);
+        if (! $student) {
             return response()->json([
-                'code'    => 404,
+                'code' => 404,
                 'message' => 'الطالب غير موجود.',
-                'data'    => null
+                'data' => null,
             ], 404);
         }
 
         $deleted = $this->studentCircleService->removeStudentFromCircle($circle->id, $student->id);
 
-        if (!$deleted) {
+        if (! $deleted) {
             return response()->json([
-                'code'    => 404,
+                'code' => 404,
                 'message' => 'الطالب غير مسجّل في هذه الحلقة الدراسية.',
-                'data'    => null
+                'data' => null,
             ], 404);
         }
 
         return response()->json([
-            'code'    => 200,
+            'code' => 200,
             'message' => 'تم إزالة الطالب من الحلقة الدراسية بنجاح.',
         ], 200);
     }
@@ -121,13 +123,13 @@ class StudentCircleController extends Controller
      */
     public function getStudents(int $circleId): JsonResponse
     {
-        $circle = $this->circleService->getCircleById((int)$circleId);
+        $circle = $this->circleService->getCircleById((int) $circleId);
 
-        if (!$circle) {
+        if (! $circle) {
             return response()->json([
-                'code'    => 404,
+                'code' => 404,
                 'message' => 'الحلقة الدراسية غير موجودة.',
-                'data'    => null
+                'data' => null,
             ], 404);
         }
 
@@ -136,9 +138,9 @@ class StudentCircleController extends Controller
             ->get();
 
         return response()->json([
-            'code'    => 200,
+            'code' => 200,
             'message' => 'تم جلب قائمة طلاب الحلقة الدراسية بنجاح.',
-            'data'    => StudentCircleResource::collection($records)
+            'data' => StudentCircleResource::collection($records),
         ], 200);
     }
 }

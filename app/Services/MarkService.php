@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-
 use App\IService\IMarkService;
 use App\Models\StudentMark;
 use Illuminate\Support\Facades\DB;
@@ -22,13 +21,13 @@ class MarkService implements IMarkService
         // حماية هندسية: إذا لم يتم تحديد أيام دوام للدورة بعد، نرجع أصفار لتجنب القسمة على صفر
         if ($totalSessions === 0) {
             return [
-                'total_sessions'        => 0,
-                'present_days'          => 0,
-                'late_first_period'     => 0,
-                'late_second_period'    => 0,
-                'absent_days'           => 0,
+                'total_sessions' => 0,
+                'present_days' => 0,
+                'late_first_period' => 0,
+                'late_second_period' => 0,
+                'absent_days' => 0,
                 'attendance_percentage' => 0,
-                'attendance_marks'      => 0,
+                'attendance_marks' => 0,
             ];
         }
 
@@ -40,9 +39,9 @@ class MarkService implements IMarkService
 
         // فرز وعد الأيام المسجلة في قاعدة البيانات لكل حالة 📊
         $presentDaysRaw = $attendanceRecords->where('type', 'present')->count();
-        $fullAbsences   = $attendanceRecords->where('type', 'full')->count();
-        $lateFirst      = $attendanceRecords->where('type', 'first_period')->count();
-        $lateSecond     = $attendanceRecords->where('type', 'second_period')->count();
+        $fullAbsences = $attendanceRecords->where('type', 'full')->count();
+        $lateFirst = $attendanceRecords->where('type', 'first_period')->count();
+        $lateSecond = $attendanceRecords->where('type', 'second_period')->count();
 
         // 3. احتساب التأخرات وتحويلها إلى غيابات وفق القاعدة المحددة:
         // ⚠️ 6 تأخرات فترة أولى = غياب يوم كامل
@@ -84,16 +83,16 @@ class MarkService implements IMarkService
 
         // 7. إرجاع مصفوفة النتائج الكاملة للـ Flow
         return [
-            'total_sessions'         => $totalSessions,
-            'present_days_raw'       => $presentDaysRaw,
-            'late_first_period'      => $lateFirst,
-            'late_second_period'     => $lateSecond,
-            'actual_absent_days'     => $fullAbsences,
-            'converted_absences'     => (int)($absencesFromFirst + $absencesFromSecond),
-            'total_absences_penalty' => (int)$totalEquivalentAbsences,
-            'calculated_present'     => $calculatedPresentDays,
-            'attendance_percentage'  => round($attendancePercentage, 2),
-            'attendance_marks'       => round($finalAttendanceMarks, 2)
+            'total_sessions' => $totalSessions,
+            'present_days_raw' => $presentDaysRaw,
+            'late_first_period' => $lateFirst,
+            'late_second_period' => $lateSecond,
+            'actual_absent_days' => $fullAbsences,
+            'converted_absences' => (int) ($absencesFromFirst + $absencesFromSecond),
+            'total_absences_penalty' => (int) $totalEquivalentAbsences,
+            'calculated_present' => $calculatedPresentDays,
+            'attendance_percentage' => round($attendancePercentage, 2),
+            'attendance_marks' => round($finalAttendanceMarks, 2),
         ];
     }
 
