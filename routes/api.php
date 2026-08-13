@@ -20,6 +20,7 @@ use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\PublicSurveyController;
 use App\Http\Controllers\RecognitionController;
 use App\Http\Controllers\ReportApiController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SabrController;
 use App\Http\Controllers\StudentCircleController;
@@ -371,9 +372,14 @@ Route::group([
     Route::get('/final-results/{resultId}', [StudentFinalResultController::class, 'show'])
         ->whereNumber('resultId')
         ->middleware('permission:'.config('roles.student_capabilities.final_results'));
-    Route::get('/certificates/{certificateId}', [CertificateController::class, 'studentDownload'])
+    // POST لا GET: تسليم الشهادة يشترط تأكيد هوية بكلمة مرور في جسم الطلب،
+    // ولا يوجد مسار GET موازٍ حتى لا يصبح التأكيد اختيارياً.
+    Route::post('/certificates/{certificateId}/download', [CertificateController::class, 'studentDownload'])
         ->whereNumber('certificateId')
-        ->middleware('permission:'.config('roles.student_capabilities.certificates'));
+        ->middleware([
+            'permission:'.config('roles.student_capabilities.certificates'),
+            'throttle:certificate-confirm',
+        ]);
 });
 
 Route::group([
@@ -665,6 +671,16 @@ Route::middleware($mobileStaffMiddleware)
             ->middleware('permission:إدارة التكريم النهائي');
         Route::post('/recognition-batches/{batch}/publish', [RecognitionController::class, 'publish'])
             ->middleware('permission:إدارة التكريم النهائي');
+    });
+
+// نظام التقارير: البوابة صلاحية «عرض التقارير»، ثم صلاحية كل كيان داخل
+// المتحكّم، ثم نطاق المسجد على الاستعلامات.
+Route::middleware([...$webAuthenticatedMiddleware, 'permission:عرض التقارير'])
+    ->prefix('reports')
+    ->group(function (): void {
+        Route::get('/', [ReportController::class, 'catalog']);
+        Route::get('/{entity}', [ReportController::class, 'show']);
+        Route::get('/{entity}/export', [ReportController::class, 'export']);
     });
 
 Route::group([

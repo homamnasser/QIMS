@@ -119,6 +119,7 @@ class PermissionSeeder extends Seeder
             'عرض كافة الاستبيانات',
             'نشر وإلغاء نشر الاستبيان',
             'عرض وتصدير ردود الاستبيان',
+            'عرض التقارير',
             config('roles.capabilities.supervise'),
             ...array_values(config('roles.student_capabilities')),
             ...config('roles.field_supervisor_permissions'),

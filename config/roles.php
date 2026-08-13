@@ -118,6 +118,9 @@ $fieldSupervisorPermissions = [
 $administrationPermissions = [
     ...$authenticationPermissions,
     $superviseCapability,
+    // التقارير تُصدِّر البيانات جملةً، فبوابتها إدارية لا تُشتق من صلاحيات
+    // العرض المفردة. ما يظهر داخلها يبقى محكوماً بصلاحية كل كيان على حدة.
+    'عرض التقارير',
 ];
 
 return [

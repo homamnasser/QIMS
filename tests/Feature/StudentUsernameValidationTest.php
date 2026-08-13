@@ -183,6 +183,43 @@ class StudentUsernameValidationTest extends TestCase
         }
     }
 
+    public function test_selfnumber_is_not_a_login_identifier(): void
+    {
+        $student = Student::query()->create([
+            'first_name' => 'طالب',
+            'last_name' => 'الرقم الذاتي',
+            'username' => 'owner.login-1',
+            'selfnumber' => 'TEST01-000123',
+            'birth_date' => '2012-01-01',
+            'academic_class' => 'السابع',
+            'reading_level' => 'level_1',
+            'father_name' => 'ولي الطالب',
+            'parent_social_state' => 'married',
+            'father_phone' => '0933333333',
+            'password' => 'password123',
+        ]);
+        $student->syncRoles([$this->studentRole]);
+
+        // الدخول باسم المستخدم فقط: الطالب بلا حلقة لا رقم ذاتي له، فلا يصلح
+        // الرقم الذاتي معرّف دخول أساسياً. تأكيد الهوية قبل تحميل الشهادة هو
+        // الموضع الوحيد الذي يقبله.
+        $this->postJson('/api/mobile/auth/login', [
+            'login' => 'owner.login-1',
+            'password' => 'password123',
+            'device_name' => 'Login Identifier Test Device',
+        ])
+            ->assertOk()
+            ->assertJsonPath('data.user.id', $student->id);
+
+        $this->postJson('/api/mobile/auth/login', [
+            'login' => 'TEST01-000123',
+            'password' => 'password123',
+            'device_name' => 'Login Identifier Test Device',
+        ])
+            ->assertUnauthorized()
+            ->assertJsonPath('error_code', 'AUTHENTICATION_FAILED');
+    }
+
     private function studentPayload(array $overrides = []): array
     {
         return [

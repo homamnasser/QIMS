@@ -46,6 +46,17 @@ class RouteServiceProvider extends ServiceProvider
             );
         });
 
+        // تأكيد الهوية قبل تحميل الشهادة يفحص كلمة مرور، فهو سطح تخمين.
+        // الحساب معروف مسبقاً (الطلب مصادق عليه) فنحدّ به لا بالـ IP وحده،
+        // كي لا تُعطّل شبكة مشتركة طلاب مسجد كامل.
+        RateLimiter::for('certificate-confirm', function (Request $request) {
+            return Limit::perMinute(5)->by(
+                $request->user()
+                    ? $request->user()::class.':'.$request->user()->getAuthIdentifier()
+                    : $request->ip()
+            );
+        });
+
         RateLimiter::for('mobile-refresh', function (Request $request) {
             return Limit::perMinute(20)->by(
                 $request->user()

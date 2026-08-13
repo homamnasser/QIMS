@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Enums\RoleFamily;
+use App\Models\Certificate;
 use App\Models\Circle;
 use App\Models\Course;
 use App\Models\CourseDate;
@@ -49,6 +50,7 @@ use Carbon\CarbonImmutable;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use Tests\TestCase;
 
@@ -1375,6 +1377,158 @@ class FinalEvaluationSystemTest extends TestCase
                 'inputs' => [],
             ],
         ];
+    }
+
+    public function test_student_must_reconfirm_identity_before_downloading_the_certificate(): void
+    {
+        Storage::fake('local');
+        $context = $this->context();
+        $studentRole = Role::create([
+            'name' => 'certificate-download-student',
+            'guard_name' => 'web',
+            'role_family' => RoleFamily::Student->value,
+            'is_system' => false,
+            'role_family_reviewed_at' => now(),
+        ]);
+        $studentRole->givePermissionTo([
+            config('roles.student_capabilities.final_results'),
+            config('roles.student_capabilities.certificates'),
+        ]);
+        $context['student']->syncRoles([$studentRole]);
+        $context['student']->forceFill(['selfnumber' => 'EVAL01-000123'])->save();
+
+        $result = $this->createPublishedResult(
+            $context['cycle'],
+            $context['candidate'],
+            $context['supervisor']
+        );
+        $certificate = $this->createIssuedCertificate($result, $context['supervisor']);
+
+        $token = $context['student']->createToken(
+            'certificate-download-test',
+            [config('auth_tokens.mobile.abilities.access')],
+            now()->addHour()
+        );
+        $this->withToken($token->plainTextToken);
+        $endpoint = "/api/mobile/student/me/certificates/{$certificate->id}/download";
+
+        // رمز الجلسة وحده لا يسلّم الشهادة: بلا حقول التأكيد الطلب غير صالح.
+        $this->postJson($endpoint)
+            ->assertStatus(422)
+            ->assertJsonValidationErrors(['identifier', 'password']);
+
+        // كلمة مرور خاطئة، ومعرّف طالب آخر، كلاهما يُرفض.
+        $this->postJson($endpoint, [
+            'identifier' => 'final-evaluation-owner',
+            'password' => 'wrong-password',
+        ])->assertForbidden();
+
+        $this->postJson($endpoint, [
+            'identifier' => 'someone-else',
+            'password' => 'student123',
+        ])->assertForbidden();
+
+        // اسم المستخدم، ثم الرقم الذاتي الحالي بفروق الحالة والمسافات الجانبية.
+        foreach (['final-evaluation-owner', '  eval01-000123  '] as $identifier) {
+            $response = $this->post($endpoint, [
+                'identifier' => $identifier,
+                'password' => 'student123',
+            ]);
+
+            $response->assertOk();
+            $this->assertSame(
+                'application/pdf',
+                $response->headers->get('content-type')
+            );
+        }
+
+        // خمس محاولات في الدقيقة سقف مقصود: الواجهة تفحص كلمة مرور فهي سطح
+        // تخمين. الطلب السادس يُردّ ولو كان تأكيده صحيحاً.
+        $this->postJson($endpoint, [
+            'identifier' => 'final-evaluation-owner',
+            'password' => 'student123',
+        ])->assertStatus(429);
+
+        // لا يوجد مسار GET موازٍ يتخطى التأكيد.
+        $this->get("/api/mobile/student/me/certificates/{$certificate->id}")
+            ->assertNotFound();
+    }
+
+    public function test_confirmed_student_cannot_download_another_students_certificate(): void
+    {
+        Storage::fake('local');
+        $context = $this->context();
+        $studentRole = Role::create([
+            'name' => 'certificate-isolation-student',
+            'guard_name' => 'web',
+            'role_family' => RoleFamily::Student->value,
+            'is_system' => false,
+            'role_family_reviewed_at' => now(),
+        ]);
+        $studentRole->givePermissionTo([
+            config('roles.student_capabilities.certificates'),
+        ]);
+        $other = $this->createStudent($context['mosque'], 'certificate-other-owner');
+        $context['student']->syncRoles([$studentRole]);
+        $other->syncRoles([$studentRole]);
+
+        $otherCandidate = EvaluationCandidate::create([
+            'evaluation_cycle_id' => $context['cycle']->id,
+            'student_id' => $other->id,
+            'mosque_id' => $context['mosque']->id,
+            'status' => 'active',
+        ]);
+        $otherResult = $this->createPublishedResult(
+            $context['cycle'],
+            $otherCandidate,
+            $context['supervisor']
+        );
+        $otherCertificate = $this->createIssuedCertificate(
+            $otherResult,
+            $context['supervisor']
+        );
+
+        $token = $context['student']->createToken(
+            'certificate-isolation-test',
+            [config('auth_tokens.mobile.abilities.access')],
+            now()->addHour()
+        );
+        $this->withToken($token->plainTextToken);
+
+        // تأكيد هوية صحيح تماماً، لكن الشهادة تخص طالباً آخر.
+        $this->postJson(
+            "/api/mobile/student/me/certificates/{$otherCertificate->id}/download",
+            [
+                'identifier' => 'final-evaluation-owner',
+                'password' => 'student123',
+            ]
+        )->assertNotFound();
+    }
+
+    private function createIssuedCertificate(
+        EvaluationResult $result,
+        User $actor
+    ): Certificate {
+        $serial = 'QIMS-TEST-'.$result->id;
+        $path = 'certificates/final-results/'.$serial.'.pdf';
+        // ملف حقيقي على قرص مزيّف: التحميل يتحقق من بصمة sha256 قبل الإرسال.
+        $bytes = "%PDF-1.4\n% certificate test fixture\n";
+        Storage::disk('local')->put($path, $bytes);
+
+        return Certificate::create([
+            'evaluation_result_id' => $result->id,
+            'certificate_type' => 'final_result',
+            'serial_number' => $serial,
+            'verification_token_hash' => hash('sha256', 'token-'.$result->id),
+            'file_disk' => 'local',
+            'file_path' => $path,
+            'file_sha256' => hash('sha256', $bytes),
+            'data_snapshot' => ['result' => ['final_score' => '425.00']],
+            'status' => 'issued',
+            'version' => 1,
+            'issued_by' => $actor->id,
+            'issued_at' => now(),
+        ]);
     }
 
     private function createPublishedResult(
