@@ -8,11 +8,13 @@ use App\Models\Course;
 use App\Models\Memorization;
 use App\Models\Mosque;
 use App\Models\Project;
+use App\Models\QuranPeriodAssessment;
 use App\Models\Role;
 use App\Models\SabrPartAchievement;
 use App\Models\Student;
 use App\Models\Survey;
 use App\Models\SurveyResponse;
+use App\Models\TeacherPeriodEvaluation;
 use App\Models\User;
 use App\Support\StaffScopeContext;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -385,6 +387,26 @@ class StaffWorkScopeTest extends TestCase
                 SabrPartAchievement::query()->pluck('student_id')->all(),
                 'إنجاز السبر بلا مرشّح تقييم يجب أن يبقى ظاهراً لمسجده'
             );
+        } finally {
+            app(StaffScopeContext::class)->clear();
+        }
+    }
+
+    public function test_period_evaluation_tables_are_scoped_through_their_candidate(): void
+    {
+        // هذان الجدولان يرتبطان بالمسجد عبر المرشّح لا عبر الطالب مباشرة،
+        // وأي اسم علاقة خاطئ يفجّر الاستعلام بدل أن يفلتره.
+        $supervisor = $this->createStaff(
+            'period-evaluations@example.com',
+            StaffWorkScope::Mosque,
+            $this->othmanMosque
+        );
+
+        app(StaffScopeContext::class)->activate($supervisor);
+
+        try {
+            $this->assertSame(0, QuranPeriodAssessment::query()->count());
+            $this->assertSame(0, TeacherPeriodEvaluation::query()->count());
         } finally {
             app(StaffScopeContext::class)->clear();
         }

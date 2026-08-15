@@ -7,6 +7,7 @@ use App\Models\Circle;
 use App\Models\Course;
 use App\Models\Mosque;
 use App\Models\Student;
+use App\Models\StudentNotification;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -119,6 +120,42 @@ class StudentLearningService implements IStudentLearningService
             ->with(['studentDetails', 'subjectDetails', 'courseDetails'])
             ->latest()
             ->get();
+    }
+
+    /**
+     * سجل الحضور كاملاً لا الغياب وحده: صفوف type = 'present' جزء من الجدول
+     * نفسه، وإخفاؤها يعطي الطالب صورة غيابات بلا مقام تُقاس عليه.
+     */
+    public function getAttendance(Student $student): Collection
+    {
+        return $student->absences()
+            ->with(['studentDetails', 'courseDetails'])
+            ->orderByDesc('date')
+            ->orderByDesc('id')
+            ->get();
+    }
+
+    /**
+     * آخر مئة إشعار. الصندوق سجل للقراءة لا أرشيف يُصفَّح: الطالب يفتحه ليرى ما
+     * فاته، والمئة تغطّي أشهراً بمعدّل إشعارات هذا النظام، وتحدّ الاستجابة بلا
+     * ترقيم صفحات في الطرفين.
+     */
+    public function getNotifications(Student $student): Collection
+    {
+        return StudentNotification::query()
+            ->where('student_id', $student->id)
+            ->orderByDesc('id')
+            ->limit(100)
+            ->get();
+    }
+
+    /** @return int عدد الصفوف التي كانت غير مقروءة. */
+    public function markNotificationsRead(Student $student): int
+    {
+        return StudentNotification::query()
+            ->where('student_id', $student->id)
+            ->whereNull('read_at')
+            ->update(['read_at' => now()]);
     }
 
     private function enrolledCoursesQuery(Student $student): Builder

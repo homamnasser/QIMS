@@ -125,5 +125,8 @@ class StudentEnrollmentDetailsTest extends TestCase
             ['مسجد الأنصار'],
             array_column($resource['enrollment']['mosques'], 'name')
         );
+
+        // تاريخ الميلاد يخرج يوماً مقروءاً لا لحظة زمنية بصيغة ISO.
+        $this->assertSame('2012-01-01', $resource['birth_date']);
     }
 }

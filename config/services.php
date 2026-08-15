@@ -31,4 +31,10 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    // مفتاح حساب الخدمة اعتماد إرسال كامل لمشروع Firebase، فيبقى ملفًّا على
+    // القرص بصلاحية 600 خارج المستودع، لا نصًّا داخل .env.
+    'fcm' => [
+        'credentials' => env('FCM_CREDENTIALS', storage_path('app/firebase/service-account.json')),
+    ],
+
 ];

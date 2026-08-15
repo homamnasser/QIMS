@@ -12,6 +12,7 @@ use App\Models\QuranPeriodAssessment;
 use App\Models\TeacherPeriodEvaluation;
 use App\Models\User;
 use Carbon\CarbonImmutable;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -51,6 +52,7 @@ class EvaluationCycleService
                 'course_ids' => ['كل المقررات المختارة يجب أن تنتمي إلى المشروع نفسه.'],
             ]);
         }
+        $this->assertCoursesIntersectWindow($courses, $cycleStart, $cycleEnd);
 
         return DB::transaction(function () use ($data, $actor, $periods, $cycleStart, $cycleEnd) {
             $policy = isset($data['rule_configuration'])
@@ -106,6 +108,15 @@ class EvaluationCycleService
 
         return DB::transaction(function () use ($cycle, $data, $actor) {
             $before = $cycle->load(['periods', 'courses'])->toArray();
+            // النافذة والمقررات الفعليتان بعد التعديل: أيّهما لم يُرسل يبقى كما هو.
+            $effectivePeriods = collect($data['periods'] ?? $cycle->periods->toArray());
+            $this->assertCoursesIntersectWindow(
+                isset($data['course_ids'])
+                    ? Course::query()->whereIn('id', $data['course_ids'])->get()
+                    : $cycle->courses,
+                CarbonImmutable::parse($effectivePeriods->min('start_date'))->toDateString(),
+                CarbonImmutable::parse($effectivePeriods->max('end_date'))->toDateString()
+            );
             $attributes = array_intersect_key(
                 $data,
                 array_flip(['name', 'season', 'top_students_count'])
@@ -301,6 +312,55 @@ class EvaluationCycleService
                 'course_ids' => ["لا يمكن إزالة المقرر «{$name}» بعد إدخال تقييمات لطلابه."],
             ]);
         }
+    }
+
+    /**
+     * نافذة الدورة هي مصدر كل المعايير: التسميع والحضور وشواهد المدرس تُقرأ
+     * بتواريخ الفترات، والاختبارات والإنذارات وتحسّن القراءة والسبر تُقرأ بنافذة
+     * الدورة المشتقّة منها. فمقرّر لا يتقاطع مع النافذة إطلاقاً يعني أصفاراً
+     * مضمونة لكل طلابه — وهو خطأ إدخال لا خيار تقييم، فيُرفض هنا.
+     *
+     * التغطية الجزئية مقبولة عمداً: تقييم فصل من مقرر سنوي حالة مشروعة،
+     * والواجهة هي التي تُظهر مداه المغطّى.
+     *
+     * @param  Collection<int, Course>  $courses
+     */
+    private function assertCoursesIntersectWindow(
+        $courses,
+        string $cycleStart,
+        string $cycleEnd
+    ): void {
+        $start = CarbonImmutable::parse($cycleStart)->startOfDay();
+        $end = CarbonImmutable::parse($cycleEnd)->endOfDay();
+
+        $outside = $courses->filter(
+            fn (Course $course) => $course->start_date->startOfDay()->greaterThan($end)
+                || $course->end_date->endOfDay()->lessThan($start)
+        );
+
+        if ($outside->isEmpty()) {
+            return;
+        }
+
+        $names = $outside
+            ->map(fn (Course $course) => sprintf(
+                '«%s» (%s → %s)',
+                $course->name,
+                $course->start_date->toDateString(),
+                $course->end_date->toDateString()
+            ))
+            ->implode('، ');
+
+        throw ValidationException::withMessages([
+            'periods' => [sprintf(
+                'النطاق الزمني للدورة (%s → %s) لا يتقاطع مع %s؛ '
+                .'وسجلات هذه المقررات كلها ستقع خارج النافذة فتُحتسب أصفاراً. '
+                .'وسّع فترات التقييم لتغطي مدة المقررات المختارة أو غيّر المقررات.',
+                $start->toDateString(),
+                $end->toDateString(),
+                $names
+            )],
+        ]);
     }
 
     private function validatePeriods(array $periods): void

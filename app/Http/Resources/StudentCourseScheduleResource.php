@@ -16,7 +16,7 @@ class StudentCourseScheduleResource extends JsonResource
                 ->map(fn ($courseDate): array => [
                     'id' => $courseDate->id,
                     'session_date' => $courseDate->session_date->format('Y-m-d'),
-                    'day_name' => Carbon::parse($courseDate->session_date)->format('l'),
+                    'day_name' => Carbon::parse($courseDate->session_date)->locale(app()->getLocale())->translatedFormat('l'),
                     'lessons' => LessonResource::collection($courseDate->lessons),
                 ])
                 ->all()),

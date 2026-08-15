@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\AbsenceResource;
 use App\Http\Resources\ExamResource;
 use App\Http\Resources\MemorizationResource;
 use App\Http\Resources\NoteResource;
@@ -11,6 +12,7 @@ use App\Http\Resources\StudentCourseScheduleResource;
 use App\Http\Resources\StudentLearningCircleResource;
 use App\Http\Resources\StudentLearningCourseResource;
 use App\Http\Resources\StudentMosqueResource;
+use App\Http\Resources\StudentNotificationResource;
 use App\Http\Resources\WarningResource;
 use App\IService\IStudentLearningService;
 use App\Models\Student;
@@ -189,6 +191,54 @@ class StudentLearningController extends Controller
             'data' => ReadingImprovementResource::collection(
                 $this->studentLearningService->getReadingImprovements($student)
             ),
+        ]);
+    }
+
+    public function attendance(Request $request): JsonResponse
+    {
+        $student = $this->authenticatedStudent($request);
+        if (! $student) {
+            return $this->studentOnlyResponse();
+        }
+
+        return response()->json([
+            'code' => 200,
+            'message' => 'تم جلب سجل حضور الطالب بنجاح.',
+            'data' => AbsenceResource::collection(
+                $this->studentLearningService->getAttendance($student)
+            ),
+        ]);
+    }
+
+    public function notifications(Request $request): JsonResponse
+    {
+        $student = $this->authenticatedStudent($request);
+        if (! $student) {
+            return $this->studentOnlyResponse();
+        }
+
+        return response()->json([
+            'code' => 200,
+            'message' => 'تم جلب إشعارات الطالب بنجاح.',
+            'data' => StudentNotificationResource::collection(
+                $this->studentLearningService->getNotifications($student)
+            ),
+        ]);
+    }
+
+    public function readNotifications(Request $request): JsonResponse
+    {
+        $student = $this->authenticatedStudent($request);
+        if (! $student) {
+            return $this->studentOnlyResponse();
+        }
+
+        return response()->json([
+            'code' => 200,
+            'message' => 'تم تعليم الإشعارات مقروءة.',
+            'data' => [
+                'marked' => $this->studentLearningService->markNotificationsRead($student),
+            ],
         ]);
     }
 

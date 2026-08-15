@@ -14,8 +14,9 @@ class MemorizationResource extends JsonResource
             'page_number' => $this->page_number,
             'name' => $this->name,
             'record_type' => $this->record_type ?? 'memorization',
-            'recorded_at' => $this->recorded_at?->toIso8601String()
-                ?? $this->created_at?->toIso8601String(),
+            // يوم التسميع لا لحظته، كبقية تواريخ السجلات (`occurred_at`, `date`).
+            'recorded_at' => ($this->recorded_at ?? $this->created_at)
+                ?->format('Y-m-d'),
             'course_id' => $this->course_id,
             'circle_id' => $this->circle_id,
             'course_date_id' => $this->course_date_id,

@@ -28,4 +28,10 @@ interface IStudentLearningService
     public function getExams(Student $student): Collection;
 
     public function getReadingImprovements(Student $student): Collection;
+
+    public function getAttendance(Student $student): Collection;
+
+    public function getNotifications(Student $student): Collection;
+
+    public function markNotificationsRead(Student $student): int;
 }

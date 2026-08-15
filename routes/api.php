@@ -6,6 +6,7 @@ use App\Http\Controllers\CircleController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\CourseCurriculumController;
 use App\Http\Controllers\CourseDateController;
+use App\Http\Controllers\DeviceTokenController;
 use App\Http\Controllers\EvaluationAuditController;
 use App\Http\Controllers\EvaluationCycleController;
 use App\Http\Controllers\EvaluationInputController;
@@ -28,6 +29,7 @@ use App\Http\Controllers\StudentCircleController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\StudentCourseAbsenceController;
 use App\Http\Controllers\StudentFinalResultController;
+use App\Http\Controllers\StudentIdentityController;
 use App\Http\Controllers\StudentLearningController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\SurveyController;
@@ -72,6 +74,15 @@ Route::prefix('mobile/auth')->group(function (): void {
     Route::post('/logout', [MobileAuthenticationController::class, 'logout'])
         ->middleware(['auth:sanctum', 'auth.channel:mobile-token']);
 });
+
+// mobile-access لا mobile-student: أجهزة الكادر تُسجَّل بنفس المسار حين يُوسَّع
+// الإشعار إليهم، بلا مسار ثانٍ.
+Route::prefix('mobile/devices')
+    ->middleware(['auth:sanctum', 'auth.channel:mobile-access'])
+    ->group(function (): void {
+        Route::post('/', [DeviceTokenController::class, 'store']);
+        Route::delete('/', [DeviceTokenController::class, 'destroy']);
+    });
 
 Route::prefix('public/surveys')->group(function (): void {
     Route::get('/{publicToken}', [PublicSurveyController::class, 'show']);
@@ -367,19 +378,31 @@ Route::group([
         ->middleware('permission:'.config('roles.student_capabilities.exams'));
     Route::get('/reading-improvements', [StudentLearningController::class, 'readingImprovements'])
         ->middleware('permission:'.config('roles.student_capabilities.reading_improvements'));
-    Route::get('/final-results', [StudentFinalResultController::class, 'index'])
-        ->middleware('permission:'.config('roles.student_capabilities.final_results'));
-    Route::get('/final-results/{resultId}', [StudentFinalResultController::class, 'show'])
-        ->whereNumber('resultId')
-        ->middleware('permission:'.config('roles.student_capabilities.final_results'));
-    // POST لا GET: تسليم الشهادة يشترط تأكيد هوية بكلمة مرور في جسم الطلب،
-    // ولا يوجد مسار GET موازٍ حتى لا يصبح التأكيد اختيارياً.
-    Route::post('/certificates/{certificateId}/download', [CertificateController::class, 'studentDownload'])
-        ->whereNumber('certificateId')
-        ->middleware([
-            'permission:'.config('roles.student_capabilities.certificates'),
-            'throttle:certificate-confirm',
-        ]);
+    Route::get('/attendance', [StudentLearningController::class, 'attendance'])
+        ->middleware('permission:'.config('roles.student_capabilities.attendance'));
+    Route::get('/notifications', [StudentLearningController::class, 'notifications'])
+        ->middleware('permission:'.config('roles.student_capabilities.notifications'));
+    // القراءة تحت القدرة نفسها: من يرى الصندوق يعلّمه مقروءاً، ولا معنى لقدرة
+    // ثانية تفصل بينهما.
+    Route::post('/notifications/read', [StudentLearningController::class, 'readNotifications'])
+        ->middleware('permission:'.config('roles.student_capabilities.notifications'));
+    // تأكيد الهوية نفسه خارج الحارس بالضرورة: هو البوابة التي تفتحه.
+    Route::post('/identity/confirm', [StudentIdentityController::class, 'confirm'])
+        ->middleware('throttle:identity-confirm');
+    Route::post('/identity/lock', [StudentIdentityController::class, 'lock']);
+
+    // قسم النتيجة النهائية مقفل بأكمله خلف تأكيد الهوية: القائمة والتفاصيل
+    // والشهادة. النتيجة نفسها بيانات شخصية، فلا يكفي أن تُحرس الشهادة وحدها.
+    Route::middleware('student.identity.confirmed')->group(function (): void {
+        Route::get('/final-results', [StudentFinalResultController::class, 'index'])
+            ->middleware('permission:'.config('roles.student_capabilities.final_results'));
+        Route::get('/final-results/{resultId}', [StudentFinalResultController::class, 'show'])
+            ->whereNumber('resultId')
+            ->middleware('permission:'.config('roles.student_capabilities.final_results'));
+        Route::get('/certificates/{certificateId}', [CertificateController::class, 'studentDownload'])
+            ->whereNumber('certificateId')
+            ->middleware('permission:'.config('roles.student_capabilities.certificates'));
+    });
 });
 
 Route::group([

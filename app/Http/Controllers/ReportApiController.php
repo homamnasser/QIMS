@@ -93,16 +93,6 @@ class ReportApiController extends Controller
         $courses = Course::all();
         $data = [];
 
-        $daysMap = [
-            'Sunday' => 'الأحد',
-            'Monday' => 'الإثنين',
-            'Tuesday' => 'الثلاثاء',
-            'Wednesday' => 'الأربعاء',
-            'Thursday' => 'الخميس',
-            'Friday' => 'الجمعة',
-            'Saturday' => 'السبت',
-        ];
-
         foreach ($courses as $course) {
             $courseDates = CourseDate::with('lessons')
                 ->where('course_id', $course->id)
@@ -119,9 +109,7 @@ class ReportApiController extends Controller
                 }
 
                 try {
-                    $carbonDate = Carbon::parse($dateStr);
-                    $dayEng = $carbonDate->format('l');
-                    $dayAr = $daysMap[$dayEng] ?? $dayEng;
+                    $dayAr = Carbon::parse($dateStr)->locale(app()->getLocale())->translatedFormat('l');
                 } catch (\Exception $e) {
                     $dayAr = '';
                 }

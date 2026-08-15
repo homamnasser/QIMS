@@ -4,6 +4,7 @@ use App\Exceptions\ApiExceptionHandler;
 use App\Http\Middleware\EnforceStaffMosqueScope;
 use App\Http\Middleware\EnsureAuthenticationChannel;
 use App\Http\Middleware\EnsureFrontendRequest;
+use App\Http\Middleware\EnsureStudentIdentityConfirmed;
 use Illuminate\Contracts\Auth\Middleware\AuthenticatesRequests;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -49,6 +50,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'frontend.request' => EnsureFrontendRequest::class,
             'auth.channel' => EnsureAuthenticationChannel::class,
             'staff.mosque.scope' => EnforceStaffMosqueScope::class,
+            'student.identity.confirmed' => EnsureStudentIdentityConfirmed::class,
         ]);
 
         // ترتيب حرج: يجب التحقق من الهوية، ثم قناة المصادقة، ثم تفعيل نطاق

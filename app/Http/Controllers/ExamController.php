@@ -65,6 +65,19 @@ class ExamController extends Controller
             ], 404);
         }
 
+        // المدرس يصحّح علامات طلاب حلقاته فقط؛ من يرى الامتحانات كلها (الإدارة
+        // والإشراف) يعدّل بلا هذا الحصر.
+        $user = $request->user();
+        if (
+            ! $user->can('عرض كافة الامتحانات')
+            && ! $this->examService->teacherOwnsExam($exam, (int) $user->id)
+        ) {
+            return response()->json([
+                'code' => 403,
+                'message' => 'لا تملك صلاحية تعديل علامة خارج حلقاتك.',
+            ], 403);
+        }
+
         $this->examService->updateExamMark(
             $exam,
             $request->input('mark'),

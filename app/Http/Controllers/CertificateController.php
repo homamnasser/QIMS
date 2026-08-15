@@ -11,7 +11,6 @@ use App\Services\Evaluation\EvaluationAccessService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -81,32 +80,14 @@ class CertificateController extends Controller
     }
 
     /**
-     * تسليم الشهادة للطالب مشروط بتأكيد هوية إضافي: رمز الجلسة وحده لا يكفي،
-     * فالجهاز قد يبقى مفتوحاً بيد غير صاحبه. لذلك يعيد الطالب إدخال معرّفه
-     * (اسم المستخدم أو رقمه الذاتي الحالي) وكلمة مروره مع الطلب نفسه.
-     *
-     * التأكيد جزء من طلب التحميل لا خطوة سابقة له، فلا تبقى نافذة زمنية
-     * مفتوحة بين التأكيد والتسليم، ولا يوجد مسار تحميل ثانٍ بلا تأكيد.
+     * تأكيد الهوية يحرس هذا المسار من الخارج عبر `student.identity.confirmed`،
+     * وهو الحارس نفسه الذي يقفل قسم النتيجة النهائية بأكمله. لذلك لا يعيد هذا
+     * الإجراء فحص كلمة المرور: القسم لا يُفتح أصلاً قبل التأكيد.
      */
     public function studentDownload(Request $request, int $certificateId): StreamedResponse
     {
         /** @var Student $student */
         $student = $request->user();
-        $credentials = $request->validate([
-            'identifier' => ['required', 'string', 'max:255'],
-            'password' => ['required', 'string', 'max:255'],
-        ]);
-
-        abort_unless(
-            $this->confirmsOwnIdentity(
-                $student,
-                $credentials['identifier'],
-                $credentials['password']
-            ),
-            403,
-            'تعذر تأكيد هويتك؛ تحقق من المعرّف وكلمة المرور ثم أعد المحاولة.'
-        );
-
         $certificate = Certificate::query()
             ->whereKey($certificateId)
             ->where('status', 'issued')
@@ -122,41 +103,6 @@ class CertificateController extends Controller
             $certificate->serial_number.'.pdf',
             ['Content-Type' => 'application/pdf']
         );
-    }
-
-    /**
-     * تتم المقارنة مع أعمدة الطالب المصادق عليه نفسه، لا ببحث في جدول الطلاب.
-     * لذلك لا يفتح معرّف طالب آخر شهادة هذا الحساب، ولا تتحول الواجهة إلى وسيلة
-     * لتخمين معرّفات الطلاب.
-     *
-     * الرقم الذاتي يقبله من يملكه فقط؛ والطالب غير الملتحق بأي حلقة لا رقم ذاتي
-     * له، فيؤكد باسم المستخدم وحده ولا يُحرم من شهادته.
-     */
-    private function confirmsOwnIdentity(
-        Student $student,
-        string $identifier,
-        string $password
-    ): bool {
-        $identifier = trim($identifier);
-
-        // اسم المستخدم مخزّن بأحرف صغيرة، ورمز المسجد داخل الرقم الذاتي بأحرف
-        // كبيرة، فنوحّد الحالة بدل الاتكال على ترتيب مقارنة الجدول.
-        $matchesIdentifier = hash_equals(
-            strtolower((string) $student->username),
-            strtolower($identifier)
-        ) || (
-            $student->selfnumber !== null
-            && hash_equals(
-                strtoupper($student->selfnumber),
-                strtoupper($identifier)
-            )
-        );
-
-        // كلمة المرور تُفحص دائماً حتى لو فشل المعرّف، حتى لا يكشف فرق زمن
-        // الاستجابة أي الحقلين كان الخطأ.
-        $matchesPassword = Hash::check($password, $student->password);
-
-        return $matchesIdentifier && $matchesPassword;
     }
 
     public function revoke(Request $request, Certificate $certificate): JsonResponse

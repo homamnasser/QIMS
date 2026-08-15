@@ -45,6 +45,18 @@ class ExamService implements IExamService
     }
 
     /**
+     * نفس قاعدة «امتحاناتي»: السجل يخصّ المدرس إن كان طالبه في إحدى حلقاته
+     * ضمن كورس الامتحان.
+     */
+    public function teacherOwnsExam(Exam $exam, int $teacherId): bool
+    {
+        return $this->getExamMarksForTeacher($teacherId, [
+            'student_id' => $exam->student,
+            'course_id' => $exam->course,
+        ])->contains('id', $exam->id);
+    }
+
+    /**
      * تصحيح العلامة، ومعها تاريخ الاختبار إن أُرسل — فتصحيح تاريخ خاطئ يعيد
      * العلامة إلى نافذة دورتها بدل أن تبقى ساقطة من الحساب.
      */

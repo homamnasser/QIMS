@@ -420,6 +420,8 @@ class StudentLearningApiTest extends TestCase
             '/api/mobile/student/me/memorizations',
             '/api/mobile/student/me/warnings',
             '/api/mobile/student/me/exams',
+            '/api/mobile/student/me/attendance',
+            '/api/mobile/student/me/notifications',
         ] as $endpoint) {
             $this->getJson($endpoint)->assertUnauthorized();
         }
@@ -438,6 +440,8 @@ class StudentLearningApiTest extends TestCase
             '/api/mobile/student/me/memorizations',
             '/api/mobile/student/me/warnings',
             '/api/mobile/student/me/exams',
+            '/api/mobile/student/me/attendance',
+            '/api/mobile/student/me/notifications',
         ] as $endpoint) {
             $this->getJson($endpoint)->assertForbidden();
         }
@@ -461,6 +465,8 @@ class StudentLearningApiTest extends TestCase
             '/api/mobile/student/me/memorizations',
             '/api/mobile/student/me/warnings',
             '/api/mobile/student/me/exams',
+            '/api/mobile/student/me/attendance',
+            '/api/mobile/student/me/notifications',
         ] as $endpoint) {
             $this->getJson($endpoint)
                 ->assertForbidden()

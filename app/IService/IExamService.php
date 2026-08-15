@@ -15,6 +15,8 @@ interface IExamService
 
     public function getExamById(int $id): ?Exam;
 
+    public function teacherOwnsExam(Exam $exam, int $teacherId): bool;
+
     public function updateExamMark(Exam $exam, float $newMark): bool;
 
     public function deleteExam(Exam $exam): bool;

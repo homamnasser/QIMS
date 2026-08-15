@@ -26,7 +26,9 @@ class StudentResource extends JsonResource
             'username' => $this->username,
             'email' => $this->username,
             'phone_number' => $this->phone_number,
-            'birth_date' => $this->birth_date,
+            // تاريخ لا لحظة زمنية: الصيغة الكاملة كانت تصل إلى الواجهات كما هي
+            // (`2010-01-01T00:00:00.000000Z`) فتُعرض على المستخدم بلا معنى.
+            'birth_date' => $this->birth_date?->format('Y-m-d'),
             'academic_class' => $this->academic_class,
             'reading_level' => $this->reading_level,
             'father_name' => $this->father_name,

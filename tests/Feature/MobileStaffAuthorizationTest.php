@@ -198,6 +198,82 @@ class MobileStaffAuthorizationTest extends TestCase
     }
 
     /**
+     * تصحيح علامة أُدخلت خطأً من عمل المدرس اليومي، لكنه محصور بطلاب حلقاته.
+     */
+    public function test_teacher_corrects_marks_of_their_own_circles_only(): void
+    {
+        $this->assertContains(
+            'تعديل الامتحان',
+            config('roles.teacher_permissions'),
+            'تعديل الامتحان يجب أن يكون ضمن الحد الأدنى لصلاحيات المدرس'
+        );
+
+        $teacherRole = $this->createRole('exam-update-teacher', RoleFamily::Teacher);
+        $teacherRole->givePermissionTo(Permission::firstOrCreate([
+            'name' => 'تعديل الامتحان',
+            'guard_name' => 'web',
+        ]));
+        $teacher = $this->createUser('exam-update@example.com', '0992000017');
+        $teacher->syncRoles([$teacherRole]);
+        $otherTeacher = $this->createUser(
+            'other-exam-update@example.com',
+            '0992000018'
+        );
+        [$ownCourse] = $this->createCourseContext($teacher);
+        [$otherCourse] = $this->createCourseContext($otherTeacher);
+        $ownCircle = Circle::create([
+            'name' => 'حلقة تصحيح العلامات',
+            'teacher_id' => $teacher->id,
+            'course_id' => $ownCourse->id,
+            'quran_mode' => 'recitation',
+        ]);
+        $otherCircle = Circle::create([
+            'name' => 'حلقة معلم آخر',
+            'teacher_id' => $otherTeacher->id,
+            'course_id' => $otherCourse->id,
+            'quran_mode' => 'recitation',
+        ]);
+        $ownStudent = $this->createStudent('own-update-student');
+        $otherStudent = $this->createStudent('other-update-student');
+        StudentCircle::create([
+            'student' => $ownStudent->id,
+            'circle' => $ownCircle->id,
+        ]);
+        StudentCircle::create([
+            'student' => $otherStudent->id,
+            'circle' => $otherCircle->id,
+        ]);
+        $ownExam = Exam::create([
+            'student' => $ownStudent->id,
+            'subject' => Subject::create([
+                'name' => 'مادة تصحيح العلامة',
+                'course_id' => $ownCourse->id,
+            ])->id,
+            'course' => $ownCourse->id,
+            'mark' => 60,
+        ]);
+        $otherExam = Exam::create([
+            'student' => $otherStudent->id,
+            'subject' => Subject::create([
+                'name' => 'مادة معلم آخر',
+                'course_id' => $otherCourse->id,
+            ])->id,
+            'course' => $otherCourse->id,
+            'mark' => 70,
+        ]);
+
+        $this->withFreshBearer($this->accessToken($teacher))
+            ->putJson("/api/mobile/staff/exams/{$ownExam->id}", ['mark' => 75])
+            ->assertOk();
+        $this->assertSame(75.0, (float) $ownExam->fresh()->mark);
+
+        $this->withFreshBearer($this->accessToken($teacher))
+            ->putJson("/api/mobile/staff/exams/{$otherExam->id}", ['mark' => 10])
+            ->assertForbidden();
+        $this->assertSame(70.0, (float) $otherExam->fresh()->mark);
+    }
+
+    /**
      * دور المشرف الميداني مسؤوليته رصد حضور جلسات حلقاته؛ وكل ما عداه من
      * السجلات التشغيلية خارج نطاقه ولو كان يخص طلاب مسجده نفسه.
      */

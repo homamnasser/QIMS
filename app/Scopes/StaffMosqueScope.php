@@ -121,7 +121,7 @@ class StaffMosqueScope implements Scope
             EvaluationCandidateEnrollment::class => ['candidate', 'course', 'circle'],
             EvaluationExamResult::class => ['candidate', 'subject'],
             TeacherPeriodEvaluation::class,
-            QuranPeriodAssessment::class,
+            QuranPeriodAssessment::class => ['candidate'],
             // evaluation_candidate_id stays null until the part lands inside a
             // cycle, so only student_id is a reliable anchor.
             SabrPartAchievement::class => ['student'],

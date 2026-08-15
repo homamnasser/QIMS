@@ -132,8 +132,8 @@ class FinalEvaluationSystemTest extends TestCase
             'periods' => [[
                 'name' => 'فترة القواعد',
                 'sequence' => 1,
-                'start_date' => '2026-02-01',
-                'end_date' => '2026-02-28',
+                'start_date' => '2026-01-01',
+                'end_date' => '2026-01-31',
             ]],
             'rule_configuration' => $configuration,
         ], $context['supervisor']);
@@ -276,8 +276,8 @@ class FinalEvaluationSystemTest extends TestCase
             'periods' => [[
                 'name' => 'فترة',
                 'sequence' => 1,
-                'start_date' => '2026-03-01',
-                'end_date' => '2026-03-31',
+                'start_date' => '2026-01-01',
+                'end_date' => '2026-01-31',
             ]],
             'rule_configuration' => $reloaded,
         ], $context['supervisor']);
@@ -357,6 +357,63 @@ class FinalEvaluationSystemTest extends TestCase
                 ['name' => 'اسم جديد', 'sequence' => 1, 'start_date' => '2026-01-01', 'end_date' => '2026-01-10'],
                 ['name' => 'الفترة الثانية', 'sequence' => 2, 'start_date' => '2026-01-16', 'end_date' => '2026-01-31'],
             ],
+        ], $context['supervisor']);
+    }
+
+    /**
+     * كل معايير التقييم تُقرأ من نافذة الدورة، فنطاق لا يلامس مدة المقرر
+     * يُنتج أصفاراً صامتة لكل طلابه؛ يُرفض عند التعريف لا عند الاحتساب.
+     */
+    public function test_cycle_window_must_intersect_every_selected_course(): void
+    {
+        $context = $this->context();
+
+        try {
+            app(EvaluationCycleService::class)->create([
+                'project_id' => $context['project']->id,
+                'name' => 'دورة خارج مدة المقرر',
+                'season' => 'winter',
+                'course_ids' => [$context['course']->id],
+                'periods' => [[
+                    'name' => 'فترة بعيدة',
+                    'sequence' => 1,
+                    'start_date' => '2025-01-01',
+                    'end_date' => '2025-01-31',
+                ]],
+            ], $context['supervisor']);
+            $this->fail('كان يجب رفض نطاق لا يتقاطع مع المقرر.');
+        } catch (ValidationException $exception) {
+            $this->assertStringContainsString(
+                'لا يتقاطع مع',
+                $exception->validator->errors()->first('periods')
+            );
+        }
+
+        // التغطية الجزئية مقبولة: تقييم جزء من مدة المقرر حالة مشروعة.
+        $partial = app(EvaluationCycleService::class)->create([
+            'project_id' => $context['project']->id,
+            'name' => 'دورة تغطي جزءاً من المقرر',
+            'season' => 'winter',
+            'course_ids' => [$context['course']->id],
+            'periods' => [[
+                'name' => 'النصف الثاني',
+                'sequence' => 1,
+                'start_date' => '2026-01-16',
+                'end_date' => '2026-02-15',
+            ]],
+        ], $context['supervisor']);
+        $this->assertSame('2026-01-16', $partial->start_date->toDateString());
+
+        // والتعديل يخضع للقاعدة نفسها بعد دمج ما لم يُرسل مع ما هو قائم.
+        $this->expectException(ValidationException::class);
+        $this->expectExceptionMessage('لا يتقاطع مع');
+        app(EvaluationCycleService::class)->update($partial->fresh(), [
+            'periods' => [[
+                'name' => 'فترة بعيدة',
+                'sequence' => 1,
+                'start_date' => '2027-01-01',
+                'end_date' => '2027-01-31',
+            ]],
         ], $context['supervisor']);
     }
 
@@ -1093,6 +1150,11 @@ class FinalEvaluationSystemTest extends TestCase
             now()->addHour()
         );
         $this->withToken($token->plainTextToken);
+        // القسم مقفل خلف تأكيد الهوية؛ عزل بيانات الطلاب يُختبر بعد فتحه.
+        $this->postJson('/api/mobile/student/me/identity/confirm', [
+            'identifier' => 'final-evaluation-owner',
+            'password' => 'student123',
+        ])->assertOk();
 
         $this->getJson('/api/mobile/student/me/final-results')
             ->assertOk()
@@ -1410,48 +1472,129 @@ class FinalEvaluationSystemTest extends TestCase
             now()->addHour()
         );
         $this->withToken($token->plainTextToken);
-        $endpoint = "/api/mobile/student/me/certificates/{$certificate->id}/download";
+        $confirm = '/api/mobile/student/me/identity/confirm';
+        $download = "/api/mobile/student/me/certificates/{$certificate->id}";
 
-        // رمز الجلسة وحده لا يسلّم الشهادة: بلا حقول التأكيد الطلب غير صالح.
-        $this->postJson($endpoint)
+        // القسم بأكمله مقفل قبل التأكيد: القائمة والتفاصيل والشهادة معاً، لا
+        // الشهادة وحدها. النتيجة نفسها بيانات شخصية.
+        foreach ([
+            '/api/mobile/student/me/final-results',
+            "/api/mobile/student/me/final-results/{$result->id}",
+            $download,
+        ] as $locked) {
+            $this->getJson($locked)
+                ->assertForbidden()
+                ->assertJsonPath('error_code', 'IDENTITY_CONFIRMATION_REQUIRED');
+        }
+
+        // بلا حقول التأكيد الطلب غير صالح.
+        $this->postJson($confirm)
             ->assertStatus(422)
             ->assertJsonValidationErrors(['identifier', 'password']);
 
-        // كلمة مرور خاطئة، ومعرّف طالب آخر، كلاهما يُرفض.
-        $this->postJson($endpoint, [
+        // كلمة مرور خاطئة، ومعرّف طالب آخر، كلاهما يُرفض ويبقي القسم مقفلاً.
+        $this->postJson($confirm, [
             'identifier' => 'final-evaluation-owner',
             'password' => 'wrong-password',
-        ])->assertForbidden();
+        ])
+            ->assertForbidden()
+            ->assertJsonPath('error_code', 'IDENTITY_CONFIRMATION_FAILED');
 
-        $this->postJson($endpoint, [
+        $this->postJson($confirm, [
             'identifier' => 'someone-else',
             'password' => 'student123',
         ])->assertForbidden();
 
-        // اسم المستخدم، ثم الرقم الذاتي الحالي بفروق الحالة والمسافات الجانبية.
-        foreach (['final-evaluation-owner', '  eval01-000123  '] as $identifier) {
-            $response = $this->post($endpoint, [
-                'identifier' => $identifier,
-                'password' => 'student123',
-            ]);
+        $this->getJson('/api/mobile/student/me/final-results')->assertForbidden();
 
-            $response->assertOk();
-            $this->assertSame(
-                'application/pdf',
-                $response->headers->get('content-type')
-            );
-        }
+        // الرقم الذاتي الحالي بفروق الحالة والمسافات الجانبية يفتح القسم.
+        $this->postJson($confirm, [
+            'identifier' => '  eval01-000123  ',
+            'password' => 'student123',
+        ])
+            ->assertOk()
+            ->assertJsonPath('data.expires_in', 300);
+
+        // القسم كله مفتوح الآن بتأكيد واحد.
+        $this->getJson('/api/mobile/student/me/final-results')
+            ->assertOk()
+            ->assertJsonCount(1, 'data');
+        $this->getJson("/api/mobile/student/me/final-results/{$result->id}")
+            ->assertOk();
+        $response = $this->get($download);
+        $response->assertOk();
+        $this->assertSame(
+            'application/pdf',
+            $response->headers->get('content-type')
+        );
+
+        // القفل عند مغادرة القسم يعيده مغلقاً فوراً، بلا انتظار انتهاء المهلة.
+        $this->postJson('/api/mobile/student/me/identity/lock')->assertOk();
+        $this->getJson('/api/mobile/student/me/final-results')
+            ->assertForbidden()
+            ->assertJsonPath('error_code', 'IDENTITY_CONFIRMATION_REQUIRED');
+    }
+
+    public function test_identity_confirmation_is_rate_limited_and_scoped_to_one_device(): void
+    {
+        $context = $this->context();
+        $studentRole = Role::create([
+            'name' => 'identity-confirm-student',
+            'guard_name' => 'web',
+            'role_family' => RoleFamily::Student->value,
+            'is_system' => false,
+            'role_family_reviewed_at' => now(),
+        ]);
+        $studentRole->givePermissionTo([
+            config('roles.student_capabilities.final_results'),
+        ]);
+        $context['student']->syncRoles([$studentRole]);
+        $this->createPublishedResult(
+            $context['cycle'],
+            $context['candidate'],
+            $context['supervisor']
+        );
+
+        $phone = $context['student']->createToken(
+            'identity-phone',
+            [config('auth_tokens.mobile.abilities.access')],
+            now()->addHour()
+        );
+        $tablet = $context['student']->createToken(
+            'identity-tablet',
+            [config('auth_tokens.mobile.abilities.access')],
+            now()->addHour()
+        );
+        $confirm = '/api/mobile/student/me/identity/confirm';
+
+        $this->withToken($phone->plainTextToken);
+        $this->postJson($confirm, [
+            'identifier' => 'final-evaluation-owner',
+            'password' => 'student123',
+        ])->assertOk();
+        $this->getJson('/api/mobile/student/me/final-results')->assertOk();
+
+        // الإذن مرتبط برمز الوصول: تأكيد على جهاز لا يفتح القسم على جهاز آخر
+        // يحمل جلسة أخرى للطالب نفسه.
+        $this->app['auth']->forgetGuards();
+        $this->withToken($tablet->plainTextToken);
+        $this->getJson('/api/mobile/student/me/final-results')
+            ->assertForbidden()
+            ->assertJsonPath('error_code', 'IDENTITY_CONFIRMATION_REQUIRED');
 
         // خمس محاولات في الدقيقة سقف مقصود: الواجهة تفحص كلمة مرور فهي سطح
-        // تخمين. الطلب السادس يُردّ ولو كان تأكيده صحيحاً.
-        $this->postJson($endpoint, [
+        // تخمين. الحدّ محسوب بالحساب لا بالجهاز، والتأكيد الناجح أعلاه يُحتسب
+        // منه، فتبقى أربع محاولات قبل أن يُردّ الطلب السادس ولو كان صحيحاً.
+        for ($attempt = 0; $attempt < 4; $attempt++) {
+            $this->postJson($confirm, [
+                'identifier' => 'final-evaluation-owner',
+                'password' => 'wrong-password',
+            ])->assertForbidden();
+        }
+        $this->postJson($confirm, [
             'identifier' => 'final-evaluation-owner',
             'password' => 'student123',
         ])->assertStatus(429);
-
-        // لا يوجد مسار GET موازٍ يتخطى التأكيد.
-        $this->get("/api/mobile/student/me/certificates/{$certificate->id}")
-            ->assertNotFound();
     }
 
     public function test_confirmed_student_cannot_download_another_students_certificate(): void
@@ -1496,12 +1639,13 @@ class FinalEvaluationSystemTest extends TestCase
         $this->withToken($token->plainTextToken);
 
         // تأكيد هوية صحيح تماماً، لكن الشهادة تخص طالباً آخر.
-        $this->postJson(
-            "/api/mobile/student/me/certificates/{$otherCertificate->id}/download",
-            [
-                'identifier' => 'final-evaluation-owner',
-                'password' => 'student123',
-            ]
+        $this->postJson('/api/mobile/student/me/identity/confirm', [
+            'identifier' => 'final-evaluation-owner',
+            'password' => 'student123',
+        ])->assertOk();
+
+        $this->getJson(
+            "/api/mobile/student/me/certificates/{$otherCertificate->id}"
         )->assertNotFound();
     }
 

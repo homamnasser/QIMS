@@ -9,6 +9,7 @@ use App\Models\Circle;
 use App\Models\CourseDate;
 use App\Models\Memorization;
 use App\Models\Student;
+use App\Services\StudentPushService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -46,35 +47,57 @@ class MemorizationController extends Controller
         $endPage = max((int) $validated['start_page'], (int) $validated['end_page']);
 
         $insertedMemorizations = [];
+        $createdPages = [];
 
-        for ($page = $startPage; $page <= $endPage; $page++) {
+        // withoutEvents: الحلقة تكتب صفًّا لكل صفحة، وخطّاف created كان يرسل
+        // إشعارًا لكل صف — عشر صفحات = عشرة إشعارات. النطاق مفهوم على مستوى
+        // المتحكّم لا الموديل، فيُكتم الحدث هنا ويُرسل إشعار واحد بعد الحلقة.
+        Memorization::withoutEvents(function () use (
+            $startPage, $endPage, $validated, $recordType, $courseDate,
+            $circle, $giverId, $courseId, $recordedAt,
+            &$insertedMemorizations, &$createdPages
+        ): void {
+            for ($page = $startPage; $page <= $endPage; $page++) {
 
-            $identity = [
-                'student' => $validated['student_id'],
-                'page_number' => $page,
-                'record_type' => $recordType,
-            ];
-            if ($courseDate) {
-                $identity['course_date_id'] = $courseDate->id;
-            } elseif ($circle) {
-                $identity['circle_id'] = $circle->id;
+                $identity = [
+                    'student' => $validated['student_id'],
+                    'page_number' => $page,
+                    'record_type' => $recordType,
+                ];
+                if ($courseDate) {
+                    $identity['course_date_id'] = $courseDate->id;
+                } elseif ($circle) {
+                    $identity['circle_id'] = $circle->id;
+                }
+
+                $memorization = Memorization::updateOrCreate(
+                    $identity,
+                    [
+                        'giver' => $giverId,
+                        'course_id' => $courseId,
+                        'circle_id' => $circle?->id,
+                        'course_date_id' => $courseDate?->id,
+                        'recorded_at' => $recordedAt,
+                        'name' => $validated['name'] ?? 'Page '.$page,
+                    ]
+                );
+
+                // إعادة تسجيل صفحة قائمة تحديث لا إنشاء، وهي لا تُشعر — وهو
+                // سلوك ما قبل التجميع نفسه، إذ لم يكن Memorization في ON_UPDATE.
+                if ($memorization->wasRecentlyCreated) {
+                    $createdPages[] = $page;
+                }
+
+                $memorization->load(['studentDetails', 'giverDetails', 'course', 'circle', 'courseDate']);
+                $insertedMemorizations[] = $memorization;
             }
+        });
 
-            $memorization = Memorization::updateOrCreate(
-                $identity,
-                [
-                    'giver' => $giverId,
-                    'course_id' => $courseId,
-                    'circle_id' => $circle?->id,
-                    'course_date_id' => $courseDate?->id,
-                    'recorded_at' => $recordedAt,
-                    'name' => $validated['name'] ?? 'Page '.$page,
-                ]
-            );
-
-            $memorization->load(['studentDetails', 'giverDetails', 'course', 'circle', 'courseDate']);
-            $insertedMemorizations[] = $memorization;
-        }
+        $this->notifyMemorizationRange(
+            (int) $validated['student_id'],
+            $recordType,
+            $createdPages
+        );
 
         return response()->json([
             'code' => 201,
@@ -82,6 +105,34 @@ class MemorizationController extends Controller
             'message' => 'تم تسجيل صفحات الحفظ بنجاح بدون تكرار.',
             'data' => MemorizationResource::collection($insertedMemorizations),
         ], 201);
+    }
+
+    /**
+     * إشعار واحد عن النطاق كلّه.
+     *
+     * الصفحات المُنشأة قد تكون متقطّعة إن كان بعض النطاق مسجّلًا سلفًا، فالنص
+     * يذكر الحدّين والعدد بدل افتراض تسلسل متّصل.
+     */
+    private function notifyMemorizationRange(int $studentId, string $recordType, array $createdPages): void
+    {
+        if ($createdPages === []) {
+            return;
+        }
+
+        $count = count($createdPages);
+        $first = min($createdPages);
+        $last = max($createdPages);
+
+        $body = $count === 1
+            ? "صفحة {$first}"
+            : "الصفحات {$first} - {$last} ({$count} صفحات)";
+
+        StudentPushService::queue(
+            $studentId,
+            $recordType === 'revision' ? 'مراجعة جديدة' : 'تسميع جديد',
+            $body,
+            ['route' => '/memorization'],
+        );
     }
 
     public function getMemorizationById(int $id): JsonResponse

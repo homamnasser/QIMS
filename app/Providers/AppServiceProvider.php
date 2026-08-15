@@ -88,10 +88,12 @@ use App\Services\StaffService;
 use App\Services\StudentCircleService;
 use App\Services\StudentCourseAbsenceService;
 use App\Services\StudentLearningService;
+use App\Services\StudentPushService;
 use App\Services\StudentService;
 use App\Services\SubjectService;
 use App\Services\WarningService;
 use App\Support\StaffScopeContext;
+use App\Support\StudentPushEvents;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -192,7 +194,50 @@ class AppServiceProvider extends ServiceProvider
             return $user->isSuperAdmin() ? true : null;
         });
 
+        $this->registerStudentPushHooks();
         $this->configureRateLimiting();
+    }
+
+    /**
+     * الخطّاف على الموديل لا على المتحكّم: مسارات الويب ومسارات mobile/staff
+     * تشترك في المتحكّمات والخدمات نفسها، فخطّاف واحد يغطي القناتين إلى الأبد،
+     * بينما الخطّاف على المتحكّمات يعني 7 موديلات × قناتين = 14 موضع تعديل تتباعد.
+     */
+    private function registerStudentPushHooks(): void
+    {
+        foreach (StudentPushEvents::ON_CREATE as $model) {
+            $model::created(fn ($record) => $this->pushForRecord($record));
+        }
+
+        foreach (StudentPushEvents::ON_UPDATE as $model => $column) {
+            $model::updated(function ($record) use ($column): void {
+                // wasChanged لا wasDirty: نُشعر بعد الحفظ الفعلي، وبتغيّر النتيجة وحدها
+                // لا بأي حفظ آخر يمسّ الصف.
+                if ($record->wasChanged($column)) {
+                    $this->pushForRecord($record);
+                }
+            });
+        }
+    }
+
+    private function pushForRecord(object $record): void
+    {
+        $described = StudentPushEvents::describe($record);
+
+        if (! $described) {
+            return;
+        }
+
+        [$studentId, $title, $body, $route] = $described;
+
+        if (! $studentId) {
+            return;
+        }
+
+        StudentPushService::queue($studentId, $title, $body, [
+            'route' => $route,
+            'id' => $record->getKey(),
+        ]);
     }
 
     /**
@@ -221,10 +266,10 @@ class AppServiceProvider extends ServiceProvider
             );
         });
 
-        // تأكيد الهوية قبل تحميل الشهادة يفحص كلمة مرور، فهو سطح تخمين.
+        // تأكيد الهوية لفتح قسم النتيجة النهائية يفحص كلمة مرور، فهو سطح تخمين.
         // الحساب معروف مسبقاً (الطلب مصادق عليه) فنحدّ به لا بالـ IP وحده،
         // كي لا تُعطّل شبكة مشتركة طلاب مسجد كامل.
-        RateLimiter::for('certificate-confirm', function (Request $request) {
+        RateLimiter::for('identity-confirm', function (Request $request) {
             return Limit::perMinute(5)->by(
                 $request->user()
                     ? $request->user()::class.':'.$request->user()->getAuthIdentifier()
